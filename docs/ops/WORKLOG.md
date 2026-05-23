@@ -1,5 +1,23 @@
 # Worklog
 
+## 2026-05-24 - REVIEW-FIX-TR001C: Fix CI Pytest Dependency
+
+**Goal:** Fix GitHub Actions pytest dependency gap.
+
+**Summary:**
+
+- Added `pytest>=8,<9` as the `dev` optional dependency.
+- Updated CI to install the editable package with `.[dev]`.
+- Runtime dependencies remain empty.
+- No runtime behavior changed.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed.
+- `python -m pytest` passed: 15 tests.
+- Forbidden DB/log/env file scan returned no files.
+- Pending GitHub Actions result.
+
 ## 2026-05-23 - REVIEW-FIX-TR001B: Single Policy Decision for Message Receipt
 
 **Goal:** Ensure inbound message receipts use the same policy decision that authorized message recording, then open a PR.

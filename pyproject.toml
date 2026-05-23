@@ -9,6 +9,11 @@ description = "Minimal Verace Trust Runtime ledger seed"
 requires-python = ">=3.11"
 dependencies = []
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+]
+
 [project.scripts]
 verace-runtime = "verace_runtime.cli:main"
 
