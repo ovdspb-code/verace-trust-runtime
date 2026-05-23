@@ -10,6 +10,7 @@ Durable operating decisions for Verace - Trust Runtime.
 | D-TR-004 | No receipt, no success claim. | ADR-TR002 |
 | D-TR-005 | State is not in the model. | ADR-TR002 |
 | D-TR-006 | ADR-TR004 Runtime Ledger Minimal Contract accepted; Runtime Ledger is operational source of truth. | ADR-TR004 |
+| D-TR-007 | ADR-TR005 Receipt and Approval Policy accepted; consequential external action requires mandate or approval, and success claims require receipts. | ADR-TR005 |
 
 ## Decision Discipline
 

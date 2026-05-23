@@ -1,5 +1,33 @@
 # Worklog
 
+## 2026-05-23 - Ratify ADR-TR005
+
+**Goal:** Record founder decision ratifying ADR-TR005.
+
+**Summary:**
+
+- Founder decision supplied in chat: ADR-TR005 ratified as `Accepted v1.0`, ratified 2026-05-23 by Oleg Dolgikh.
+- Updated ADR-TR005 status to `Accepted v1.0`.
+- Added ratification line: `2026-05-23 by Oleg Dolgikh`.
+- Updated ADR index, project state, and decision log.
+- No ADR body changes.
+
+**Changed files:**
+
+- `docs/adr/ADR-TR005-Receipt-and-Approval-Policy.md`
+- `docs/adr/README.md`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/DECISIONS.md`
+- `docs/ops/WORKLOG.md`
+
+**Checks:**
+
+- Preflight run.
+- `git fetch origin main` run.
+- Divergence check returned `0 0`.
+- Diff inspected before commit.
+- No code changes.
+
 ## 2026-05-23 - Session TR-005: Add ADR-TR005 Receipt and Approval Policy
 
 **Goal:** Add ADR-TR005 as proposed receipt and approval policy ADR.

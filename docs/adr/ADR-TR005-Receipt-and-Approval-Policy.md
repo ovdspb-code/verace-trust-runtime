@@ -1,7 +1,8 @@
 # ADR-TR005: Receipt and Approval Policy
 
-**Status:** Proposed v1.0  
+**Status:** Accepted v1.0  
 **Date:** 2026-05-23  
+**Ratified:** 2026-05-23 by Oleg Dolgikh  
 **Owner:** Oleg Dolgikh  
 **Project:** Verace — Trust Runtime  
 **Scope:** Policy doctrine for receipts, approvals, review, blocks, and safe claims  
