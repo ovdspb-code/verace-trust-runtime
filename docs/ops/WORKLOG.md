@@ -1,5 +1,34 @@
 # Worklog
 
+## 2026-05-23 - Session TR-GH-001: Publish TRUST_RUNTIME to GitHub
+
+**Goal:** Connect the local TRUST_RUNTIME repository to a GitHub remote, push the current accepted baseline, and document the GitHub review workflow.
+
+**Summary:**
+
+- Verified clean local repository state.
+- Verified no unexpected non-document files.
+- Verified GitHub CLI authentication for `ovdspb-code`.
+- Found `ovdspb-code/verace-trust-runtime` already existed as a public empty repository.
+- Added GitHub workflow documentation.
+- Updated project state and risk register.
+- Remote/push receipt to be filled by final report.
+
+**Changed files:**
+
+- `docs/ops/GITHUB_WORKFLOW.md`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/WORKLOG.md`
+- `docs/ops/RISK_REGISTER.md`
+
+**Checks:**
+
+- Preflight run.
+- Secret/file hygiene check run.
+- GitHub authentication checked.
+- Remote refs checked before push.
+- Diff inspected before commit.
+
 ## 2026-05-23 - Session TR-004: Add ADR-TR004 Runtime Ledger Minimal Contract
 
 **Goal:** Add ADR-TR004 as proposed runtime ledger contract ADR.

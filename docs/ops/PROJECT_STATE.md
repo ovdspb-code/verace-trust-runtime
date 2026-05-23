@@ -28,6 +28,15 @@
 
 Baseline commit: created in Session TR-002. The current commit hash is intentionally not embedded in the committed tree because amending a commit changes its hash; use `git rev-parse --short HEAD` / `git log --oneline -1` as the operational receipt.
 
+## GitHub Remote Status
+
+- Repository full name: `ovdspb-code/verace-trust-runtime`
+- Visibility: public
+- Remote name: `origin`
+- Remote URL: `https://github.com/ovdspb-code/verace-trust-runtime.git`
+- GitHub is intended to be the canonical repository state after successful push.
+- ChatGPT Project uploads remain supporting context snapshots, not repository truth.
+
 ## Operating Rule
 
 Do not start runtime implementation until a session brief has been issued and accepted through the Session Protocol.

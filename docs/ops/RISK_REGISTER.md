@@ -8,6 +8,8 @@
 | False success claims | Open | Enforce "No receipt, no success claim" in briefs, reports, and runtime design. |
 | Old Verace backend over-import | Open | Use shared contracts and explicit ports before any backend integration. |
 | Protocol cargo cult | Open | Future protocols may shape boundaries but must not define MVP scope. |
+| Architect lacks direct local filesystem access | Mitigated in TR-GH-001 | GitHub canonical repository plus commit/PR review flow. |
+| Secrets leakage | Open | Keep `.env`, databases, credentials, and generated runtime state out of git; future secret scanning not configured yet. |
 
 ## Review Rule
 
