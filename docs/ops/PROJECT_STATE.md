@@ -1,7 +1,7 @@
 # Project State
 
 **Project:** Verace - Trust Runtime  
-**Current phase:** Phase 0 - Operating Base  
+**Current phase:** Phase 1 - Founder Assistant Seed  
 **Updated:** 2026-05-23  
 
 ## Accepted ADRs
@@ -15,9 +15,13 @@
 
 - PLAN-TR001: Verace Work Plan - From Founder Assistant to Trust Runtime — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
 
-## Next Intended Document
+## Active Implementation Brief
 
 - BRIEF-TR001: Founder Assistant MVP — Ledger Seed.
+
+## Next Intended Document
+
+- TBD after IMPL-TR001 review.
 
 ## Current Repository Fact
 
@@ -40,4 +44,4 @@ Baseline commit: created in Session TR-002. The current commit hash is intention
 
 ## Operating Rule
 
-Do not start runtime implementation until a session brief has been issued and accepted through the Session Protocol.
+Runtime implementation may proceed only inside an issued implementation brief and must report receipts for tests, git state, and push state.

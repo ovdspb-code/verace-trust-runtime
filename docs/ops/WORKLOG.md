@@ -1,5 +1,34 @@
 # Worklog
 
+## 2026-05-23 - IMPL-TR001: Founder Assistant MVP Ledger Seed
+
+**Goal:** Implement the first executable ledger seed for the Founder Assistant MVP.
+
+**Summary:**
+
+- Copied BRIEF-TR001 into `docs/briefs/`.
+- Added a small Python package with SQLite ledger, deterministic policy, receipts, service layer, and CLI.
+- Added pytest coverage for init, ingest, policy/receipts, restart recovery, and CLI smoke.
+- Updated project state to Phase 1 - Founder Assistant Seed.
+- No Telegram, LLM provider, external API, payment, legal, or external-send integration was added.
+
+**Changed files:**
+
+- `.gitignore`
+- `pyproject.toml`
+- `docs/briefs/BRIEF-TR001-Founder-Assistant-MVP-Ledger-Seed.md`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/RISK_REGISTER.md`
+- `docs/ops/WORKLOG.md`
+- `src/verace_runtime/**`
+- `tests/**`
+
+**Checks:**
+
+- `python -m pytest` passed: 6 tests.
+- Manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Line-count gate passed: largest code file is 204 lines.
+
 ## 2026-05-23 - Ratify ADR-TR005
 
 **Goal:** Record founder decision ratifying ADR-TR005.
