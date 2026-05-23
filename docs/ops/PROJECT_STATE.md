@@ -10,13 +10,17 @@
 - ADR-TR003: Founder Assistant as First Runtime Canary — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
 - ADR-TR004: Runtime Ledger Minimal Contract — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
 
+## Proposed ADRs
+
+- ADR-TR005: Receipt and Approval Policy — Proposed v1.0.
+
 ## Accepted Plans
 
 - PLAN-TR001: Verace Work Plan - From Founder Assistant to Trust Runtime — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
 
 ## Next Intended Document
 
-- ADR-TR005: Receipt and Approval Policy.
+- BRIEF-TR001: Founder Assistant MVP — Ledger Seed.
 
 ## Current Repository Fact
 

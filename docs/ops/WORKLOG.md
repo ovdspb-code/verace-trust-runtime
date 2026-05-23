@@ -1,5 +1,35 @@
 # Worklog
 
+## 2026-05-23 - Session TR-005: Add ADR-TR005 Receipt and Approval Policy
+
+**Goal:** Add ADR-TR005 as proposed receipt and approval policy ADR.
+
+**Summary:**
+
+- Verified local `main` and `origin/main` were aligned.
+- Copied ADR-TR005 from Chief Architect source.
+- Verified SHA-256 copy match.
+- Left ADR-TR005 status as `Proposed v1.0`.
+- Updated ADR index and project state.
+- Set next intended document to BRIEF-TR001: Founder Assistant MVP — Ledger Seed.
+
+**Changed files:**
+
+- `docs/adr/ADR-TR005-Receipt-and-Approval-Policy.md`
+- `docs/adr/README.md`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/WORKLOG.md`
+
+**Checks:**
+
+- Preflight run.
+- `git fetch origin main` run.
+- Divergence check returned `0 0`.
+- Source file presence verified.
+- SHA-256 copy verification passed.
+- Diff inspected before commit.
+- No code changes.
+
 ## 2026-05-23 - Session TR-GOV-001: Reconcile ADR-TR004 Ratification Receipt
 
 **Goal:** Repair the governance record around ADR-TR004 after GitHub publication revealed ADR-TR004 is already marked `Accepted v1.0`.
