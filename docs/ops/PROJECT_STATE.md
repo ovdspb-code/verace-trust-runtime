@@ -7,10 +7,7 @@
 ## Accepted ADRs
 
 - ADR-TR002: Verace as Trust Runtime for AI Work — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
-
-## Proposed ADRs
-
-- ADR-TR003: Founder Assistant as First Runtime Canary — Proposed v1.0.
+- ADR-TR003: Founder Assistant as First Runtime Canary — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
 
 ## Accepted Plans
 

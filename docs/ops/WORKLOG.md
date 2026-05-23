@@ -1,5 +1,29 @@
 # Worklog
 
+## 2026-05-23 - Ratify ADR-TR003
+
+**Goal:** Record founder decision ratifying ADR-TR003.
+
+**Summary:**
+
+- Updated ADR-TR003 status to `Accepted v1.0`.
+- Added ratification line: `2026-05-23 by Oleg Dolgikh`.
+- Updated ADR index, project state, and decision source.
+
+**Changed files:**
+
+- `docs/adr/ADR-TR003-Founder-Assistant-as-First-Runtime-Canary.md`
+- `docs/adr/README.md`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/DECISIONS.md`
+- `docs/ops/WORKLOG.md`
+
+**Checks:**
+
+- Working tree was clean before changes.
+- Diff inspected before commit.
+- No code changes.
+
 ## 2026-05-23 - Session TR-003: Add ADR-TR003 Founder Assistant Canary
 
 **Goal:** Add ADR-TR003 as proposed strategic ADR.
