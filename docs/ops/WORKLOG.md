@@ -1,5 +1,24 @@
 # Worklog
 
+## 2026-05-24 - MERGE-TR001: Merge Founder Assistant Ledger Seed
+
+**Goal:** Merge PR #1 into `main` with a merge commit and record post-merge state.
+
+**Summary:**
+
+- PR #1 merged into `main`.
+- Merge commit: `67b28cb`.
+- No runtime behavior changed after merge.
+- Project state now points next to BRIEF-TR002: Project Operating Memory.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed on merged `main`.
+- `python -m pytest` passed on merged `main`: 15 tests.
+- Manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Forbidden DB/log/env file scan returned no files.
+- GitHub Actions on merge commit `67b28cb`: success.
+
 ## 2026-05-24 - REVIEW-FIX-TR001C: Fix CI Pytest Dependency
 
 **Goal:** Fix GitHub Actions pytest dependency gap.

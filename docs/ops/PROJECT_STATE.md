@@ -2,7 +2,7 @@
 
 **Project:** Verace - Trust Runtime  
 **Current phase:** Phase 1 - Founder Assistant Seed  
-**Updated:** 2026-05-23  
+**Updated:** 2026-05-24  
 
 ## Accepted ADRs
 
@@ -17,11 +17,11 @@
 
 ## Active Implementation Brief
 
-- BRIEF-TR001: Founder Assistant MVP — Ledger Seed.
+- BRIEF-TR001: Founder Assistant MVP — Ledger Seed — merged in PR #1.
 
 ## Next Intended Document
 
-- TBD after IMPL-TR001 review.
+- BRIEF-TR002: Project Operating Memory.
 
 ## Current Repository Fact
 
@@ -46,6 +46,6 @@ Baseline commit: created in Session TR-002. The current commit hash is intention
 
 Runtime implementation may proceed only inside an issued implementation brief and must report receipts for tests, git state, and push state.
 
-## Current Implementation Branch
+## Recently Merged Implementation
 
-- `work/brief-tr001-ledger-seed`: Founder Assistant Ledger Seed implementation and review hardening before merge.
+- PR #1 merged `work/brief-tr001-ledger-seed` into `main` with merge commit `67b28cb`.
