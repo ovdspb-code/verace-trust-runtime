@@ -1,5 +1,34 @@
 # Worklog
 
+## 2026-05-23 - Session TR-004: Add ADR-TR004 Runtime Ledger Minimal Contract
+
+**Goal:** Add ADR-TR004 as proposed runtime ledger contract ADR.
+
+**Summary:**
+
+- Copied ADR-TR004 from Chief Architect source.
+- Verified SHA-256 copy match.
+- Recorded founder decision by updating ADR-TR004 status to `Accepted v1.0`.
+- Added ratification line: `2026-05-23 by Oleg Dolgikh`.
+- Updated ADR index, project state, decision log, and worklog.
+- Set next intended document to ADR-TR005: Receipt and Approval Policy.
+
+**Changed files:**
+
+- `docs/adr/ADR-TR004-Runtime-Ledger-Minimal-Contract.md`
+- `docs/adr/README.md`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/DECISIONS.md`
+- `docs/ops/WORKLOG.md`
+
+**Checks:**
+
+- Preflight run.
+- Source file presence verified.
+- SHA-256 copy verification passed.
+- Diff inspected before staging.
+- No code changes.
+
 ## 2026-05-23 - Ratify ADR-TR003
 
 **Goal:** Record founder decision ratifying ADR-TR003.

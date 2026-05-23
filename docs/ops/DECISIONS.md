@@ -9,6 +9,7 @@ Durable operating decisions for Verace - Trust Runtime.
 | D-TR-003 | Founder Assistant is the first canary, not the architecture. | ADR-TR002 / PLAN-TR001 / ADR-TR003 |
 | D-TR-004 | No receipt, no success claim. | ADR-TR002 |
 | D-TR-005 | State is not in the model. | ADR-TR002 |
+| D-TR-006 | Runtime Ledger is the minimum durable operational truth contract. | ADR-TR004 |
 
 ## Decision Discipline
 
