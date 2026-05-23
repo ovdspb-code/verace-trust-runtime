@@ -27,6 +27,19 @@ The core architecture is the durable runtime that owns mandates, policy, receipt
 
 ## Current Phase
 
-Phase 0 - Operating Base.
+Phase 1 - Founder Assistant Seed.
 
-The current priority is to establish the project spine before implementation: ADRs, plans, briefs, ops memory, decision log, worklog, risk register, session protocol, and known git state.
+The current implementation slice is the local Ledger Seed: a small CLI over SQLite that records founder-project work as durable messages, tasks, events, receipts, and claims.
+
+## Ledger Seed Quickstart
+
+```bash
+python -m pip install -e .
+python -m verace_runtime.cli init --db .runtime/verace.sqlite3
+python -m verace_runtime.cli ingest-message --db .runtime/verace.sqlite3 --principal oleg --contour verace_project --text "Подготовить тестовую задачу"
+python -m verace_runtime.cli tasks --db .runtime/verace.sqlite3
+python -m verace_runtime.cli status --db .runtime/verace.sqlite3
+python -m verace_runtime.cli doctor --db .runtime/verace.sqlite3
+```
+
+Runtime DB files live under `.runtime/` by default and must never be committed. The MVP has no Telegram, LLM provider, external API, payment, legal, or external-send integration.

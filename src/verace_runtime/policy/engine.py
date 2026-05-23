@@ -1,0 +1,48 @@
+"""Deterministic policy engine for the first runtime slice."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class Decision:
+    action_class: str
+    allowed: bool
+    result: str
+    reason: str
+
+
+class PolicyEngine:
+    allowed_actions = frozenset(
+        {
+            "ledger.init",
+            "internal.message.record",
+            "internal.task.create",
+            "internal.task.event",
+            "internal.status.query",
+            "ledger.event",
+        }
+    )
+    blocked_actions = frozenset(
+        {
+            "external.send",
+            "external.share",
+            "external.publish",
+            "github.push",
+            "github.pr",
+            "github.merge",
+            "payment",
+            "legal.commitment",
+            "sensitive.disclosure",
+            "destructive.action",
+            "external.agent.delegate",
+        }
+    )
+
+    def evaluate(self, action_class: str) -> Decision:
+        if action_class in self.allowed_actions:
+            return Decision(action_class, True, "allowed", "internal MVP action")
+        if action_class in self.blocked_actions:
+            return Decision(action_class, False, "blocked", "outside BRIEF-TR001")
+        return Decision(action_class, False, "blocked", "unknown action class")

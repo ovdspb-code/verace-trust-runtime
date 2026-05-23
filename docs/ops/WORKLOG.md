@@ -1,5 +1,100 @@
 # Worklog
 
+## 2026-05-24 - REVIEW-FIX-TR001C: Fix CI Pytest Dependency
+
+**Goal:** Fix GitHub Actions pytest dependency gap.
+
+**Summary:**
+
+- Added `pytest>=8,<9` as the `dev` optional dependency.
+- Updated CI to install the editable package with `.[dev]`.
+- Runtime dependencies remain empty.
+- No runtime behavior changed.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed.
+- `python -m pytest` passed: 15 tests.
+- Forbidden DB/log/env file scan returned no files.
+- Pending GitHub Actions result.
+
+## 2026-05-23 - REVIEW-FIX-TR001B: Single Policy Decision for Message Receipt
+
+**Goal:** Ensure inbound message receipts use the same policy decision that authorized message recording, then open a PR.
+
+**Summary:**
+
+- Passed the already-evaluated `internal.message.record` decision into message receipt creation.
+- Removed the second policy evaluation from `_receipt_message`.
+- The policy decision used for message mutation and message receipt is now single-source.
+- Added a regression test using a flipping policy to prove message receipt reuses the authorizing decision.
+
+**Checks:**
+
+- `python -m pytest` passed: 15 tests.
+- Manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Forbidden DB/log/env file scan returned no files.
+- PR creation pending.
+
+## 2026-05-23 - REVIEW-FIX-TR001: Harden Ledger Seed Before Merge
+
+**Goal:** Harden the Founder Assistant Ledger Seed implementation before merge to main.
+
+**Summary:**
+
+- Moved task-creation policy evaluation before task/event mutation.
+- Scoped active mandate creation and lookup by principal plus contour.
+- Made claims and outbox receipts mandatory; made task events receipt-backed.
+- Strengthened doctor output and checks for schema, PRAGMAs, integrity, foreign keys, seed, and receipt coverage.
+- Added GitHub Actions pytest workflow.
+- Updated README with Phase 1 Ledger Seed quickstart.
+
+**Changed files:**
+
+- `README.md`
+- `.github/workflows/ci.yml`
+- `src/verace_runtime/**`
+- `tests/**`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/RISK_REGISTER.md`
+- `docs/ops/WORKLOG.md`
+
+**Checks:**
+
+- `python -m pytest` passed: 14 tests.
+- Manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Forbidden DB/log/env file check returned no files.
+- Line-count gate passed: no files over 300 lines.
+
+## 2026-05-23 - IMPL-TR001: Founder Assistant MVP Ledger Seed
+
+**Goal:** Implement the first executable ledger seed for the Founder Assistant MVP.
+
+**Summary:**
+
+- Copied BRIEF-TR001 into `docs/briefs/`.
+- Added a small Python package with SQLite ledger, deterministic policy, receipts, service layer, and CLI.
+- Added pytest coverage for init, ingest, policy/receipts, restart recovery, and CLI smoke.
+- Updated project state to Phase 1 - Founder Assistant Seed.
+- No Telegram, LLM provider, external API, payment, legal, or external-send integration was added.
+
+**Changed files:**
+
+- `.gitignore`
+- `pyproject.toml`
+- `docs/briefs/BRIEF-TR001-Founder-Assistant-MVP-Ledger-Seed.md`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/RISK_REGISTER.md`
+- `docs/ops/WORKLOG.md`
+- `src/verace_runtime/**`
+- `tests/**`
+
+**Checks:**
+
+- `python -m pytest` passed: 6 tests.
+- Manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Line-count gate passed: largest code file is 204 lines.
+
 ## 2026-05-23 - Ratify ADR-TR005
 
 **Goal:** Record founder decision ratifying ADR-TR005.
