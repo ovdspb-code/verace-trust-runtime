@@ -8,13 +8,17 @@
 
 - ADR-TR002: Verace as Trust Runtime for AI Work — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
 
+## Proposed ADRs
+
+- ADR-TR003: Founder Assistant as First Runtime Canary — Proposed v1.0.
+
 ## Accepted Plans
 
 - PLAN-TR001: Verace Work Plan - From Founder Assistant to Trust Runtime — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
 
 ## Next Intended Document
 
-- ADR-TR003: Founder Assistant as First Runtime Canary.
+- ADR-TR004: Runtime Ledger Minimal Contract.
 
 ## Current Repository Fact
 

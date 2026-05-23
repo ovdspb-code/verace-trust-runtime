@@ -1,5 +1,30 @@
 # Worklog
 
+## 2026-05-23 - Session TR-003: Add ADR-TR003 Founder Assistant Canary
+
+**Goal:** Add ADR-TR003 as proposed strategic ADR.
+
+**Summary:**
+
+- Added ADR-TR003 from Chief Architect source as `Proposed v1.0`.
+- Updated ADR index.
+- Updated project state to list ADR-TR003 under proposed ADRs.
+- Set next intended document to ADR-TR004: Runtime Ledger Minimal Contract.
+
+**Changed files:**
+
+- `docs/adr/ADR-TR003-Founder-Assistant-as-First-Runtime-Canary.md`
+- `docs/adr/README.md`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/WORKLOG.md`
+
+**Checks:**
+
+- Preflight run.
+- Baseline commit verified.
+- Diff inspected before staging.
+- No code changes.
+
 ## 2026-05-23 - Session TR-002: Ratify PLAN-TR001 and Create Baseline Commit
 
 **Goal:** Ratify PLAN-TR001 if authorized and create baseline commit.
