@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import sqlite3
 import sys
 
 from verace_runtime.app.service import FounderAssistantService
@@ -55,7 +56,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "doctor":
             _print_doctor(service)
         return 0
-    except RuntimeError as exc:
+    except (RuntimeError, sqlite3.Error) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
@@ -93,7 +94,10 @@ def _print_doctor(service: FounderAssistantService) -> None:
     result = service.doctor()
     print("Doctor: OK" if result["ok"] else "Doctor: FAIL")
     counts = result["counts"]
-    print(f"tables={len(result['required_tables'])} tasks={counts['tasks']} receipts={counts['receipts']}")
+    print(f"schema_ok={result['schema_ok']} pragma_ok={result['pragma_ok']} integrity_ok={result['integrity_ok']}")
+    print(f"foreign_keys_ok={result['foreign_keys_ok']} seed_ok={result['seed_ok']}")
+    print(f"claim_receipt_ok={result['claim_receipt_ok']} task_event_receipt_ok={result['task_event_receipt_ok']} outbox_receipt_ok={result['outbox_receipt_ok']}")
+    print(f"tables={len(result['required_tables'])} tasks={counts.get('tasks', 0)} receipts={counts.get('receipts', 0)}")
 
 
 if __name__ == "__main__":

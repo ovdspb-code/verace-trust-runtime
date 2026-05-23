@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS task_events (
   task_id TEXT NOT NULL REFERENCES tasks(id),
   event_type TEXT NOT NULL,
   summary TEXT NOT NULL,
-  receipt_id TEXT,
+  receipt_id TEXT NOT NULL REFERENCES receipts(id),
   created_at TEXT NOT NULL
 );
 
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS claims (
   claim_text TEXT NOT NULL,
   subject_type TEXT NOT NULL,
   subject_id TEXT NOT NULL,
-  receipt_id TEXT REFERENCES receipts(id),
+  receipt_id TEXT NOT NULL REFERENCES receipts(id),
   status TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
@@ -101,9 +101,13 @@ CREATE TABLE IF NOT EXISTS outbox_items (
   action_class TEXT NOT NULL,
   payload TEXT NOT NULL,
   status TEXT NOT NULL,
-  receipt_id TEXT REFERENCES receipts(id),
+  receipt_id TEXT NOT NULL REFERENCES receipts(id),
   created_at TEXT NOT NULL
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_active_mandate_principal_contour
+ON mandates(principal_person_id, contour_id)
+WHERE status = 'active';
 
 CREATE INDEX IF NOT EXISTS idx_tasks_public_no ON tasks(public_no);
 CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);

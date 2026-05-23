@@ -13,8 +13,8 @@ class LedgerRepository:
         self.conn = conn
 
     def seed_founder(self, now: str) -> dict[str, str]:
-        person_id = self._ensure_person("oleg", "Oleg Dolgikh", now)
-        contour_id = self._ensure_contour("verace_project", "Verace Project", now)
+        person_id = self.ensure_person("oleg", "Oleg Dolgikh", now)
+        contour_id = self.ensure_contour("verace_project", "Verace Project", now)
         self.conn.execute(
             """
             INSERT OR IGNORE INTO contour_memberships
@@ -22,7 +22,7 @@ class LedgerRepository:
             """,
             (person_id, contour_id, "principal", now),
         )
-        mandate_id = self._ensure_mandate(person_id, contour_id, now)
+        mandate_id = self.ensure_mandate(person_id, contour_id, now, "MANDATE-FOUNDING-001")
         return {"person_id": person_id, "contour_id": contour_id, "mandate_id": mandate_id}
 
     def active_mandate(self, principal: str, contour: str) -> sqlite3.Row:
@@ -73,19 +73,16 @@ class LedgerRepository:
         self.conn.execute("UPDATE tasks SET public_no = ? WHERE id = ?", (task_public_no(seq), task_id))
         return self._required("SELECT * FROM tasks WHERE id = ?", (task_id,))
 
-    def create_event(self, task_id: str, event_type: str, summary: str, now: str) -> str:
+    def create_event(self, task_id: str, event_type: str, summary: str, receipt_id: str, now: str) -> str:
         event_id = new_id("event")
         self.conn.execute(
             """
-            INSERT INTO task_events (id, task_id, event_type, summary, created_at)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO task_events (id, task_id, event_type, summary, receipt_id, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
             """,
-            (event_id, task_id, event_type, summary, now),
+            (event_id, task_id, event_type, summary, receipt_id, now),
         )
         return event_id
-
-    def attach_event_receipt(self, event_id: str, receipt_id: str) -> None:
-        self.conn.execute("UPDATE task_events SET receipt_id = ? WHERE id = ?", (receipt_id, event_id))
 
     def insert_receipt(self, payload) -> sqlite3.Row:
         self.conn.execute(
@@ -157,32 +154,90 @@ class LedgerRepository:
 
     def task_receipts(self, task_id: str) -> list[sqlite3.Row]:
         return self.conn.execute(
-            "SELECT * FROM receipts WHERE subject_type = 'task' AND subject_id = ? ORDER BY created_at",
+            """
+            SELECT * FROM receipts
+            WHERE subject_type = 'task' AND subject_id = ?
+            ORDER BY created_at, public_id
+            """,
             (task_id,),
         ).fetchall()
 
     def counts(self) -> dict[str, int]:
-        names = ["persons", "contours", "mandates", "messages", "tasks", "task_events", "receipts", "claims"]
+        names = [
+            "persons",
+            "contours",
+            "contour_memberships",
+            "mandates",
+            "messages",
+            "tasks",
+            "task_events",
+            "approvals",
+            "receipts",
+            "claims",
+            "outbox_items",
+        ]
         return {name: self.conn.execute(f"SELECT COUNT(*) AS n FROM {name}").fetchone()["n"] for name in names}
 
-    def _ensure_person(self, slug: str, name: str, now: str) -> str:
+    def table_names(self) -> set[str]:
+        rows = self.conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'").fetchall()
+        return {row["name"] for row in rows}
+
+    def seed_ok(self) -> bool:
+        row = self.conn.execute(
+            """
+            SELECT COUNT(*) AS n FROM mandates m
+            JOIN persons p ON p.id = m.principal_person_id
+            JOIN contours c ON c.id = m.contour_id
+            WHERE p.slug = 'oleg' AND c.slug = 'verace_project' AND m.status = 'active'
+            """
+        ).fetchone()
+        return row["n"] == 1
+
+    def invariant_counts(self) -> dict[str, int]:
+        queries = {
+            "claims_missing_receipt": """
+                SELECT COUNT(*) AS n FROM claims c
+                LEFT JOIN receipts r ON r.id = c.receipt_id
+                WHERE c.receipt_id IS NULL OR r.id IS NULL
+            """,
+            "task_events_missing_receipt": """
+                SELECT COUNT(*) AS n FROM task_events e
+                LEFT JOIN receipts r ON r.id = e.receipt_id
+                WHERE e.receipt_id IS NULL OR r.id IS NULL
+            """,
+            "outbox_missing_receipt": """
+                SELECT COUNT(*) AS n FROM outbox_items o
+                LEFT JOIN receipts r ON r.id = o.receipt_id
+                WHERE o.status = 'blocked' AND (o.receipt_id IS NULL OR r.id IS NULL)
+            """,
+        }
+        return {name: self.conn.execute(sql).fetchone()["n"] for name, sql in queries.items()}
+
+    def ensure_person(self, slug: str, name: str, now: str) -> str:
         return self._ensure_slug("persons", slug, {"display_name": name}, now)
 
-    def _ensure_contour(self, slug: str, name: str, now: str) -> str:
+    def ensure_contour(self, slug: str, name: str, now: str) -> str:
         return self._ensure_slug("contours", slug, {"name": name}, now)
 
-    def _ensure_mandate(self, person_id: str, contour_id: str, now: str) -> str:
-        row = self.conn.execute("SELECT id FROM mandates WHERE contour_id = ? AND status = 'active'", (contour_id,)).fetchone()
+    def ensure_mandate(self, person_id: str, contour_id: str, now: str, public_id: str | None = None) -> str:
+        row = self.conn.execute(
+            """
+            SELECT id FROM mandates
+            WHERE principal_person_id = ? AND contour_id = ? AND status = 'active'
+            """,
+            (person_id, contour_id),
+        ).fetchone()
         if row:
             return row["id"]
         mandate_id = new_id("mandate")
+        mandate_public_id = public_id or new_public_id("MANDATE")
         self.conn.execute(
             """
             INSERT INTO mandates
             (id, public_id, principal_person_id, contour_id, title, scope, status, created_at)
             VALUES (?, ?, ?, ?, ?, ?, 'active', ?)
             """,
-            (mandate_id, "MANDATE-FOUNDING-001", person_id, contour_id, "Manage Verace project work", "internal_project_work", now),
+            (mandate_id, mandate_public_id, person_id, contour_id, "Manage Verace project work", "internal_project_work", now),
         )
         return mandate_id
 

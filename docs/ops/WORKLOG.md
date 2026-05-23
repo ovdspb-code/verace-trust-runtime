@@ -1,5 +1,35 @@
 # Worklog
 
+## 2026-05-23 - REVIEW-FIX-TR001: Harden Ledger Seed Before Merge
+
+**Goal:** Harden the Founder Assistant Ledger Seed implementation before merge to main.
+
+**Summary:**
+
+- Moved task-creation policy evaluation before task/event mutation.
+- Scoped active mandate creation and lookup by principal plus contour.
+- Made claims and outbox receipts mandatory; made task events receipt-backed.
+- Strengthened doctor output and checks for schema, PRAGMAs, integrity, foreign keys, seed, and receipt coverage.
+- Added GitHub Actions pytest workflow.
+- Updated README with Phase 1 Ledger Seed quickstart.
+
+**Changed files:**
+
+- `README.md`
+- `.github/workflows/ci.yml`
+- `src/verace_runtime/**`
+- `tests/**`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/RISK_REGISTER.md`
+- `docs/ops/WORKLOG.md`
+
+**Checks:**
+
+- `python -m pytest` passed: 14 tests.
+- Manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Forbidden DB/log/env file check returned no files.
+- Line-count gate passed: no files over 300 lines.
+
 ## 2026-05-23 - IMPL-TR001: Founder Assistant MVP Ledger Seed
 
 **Goal:** Implement the first executable ledger seed for the Founder Assistant MVP.

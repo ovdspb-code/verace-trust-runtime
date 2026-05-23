@@ -25,5 +25,27 @@ def test_task_creation_and_blocked_action_are_receipted(tmp_path):
     assert task_result.receipt_public_id.startswith("RCPT-")
     assert block_result.allowed is False
     assert block_result.receipt_public_id is not None
-    assert counts["receipts"] >= 3
-    assert counts["claims"] >= 3
+    assert counts["receipts"] >= 4
+    assert counts["claims"] >= 4
+
+
+def test_unknown_action_is_blocked_with_receipt(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+
+    result = service.request_action("unknown.future.action")
+
+    assert result.allowed is False
+    assert result.receipt_public_id is not None
+    assert service.status()["outbox_items"] == 1
+
+
+def test_allowed_policy_probe_gets_receipt(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+
+    result = service.request_action("internal.status.query")
+
+    assert result.allowed is True
+    assert result.receipt_public_id is not None
+    assert service.status()["claims"] == 2

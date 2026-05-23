@@ -45,3 +45,7 @@ Baseline commit: created in Session TR-002. The current commit hash is intention
 ## Operating Rule
 
 Runtime implementation may proceed only inside an issued implementation brief and must report receipts for tests, git state, and push state.
+
+## Current Implementation Branch
+
+- `work/brief-tr001-ledger-seed`: Founder Assistant Ledger Seed implementation and review hardening before merge.

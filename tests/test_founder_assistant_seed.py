@@ -21,4 +21,18 @@ def test_synthetic_message_creates_task_event_receipt_and_claim(tmp_path):
     assert detail["task"]["public_no"] == result.task_public_no
     assert len(detail["receipts"]) >= 1
     assert counts["task_events"] >= 1
-    assert counts["claims"] >= 2
+    assert counts["claims"] >= 3
+
+
+def test_note_message_creates_no_task(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+
+    result = service.ingest_message("oleg", "verace_project", "note: просто зафиксировать")
+    counts = service.status()
+
+    assert result.task_public_no is None
+    assert result.receipt_public_id.startswith("RCPT-")
+    assert counts["messages"] == 1
+    assert counts["tasks"] == 0
+    assert counts["receipts"] == 2
