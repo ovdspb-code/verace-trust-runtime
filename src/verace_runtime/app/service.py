@@ -51,7 +51,7 @@ class FounderAssistantService:
                 receipt = self._policy_receipt(repo, message_decision, now)
                 return IngestResult("", None, receipt["public_id"], "blocked")
             message = repo.create_message(person["id"], contour_row["id"], clean_text, now)
-            message_receipt = self._receipt_message(repo, message, now)
+            message_receipt = self._receipt_message(repo, message, message_decision, now)
             if self._is_note(clean_text):
                 return IngestResult(message["public_id"], None, message_receipt["public_id"], "verified_by_receipt")
             task_decision = self.policy.evaluate("internal.task.create")
@@ -145,8 +145,7 @@ class FounderAssistantService:
             "invariants": invariants,
         }
 
-    def _receipt_message(self, repo: LedgerRepository, message, now: str):
-        decision = self.policy.evaluate("internal.message.record")
+    def _receipt_message(self, repo: LedgerRepository, message, decision, now: str):
         receipt = repo.insert_receipt(
             self.receipts.build(decision, "ledger.event", "message", message["id"], "Inbound message recorded")
         )

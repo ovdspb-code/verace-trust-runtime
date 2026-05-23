@@ -1,5 +1,23 @@
 # Worklog
 
+## 2026-05-23 - REVIEW-FIX-TR001B: Single Policy Decision for Message Receipt
+
+**Goal:** Ensure inbound message receipts use the same policy decision that authorized message recording, then open a PR.
+
+**Summary:**
+
+- Passed the already-evaluated `internal.message.record` decision into message receipt creation.
+- Removed the second policy evaluation from `_receipt_message`.
+- The policy decision used for message mutation and message receipt is now single-source.
+- Added a regression test using a flipping policy to prove message receipt reuses the authorizing decision.
+
+**Checks:**
+
+- `python -m pytest` passed: 15 tests.
+- Manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Forbidden DB/log/env file scan returned no files.
+- PR creation pending.
+
 ## 2026-05-23 - REVIEW-FIX-TR001: Harden Ledger Seed Before Merge
 
 **Goal:** Harden the Founder Assistant Ledger Seed implementation before merge to main.
