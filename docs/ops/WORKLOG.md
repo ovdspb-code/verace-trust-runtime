@@ -1,5 +1,31 @@
 # Worklog
 
+## 2026-05-23 - Session TR-GOV-001: Reconcile ADR-TR004 Ratification Receipt
+
+**Goal:** Repair the governance record around ADR-TR004 after GitHub publication revealed ADR-TR004 is already marked `Accepted v1.0`.
+
+**Summary:**
+
+- Founder decision supplied in chat: ADR-TR004 ratified as `Accepted v1.0`, ratified 2026-05-23 by Oleg Dolgikh.
+- Verified local `main` and `origin/main` were not diverged.
+- Left ADR-TR004 status as `Accepted v1.0`.
+- Confirmed ADR index and project state already recorded ADR-TR004 as accepted.
+- Updated D-TR-006 wording to explicitly record ADR-TR004 acceptance and Runtime Ledger source-of-truth decision.
+- No ADR body changes.
+
+**Changed files:**
+
+- `docs/ops/DECISIONS.md`
+- `docs/ops/WORKLOG.md`
+
+**Checks:**
+
+- Preflight run.
+- `git fetch origin main` run.
+- Divergence check returned `0 0`.
+- Diff inspected before commit.
+- No code changes.
+
 ## 2026-05-23 - Session TR-GH-001: Publish TRUST_RUNTIME to GitHub
 
 **Goal:** Connect the local TRUST_RUNTIME repository to a GitHub remote, push the current accepted baseline, and document the GitHub review workflow.
