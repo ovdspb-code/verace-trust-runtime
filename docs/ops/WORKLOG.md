@@ -1,5 +1,27 @@
 # Worklog
 
+## 2026-05-24 - MERGE-TR004: Merge Review Queue and Session Brief
+
+**Goal:** Merge PR #4 into `main` with a merge commit and record post-merge state.
+
+**Summary:**
+
+- PR #4 merged into `main`.
+- Merge commit: `01c3a46`.
+- No runtime behavior changed after merge.
+- Project state now points next to ADR-TR007: Human-Facing System-Action Claim Rendering.
+- No Telegram, LLM provider, external API, payment, legal, sensitive, destructive, approval-execution, or external-send integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed on merged `main`.
+- `python -m pytest` passed on merged `main`: 60 tests.
+- Healthy manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Unsafe unversioned DB smoke reported explicit schema failure without a healthy claim.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+- GitHub Actions on merge commit `01c3a46`: success.
+
 ## 2026-05-24 - REVIEW-FIX-TR004A: Harden Review Lifecycle Invariants
 
 **Goal:** Make review creation and resolution/dismissal lifecycle events part of doctor/audit coverage before PR #4 merge.
