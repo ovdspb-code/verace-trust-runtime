@@ -29,7 +29,7 @@ The core architecture is the durable runtime that owns mandates, policy, receipt
 
 Phase 1 - Founder Assistant Seed.
 
-The current implementation slice is the local Ledger Seed: a small CLI over SQLite that records founder-project work as durable messages, tasks, events, receipts, and claims.
+The current implementation includes the Browser Founder Workbench over the Verace Runtime ledger. CLI commands remain internal/admin surfaces, not founder UX.
 
 ## Founder Workbench
 
@@ -47,6 +47,8 @@ Then open:
 ```text
 http://127.0.0.1:8765/
 ```
+
+Oleg's product workflow starts in the browser at the local workbench URL. The launch command is an internal Codex/admin step, not the founder interface.
 
 The workbench shows session brief, doctor/schema state, open tasks, review queue, and latest decisions. It supports browser forms for task, decision, review creation, and review resolution. State-changing confirmations use receipt-rendered runtime prose where supported.
 
