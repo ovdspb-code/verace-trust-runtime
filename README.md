@@ -54,6 +54,8 @@ The workbench shows session brief, doctor/schema state, open tasks, review queue
 
 FOUNDER-TRIAL-001 found first-use friction in the browser UI: the dashboard was too technical, review layout was cramped, and several labels looked internal. The browser workbench is being refined from that human trial feedback. CLI remains internal/admin only.
 
+The workbench is not intended to be a manual notebook. It reads local project documentation, shows project context, and suggests next work for Oleg to review, edit, and approve.
+
 ## Ledger Seed Quickstart
 
 ```bash

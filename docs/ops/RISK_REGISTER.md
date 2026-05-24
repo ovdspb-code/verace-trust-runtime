@@ -25,6 +25,8 @@
 | Product loop not yet proven | Partially mitigated in PR #7 | Browser workbench exists and passed engineering product-loop tests; real founder human trial is still pending. |
 | First-use friction | Partially mitigated in PR #8 | Browser opened and core flow worked, but Oleg found first-use confusion. PR #8 improves dashboard clarity, review layout, and Russian UI copy. Must be re-tested by Oleg. |
 | Founder usability not yet proven after UX cleanup | Open | Run FOUNDER-TRIAL-002 with Oleg using the browser UI. |
+| Manual empty-form work | Partially mitigated in BRIEF-TR007 | Workbench reads local project docs and suggests task/review/decision/Codex-task cards. Must be validated by Oleg in browser. |
+| Duplicate suggested work entries | Mitigated in REVIEW-FIX-TR007A | Accepted suggestions are hidden session-locally after successful task/review/decision creation; durable suggestion-state remains future work if needed. |
 
 ## Review Rule
 

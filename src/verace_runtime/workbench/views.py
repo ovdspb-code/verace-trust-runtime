@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+from urllib.parse import quote
+
 from verace_runtime.app.service import FounderAssistantService
+from verace_runtime.workbench.context import ProjectContext, read_project_context
 from verace_runtime.workbench.html import esc, items, page
+from verace_runtime.workbench.suggestions import Suggestion, build_suggestions, codex_task_prompt, find_suggestion
 
 
 def dashboard(service: FounderAssistantService, notice: str | None = None) -> str:
@@ -79,10 +83,105 @@ def _hero(doctor: dict[str, object]) -> str:
         "<section class='hero'><h2>Рабочая панель проекта</h2>"
         f"<p><span class='status {css}'>{text}</span></p>"
         "<p class='muted'>Здесь видно, что открыто по Verace и что требует внимания.</p>"
-        "<p class='actions'><a class='button' href='/tasks/new'>Добавить задачу</a>"
+        "<p class='actions'><a class='button' href='/plan'>Открыть план</a>"
+        "<a class='button' href='/tasks/new'>Добавить задачу</a>"
         "<a class='button' href='/decisions/new'>Записать решение</a>"
         "<a class='button' href='/reviews/new'>Добавить на проверку</a></p></section>"
     )
+
+
+def plan_page(service: FounderAssistantService, notice: str | None = None, dismissed: set[str] | None = None) -> str:
+    context = read_project_context()
+    dismissed = dismissed or set()
+    suggestions = [item for item in build_suggestions(context) if item.id not in dismissed]
+    body = (
+        "<section class='hero'><h2>План проекта</h2>"
+        f"<p><strong>{esc(context.project_name)}</strong> · {esc(context.current_phase)}</p>"
+        f"<p>Поверхность: {esc(context.current_product_surface or 'не указана')}</p>"
+        f"<p>Текущая работа: {esc(context.current_work or context.recent_work or 'не указана')}</p>"
+        f"<p>Следующий шаг: {esc(context.next_work or 'не указан')}</p></section>"
+    )
+    body += "<div class='grid'>"
+    body += _panel("Открытые риски", [f"<strong>{esc(risk.title)}</strong>: {esc(risk.mitigation)}" for risk in context.open_risks[:5]], "Пока нет открытых рисков.")
+    body += _panel("Последние решения", [esc(row) for row in context.latest_decisions], "Пока нет решений в журнале.")
+    body += _panel("Последние записи", [esc(row) for row in context.recent_worklog], "Пока нет записей worklog.")
+    body += "</div>"
+    body += "<section><h2>Предложенные действия</h2>" + (_suggestion_cards(suggestions) if suggestions else "<p class='muted'>Все предложения скрыты для этой сессии.</p>") + "</section>"
+    return page("План", body, notice)
+
+
+def documents_page() -> str:
+    context = read_project_context()
+    groups: dict[str, list[str]] = {}
+    for doc in context.documents:
+        status = f" · {esc(doc.status)}" if doc.status else ""
+        purpose = f"<p class='muted'>{esc(doc.purpose)}</p>" if doc.purpose else ""
+        groups.setdefault(doc.category, []).append(f"<strong>{esc(doc.title)}</strong>{status}<br><code>{esc(doc.path)}</code>{purpose}")
+    body = "<section><h2>Документы проекта</h2><p class='muted'>Карта локальных документов, из которых Workbench строит план и предложения.</p></section>"
+    body += "<div class='grid'>"
+    for title in ("README", "Operations", "ADRs", "Briefs", "Plans"):
+        body += _panel(title, groups.get(title, []), "Документы не найдены.")
+    body += "</div>"
+    return page("Документы", body)
+
+
+def suggestion_task_form(suggestion_id: str) -> str:
+    suggestion = find_suggestion(read_project_context(), suggestion_id)
+    body = (
+        "<section><h2>Принять как задачу</h2><form method='post' action='/suggestions/task'>"
+        f"<input type='hidden' name='key' value='{esc(suggestion.id)}'>"
+        f"<label>Текст задачи</label><textarea name='text' required rows='5'>{esc(suggestion.body)}</textarea>"
+        "<button>Создать задачу</button></form></section>"
+    )
+    return page("Задача из предложения", body)
+
+
+def suggestion_review_form(suggestion_id: str) -> str:
+    suggestion = find_suggestion(read_project_context(), suggestion_id)
+    body = f"""<section><h2>Принять как проверку</h2><form method="post" action="/suggestions/review">
+    <input type="hidden" name="key" value="{esc(suggestion.id)}">
+    <label>Название</label><input name="title" required value="{esc(suggestion.title)}">
+    <label>Что нужно проверить?</label><textarea name="body" required rows="6">{esc(suggestion.body)}</textarea>
+    <label>Тип</label><select name="review_type"><option value="risk">Риск</option><option value="architecture">Архитектура</option><option value="decision">Решение</option><option value="clarification">Уточнение</option></select>
+    <label>Приоритет</label><select name="priority"><option value="high">Высокий</option><option value="normal">Обычный</option><option value="critical">Критический</option><option value="low">Низкий</option></select>
+    <button>Создать проверку</button></form></section>"""
+    return page("Проверка из предложения", body)
+
+
+def suggestion_decision_form(suggestion_id: str) -> str:
+    suggestion = find_suggestion(read_project_context(), suggestion_id)
+    body = (
+        "<section><h2>Записать как решение</h2><form method='post' action='/suggestions/decision'>"
+        f"<input type='hidden' name='key' value='{esc(suggestion.id)}'>"
+        f"<label>Название</label><input name='title' required value='{esc(suggestion.title)}'>"
+        f"<label>Текст решения</label><textarea name='text' required rows='6'>{esc(suggestion.body)}</textarea>"
+        "<button>Записать решение</button></form></section>"
+    )
+    return page("Решение из предложения", body)
+
+
+def codex_task_page(suggestion_id: str) -> str:
+    context = read_project_context()
+    suggestion = find_suggestion(context, suggestion_id)
+    prompt = codex_task_prompt(context, suggestion)
+    return page("Codex task", f"<section><h2>Codex task text</h2><p class='muted'>Сгенерировано детерминированно из локальных документов.</p><pre>{esc(prompt)}</pre></section>")
+
+
+def _suggestion_cards(suggestions: list[Suggestion]) -> str:
+    cards = []
+    for item in suggestions:
+        key = quote(item.id)
+        actions = [f"<a class='button' href='/suggestions/task?key={key}'>Принять как задачу</a>", f"<a class='button' href='/suggestions/review?key={key}'>Принять как review</a>", f"<a class='button' href='/suggestions/decision?key={key}'>Записать как решение</a>", f"<a class='button' href='/suggestions/codex?key={key}'>Codex task</a>"]
+        cards.append(
+            f"<article class='card'><h3>{esc(item.title)}</h3><p>{esc(item.body)}</p>"
+            f"<p class='meta'>тип: {esc(_suggestion_kind(item.kind))} · source: {esc(item.source_file)} · причина: {esc(item.reason)}</p>"
+            f"<p class='actions'>{''.join(actions)}</p><form method='post' action='/suggestions/dismiss'><input type='hidden' name='key' value='{esc(item.id)}'><button>Скрыть на эту сессию</button></form></article>"
+        )
+    return "".join(cards)
+
+
+def _suggestion_kind(value: str) -> str:
+    return {"task": "задача", "review": "проверка", "decision": "решение", "codex_task": "Codex task"}.get(value, value)
 
 
 def _doctor_block(doctor: dict[str, object]) -> str:

@@ -29,6 +29,7 @@
 ## Current Work
 
 - Current product surface: Browser Founder Workbench.
+- Current work: BRIEF-TR007: Project Context Intake and Suggested Work Queue.
 - Recent work: FOUNDER-TRIAL-FIX-001: Browser Workbench First-Use UX Cleanup — merged in PR #8.
 
 ## Next Intended Work

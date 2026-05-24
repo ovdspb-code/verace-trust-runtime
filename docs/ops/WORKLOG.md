@@ -1,5 +1,28 @@
 # Worklog
 
+## 2026-05-24 - REVIEW-FIX-TR007A: Close Accepted Suggestion Queue Semantics
+
+**Summary:**
+
+- Accepted suggestions are hidden from the current suggested work queue session.
+- Suggestion accept forms now carry explicit suggestion keys.
+- Missing/unknown keys fail closed without ledger mutation.
+- Codex task generation remains read-only.
+- No durable suggestion-state table added.
+
+## 2026-05-24 - IMPL-TR007: Project Context Intake and Suggested Work Queue
+
+**Goal:** Make Browser Founder Workbench useful without manual empty-form entry.
+
+**Summary:**
+
+- Added deterministic intake from local repository documentation.
+- Added `/plan` with project state, open risks, recent decisions, recent worklog entries, and suggested actions.
+- Added `/documents` with a documentation map.
+- Added suggestion accept/edit flows for task, review, and decision.
+- Added deterministic Codex task text generation from suggestions.
+- No LLM, Telegram, external API, GitHub API, channel integration, npm, React, or Vite was added.
+
 ## 2026-05-24 - MERGE-FOUNDER-TRIAL-FIX-001: Merge Browser Workbench UX Cleanup
 
 **Goal:** Merge PR #8 into `main` with a merge commit and record post-merge state.
