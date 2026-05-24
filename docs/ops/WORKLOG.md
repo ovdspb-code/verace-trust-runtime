@@ -20,7 +20,7 @@
 - Non-empty seed-missing DB safety smoke preserved existing task/message rows and blocked `/init`.
 - Forbidden DB/log/env file scan returned no files.
 - Line-count gate passed: no files over 300 lines.
-- GitHub Actions status on merge commit `d766e48`: in progress during post-merge docs update.
+- GitHub Actions on `main`: success for merge commit `d766e48` and docs commit `36f1be9`.
 
 ## 2026-05-24 - FOUNDER-TRIAL-FIX-002: First-Run State Handling
 
