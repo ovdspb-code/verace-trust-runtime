@@ -1,5 +1,26 @@
 # Worklog
 
+## 2026-05-24 - MERGE-TR002: Merge Project Operating Memory
+
+**Goal:** Merge PR #2 into `main` with a merge commit and record post-merge state.
+
+**Summary:**
+
+- PR #2 merged into `main`.
+- Merge commit: `e2a2dc6`.
+- No runtime behavior changed after merge.
+- Project state now points next to ADR-TR006: Runtime Schema and Migration Policy.
+- No Telegram, LLM provider, external API, payment, legal, sensitive, destructive, or external-send integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed on merged `main`.
+- `python -m pytest` passed on merged `main`: 26 tests.
+- Manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+- GitHub Actions on merge commit `e2a2dc6`: pending at docs-update time.
+
 ## 2026-05-24 - REVIEW-FIX-TR002A: Harden Decision Receipt Coverage
 
 **Goal:** Make decision records part of doctor/audit invariant coverage before PR #2 merge.

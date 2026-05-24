@@ -18,11 +18,11 @@
 ## Active Implementation Brief
 
 - BRIEF-TR001: Founder Assistant MVP — Ledger Seed — merged in PR #1.
-- BRIEF-TR002: Project Operating Memory — active on branch `work/brief-tr002-project-operating-memory`.
+- BRIEF-TR002: Project Operating Memory — merged in PR #2.
 
 ## Next Intended Document
 
-- TBD after BRIEF-TR002 review.
+- ADR-TR006: Runtime Schema and Migration Policy.
 
 ## Current Repository Fact
 
@@ -50,3 +50,4 @@ Runtime implementation may proceed only inside an issued implementation brief an
 ## Recently Merged Implementation
 
 - PR #1 merged `work/brief-tr001-ledger-seed` into `main` with merge commit `67b28cb`.
+- PR #2 merged `work/brief-tr002-project-operating-memory` into `main` with merge commit `e2a2dc6`.
