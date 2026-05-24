@@ -22,12 +22,12 @@
 | Receipt/prose mismatch for current runtime entities | Mitigated in PR #5 | BRIEF-TR005 added a deterministic Response Claim Renderer for task, decision, review lifecycle, schema-health, and blocked-action claims with receipt/action-class validation and source provenance. |
 | Receipt/prose mismatch in future artifact/channel/LLM layers | Open | Future artifact, delivery, channel, and LLM response paths must use or validate against the Response Claim Renderer before making system-action statements. |
 | CLI mistaken for founder UX | Mitigated in PR #7 | Terminal/CLI is internal engineering/admin surface only; BRIEF-TR006 Browser Founder Workbench is the founder-facing local surface. |
-| Product loop not yet proven | Partially mitigated in PR #7 | Browser workbench exists and passed engineering product-loop tests; real founder human trial is still pending. |
+| Product loop not yet proven | Mitigated in FOUNDER-TRIAL-004 | Browser workbench with project context intake completed a real-session trial with Oleg reporting that the flow worked end-to-end. |
 | First-use friction | Partially mitigated in PR #8 | Browser opened and core flow worked, but Oleg found first-use confusion. PR #8 improves dashboard clarity, review layout, and Russian UI copy. Must be re-tested by Oleg. |
-| Founder usability not yet proven after UX cleanup | Open | Run FOUNDER-TRIAL-003 with Oleg using the browser UI, especially `/plan`, `/documents`, and suggested work cards. |
+| Founder usability not yet proven after UX cleanup | Mitigated in FOUNDER-TRIAL-004 | Oleg completed the browser flow with `/plan`, suggested work, Codex task generation, documents, and diagnostics. |
 | Manual empty-form work | Mitigated in PR #9 | Workbench reads local project docs and suggests editable task/review/decision/Codex-task cards instead of starting from empty forms; usefulness still needs Oleg trial. |
 | Duplicate suggested work entries | Mitigated in REVIEW-FIX-TR007A | Accepted suggestions are hidden session-locally after successful task/review/decision creation; durable suggestion-state remains future work if needed. |
-| Suggested work usefulness not yet proven by longer real use | Open | FOUNDER-TRIAL-003 passed; run FOUNDER-TRIAL-004 in a real Verace session with project context intake active. |
+| Suggested work usefulness not yet proven by longer real use | Partially mitigated in FOUNDER-TRIAL-004 | Suggested work was useful enough for a first real-session loop; longer daily use still needs observation. |
 | Suggestion state is session-local | Open | Accepted/dismissed suggestions are hidden for the current server session only; add durable suggestion state later only if repeated sessions need it. |
 | Future LLM/channel layers bypass hard facts boundary | Open | Future LLM/channel layers must remain thin wrappers over ledger, receipts, claims, renderer output, and policy state. |
 | First-run runtime trap | Mitigated in PR #10 | Workbench shows first-run initialization state instead of raw missing-ledger errors; unsafe DB still fails closed. |

@@ -1,5 +1,23 @@
 # Worklog
 
+## 2026-05-24 - FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake
+
+**Goal:** Use Browser Founder Workbench as the cockpit for a real Verace session.
+
+**Summary:**
+
+- Opened the Browser Workbench on `/plan` for Oleg.
+- Oleg completed the real-session flow after server restart handling: project plan, suggested work, Codex task generation, accepted-card behavior, documents, and diagnostics.
+- Oleg verdict: "всё отработало".
+- Result: PASS for the v0 loop `docs -> suggestions -> founder approval -> Codex task text -> updated context`.
+- No runtime code changes were made.
+
+**Product findings:**
+
+- Browser Workbench can start a real Verace session without asking Oleg to search docs or manually invent tasks.
+- Local launch remains an internal/admin fragility; a one-click launcher or setup wizard is still future work.
+- Next product layer should connect real conversation snippets into the ledger flow through a Conversation Capture Inbox.
+
 ## 2026-05-24 - MERGE-TR010: Merge First-Run State Handling
 
 **Goal:** Merge PR #10 into `main` with a merge commit and record post-merge state.
