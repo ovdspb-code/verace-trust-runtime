@@ -1,5 +1,15 @@
 # Worklog
 
+## 2026-05-24 - REVIEW-FIX-TR007A: Close Accepted Suggestion Queue Semantics
+
+**Summary:**
+
+- Accepted suggestions are hidden from the current suggested work queue session.
+- Suggestion accept forms now carry explicit suggestion keys.
+- Missing/unknown keys fail closed without ledger mutation.
+- Codex task generation remains read-only.
+- No durable suggestion-state table added.
+
 ## 2026-05-24 - IMPL-TR007: Project Context Intake and Suggested Work Queue
 
 **Goal:** Make Browser Founder Workbench useful without manual empty-form entry.

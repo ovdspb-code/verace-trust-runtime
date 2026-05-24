@@ -10,6 +10,8 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from verace_runtime.app.service import FounderAssistantService
+from verace_runtime.workbench.context import read_project_context
+from verace_runtime.workbench.suggestions import find_suggestion
 from verace_runtime.workbench import actions, views
 
 
@@ -90,16 +92,22 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
                 notice = actions.resolve_review(service, review, form.get("resolution", ""), form.get("status", "resolved"))
                 self._html(200, views.reviews(service, notice))
             elif path == "/suggestions/task":
+                key = _valid_suggestion_key(form)
                 notice = actions.create_task(service, form.get("text", ""))
+                self.dismissed_suggestions.add(key)
                 self._html(200, views.plan_page(service, notice, self.dismissed_suggestions))
             elif path == "/suggestions/review":
+                key = _valid_suggestion_key(form)
                 notice = actions.create_review(service, form.get("title", ""), form.get("body", ""), form.get("review_type", "risk"), form.get("priority", "high"), None)
+                self.dismissed_suggestions.add(key)
                 self._html(200, views.plan_page(service, notice, self.dismissed_suggestions))
             elif path == "/suggestions/decision":
+                key = _valid_suggestion_key(form)
                 notice = actions.record_decision(service, form.get("title", ""), form.get("text", ""))
+                self.dismissed_suggestions.add(key)
                 self._html(200, views.plan_page(service, notice, self.dismissed_suggestions))
             elif path == "/suggestions/dismiss":
-                self.dismissed_suggestions.add(form.get("key", ""))
+                self.dismissed_suggestions.add(_valid_suggestion_key(form))
                 self._html(200, views.plan_page(service, "Предложение скрыто для этой сессии.", self.dismissed_suggestions))
             else:
                 self._html(*views.error_page("Unsupported action", 404))
@@ -129,6 +137,14 @@ def _query_key(query: dict[str, list[str]]) -> str:
     if not values or not values[0]:
         raise RuntimeError("Suggestion key is required")
     return values[0]
+
+
+def _valid_suggestion_key(form: dict[str, str]) -> str:
+    key = form.get("key", "")
+    if not key:
+        raise RuntimeError("Suggestion key is required")
+    find_suggestion(read_project_context(), key)
+    return key
 
 
 def main(argv: list[str] | None = None) -> int:

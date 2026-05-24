@@ -127,13 +127,19 @@ def documents_page() -> str:
 
 def suggestion_task_form(suggestion_id: str) -> str:
     suggestion = find_suggestion(read_project_context(), suggestion_id)
-    body = f"<section><h2>Принять как задачу</h2><form method='post' action='/suggestions/task'><label>Текст задачи</label><textarea name='text' required rows='5'>{esc(suggestion.body)}</textarea><button>Создать задачу</button></form></section>"
+    body = (
+        "<section><h2>Принять как задачу</h2><form method='post' action='/suggestions/task'>"
+        f"<input type='hidden' name='key' value='{esc(suggestion.id)}'>"
+        f"<label>Текст задачи</label><textarea name='text' required rows='5'>{esc(suggestion.body)}</textarea>"
+        "<button>Создать задачу</button></form></section>"
+    )
     return page("Задача из предложения", body)
 
 
 def suggestion_review_form(suggestion_id: str) -> str:
     suggestion = find_suggestion(read_project_context(), suggestion_id)
     body = f"""<section><h2>Принять как проверку</h2><form method="post" action="/suggestions/review">
+    <input type="hidden" name="key" value="{esc(suggestion.id)}">
     <label>Название</label><input name="title" required value="{esc(suggestion.title)}">
     <label>Что нужно проверить?</label><textarea name="body" required rows="6">{esc(suggestion.body)}</textarea>
     <label>Тип</label><select name="review_type"><option value="risk">Риск</option><option value="architecture">Архитектура</option><option value="decision">Решение</option><option value="clarification">Уточнение</option></select>
@@ -144,7 +150,13 @@ def suggestion_review_form(suggestion_id: str) -> str:
 
 def suggestion_decision_form(suggestion_id: str) -> str:
     suggestion = find_suggestion(read_project_context(), suggestion_id)
-    body = f"<section><h2>Записать как решение</h2><form method='post' action='/suggestions/decision'><label>Название</label><input name='title' required value='{esc(suggestion.title)}'><label>Текст решения</label><textarea name='text' required rows='6'>{esc(suggestion.body)}</textarea><button>Записать решение</button></form></section>"
+    body = (
+        "<section><h2>Записать как решение</h2><form method='post' action='/suggestions/decision'>"
+        f"<input type='hidden' name='key' value='{esc(suggestion.id)}'>"
+        f"<label>Название</label><input name='title' required value='{esc(suggestion.title)}'>"
+        f"<label>Текст решения</label><textarea name='text' required rows='6'>{esc(suggestion.body)}</textarea>"
+        "<button>Записать решение</button></form></section>"
+    )
     return page("Решение из предложения", body)
 
 
