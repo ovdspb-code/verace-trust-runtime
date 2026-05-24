@@ -33,6 +33,8 @@
 | First-run runtime trap | Mitigated in PR #10 | Workbench shows first-run initialization state instead of raw missing-ledger errors; unsafe DB still fails closed. |
 | First-run reset of non-empty runtime DB | Mitigated in PR #10 | Workbench classifies seed-missing non-empty runtime as unsafe and does not reset it as first-run. |
 | One-click launcher / durable setup wizard absent | Open | First-run browser state is safe, but a non-terminal launcher and durable setup wizard remain future product work. |
+| Workbench launch fragility | Mitigated in RUN-FIX-TR011 | Internal run-control handles stale pid, dead process, existing server, and safe browser open. Founder still uses browser, not terminal. |
+| Run-control unowned PID kill | Mitigated in REVIEW-FIX-TR011A | Run-control verifies pid ownership before signaling; stale live unowned PIDs are removed from pid file without killing the process. |
 
 ## Review Rule
 
