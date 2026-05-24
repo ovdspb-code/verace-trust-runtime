@@ -25,16 +25,16 @@
 - BRIEF-TR004: Review Queue and Session Brief — merged in PR #4.
 - BRIEF-TR005: Response Claim Renderer — merged in PR #5.
 - BRIEF-TR006: Browser Founder Workbench — merged in PR #7.
+- BRIEF-TR007: Project Context Intake and Suggested Work Queue — merged in PR #9.
 
 ## Current Work
 
-- Current product surface: Browser Founder Workbench.
-- Current work: BRIEF-TR007: Project Context Intake and Suggested Work Queue.
-- Recent work: FOUNDER-TRIAL-FIX-001: Browser Workbench First-Use UX Cleanup — merged in PR #8.
+- Current product surface: Browser Founder Workbench with Project Context Intake and Suggested Work Queue.
+- Recent work: BRIEF-TR007: Project Context Intake and Suggested Work Queue — merged in PR #9.
 
 ## Next Intended Work
 
-- FOUNDER-TRIAL-002: Browser Workbench Re-trial with Oleg.
+- FOUNDER-TRIAL-003: Plan and Suggested Work Queue Trial with Oleg.
 
 ## Current Repository Fact
 
@@ -68,3 +68,4 @@ Runtime implementation may proceed only inside an issued implementation brief an
 - PR #5 merged `work/brief-tr005-response-claim-renderer` into `main` with merge commit `0e90edd`.
 - PR #7 merged `work/brief-tr006-browser-founder-workbench` into `main` with merge commit `57471ec`.
 - PR #8 merged `work/founder-trial-fix-001-workbench-ux` into `main` with merge commit `a8a160d`.
+- PR #9 merged `work/brief-tr007-project-context-intake` into `main` with merge commit `cc2bf7c`.

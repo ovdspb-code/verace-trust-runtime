@@ -24,9 +24,12 @@
 | CLI mistaken for founder UX | Mitigated in PR #7 | Terminal/CLI is internal engineering/admin surface only; BRIEF-TR006 Browser Founder Workbench is the founder-facing local surface. |
 | Product loop not yet proven | Partially mitigated in PR #7 | Browser workbench exists and passed engineering product-loop tests; real founder human trial is still pending. |
 | First-use friction | Partially mitigated in PR #8 | Browser opened and core flow worked, but Oleg found first-use confusion. PR #8 improves dashboard clarity, review layout, and Russian UI copy. Must be re-tested by Oleg. |
-| Founder usability not yet proven after UX cleanup | Open | Run FOUNDER-TRIAL-002 with Oleg using the browser UI. |
-| Manual empty-form work | Partially mitigated in BRIEF-TR007 | Workbench reads local project docs and suggests task/review/decision/Codex-task cards. Must be validated by Oleg in browser. |
+| Founder usability not yet proven after UX cleanup | Open | Run FOUNDER-TRIAL-003 with Oleg using the browser UI, especially `/plan`, `/documents`, and suggested work cards. |
+| Manual empty-form work | Mitigated in PR #9 | Workbench reads local project docs and suggests editable task/review/decision/Codex-task cards instead of starting from empty forms; usefulness still needs Oleg trial. |
 | Duplicate suggested work entries | Mitigated in REVIEW-FIX-TR007A | Accepted suggestions are hidden session-locally after successful task/review/decision creation; durable suggestion-state remains future work if needed. |
+| Suggested work usefulness not yet proven by Oleg | Open | Run FOUNDER-TRIAL-003 with Oleg using `/plan`, `/documents`, and the suggested work queue in the browser. |
+| Suggestion state is session-local | Open | Accepted/dismissed suggestions are hidden for the current server session only; add durable suggestion state later only if repeated sessions need it. |
+| Future LLM/channel layers bypass hard facts boundary | Open | Future LLM/channel layers must remain thin wrappers over ledger, receipts, claims, renderer output, and policy state. |
 
 ## Review Rule
 

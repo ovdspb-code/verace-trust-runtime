@@ -1,5 +1,28 @@
 # Worklog
 
+## 2026-05-24 - MERGE-TR007: Merge Project Context Intake and Suggested Work Queue
+
+**Goal:** Merge PR #9 into `main` with a merge commit and record post-merge state.
+
+**Summary:**
+
+- PR #9 merged into `main`.
+- Merge commit: `cc2bf7c`.
+- Product effect: Workbench reads local project docs and proposes editable task/review/decision/Codex-task cards.
+- Queue semantics: accepted suggestions are hidden session-locally; Codex task generation remains read-only.
+- Next work is FOUNDER-TRIAL-003: Plan and Suggested Work Queue Trial with Oleg.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed on merged `main`.
+- `python -m pytest` passed on merged `main`: 104 tests.
+- Healthy browser smoke passed for `/plan`, `/documents`, suggestion accept flows, Codex task generation, and `/doctor`.
+- Unsafe unversioned DB browser smoke reported explicit schema failure without a healthy claim.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+- GitHub Actions status on merge commit `cc2bf7c`: success.
+
 ## 2026-05-24 - REVIEW-FIX-TR007A: Close Accepted Suggestion Queue Semantics
 
 **Summary:**
