@@ -19,12 +19,14 @@ def test_renderer_renders_current_runtime_claims_from_evidence(tmp_path):
     schema_render = service.render_claim("schema_healthy")
 
     assert task_render.ok is True
+    assert task_render.source == "receipt"
     assert f"Task {task.task_public_no} was recorded" in task_render.text
     assert decision_render.ok is True
     assert f"Decision {decision.public_id} was recorded" in decision_render.text
     assert review_render.ok is True
     assert f"Review {review.public_id} was resolved" in review_render.text
     assert schema_render.ok is True
+    assert schema_render.source == "doctor"
     assert "Runtime schema is healthy" in schema_render.text
 
 
@@ -55,7 +57,38 @@ def test_renderer_refuses_missing_task_claim(tmp_path):
     result = service.render_claim("task_recorded", task.task_public_no)
 
     assert result.ok is False
+    assert result.source == "refusal"
     assert result.reason == "receipt-backed evidence not found"
+
+
+def test_wrong_action_class_receipt_fails_closed(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    service = FounderAssistantService(db_path)
+    service.init_runtime()
+    task = service.ingest_message("oleg", "verace_project", "Prepare renderer test")
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("UPDATE receipts SET action_class = 'internal.task.status_change' WHERE subject_type = 'task'")
+
+    result = service.render_claim("task_recorded", task.task_public_no)
+
+    assert result.ok is False
+    assert result.source == "refusal"
+    assert result.reason == "receipt action class mismatch"
+
+
+def test_wrong_receipt_type_fails_closed(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    service = FounderAssistantService(db_path)
+    service.init_runtime()
+    task = service.ingest_message("oleg", "verace_project", "Prepare renderer test")
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("UPDATE receipts SET receipt_type = 'policy.allowed' WHERE subject_type = 'task'")
+
+    result = service.render_claim("task_recorded", task.task_public_no)
+
+    assert result.ok is False
+    assert result.source == "refusal"
+    assert result.reason == "receipt type mismatch"
 
 
 def test_renderer_refuses_wrong_subject_receipt(tmp_path):
@@ -69,6 +102,7 @@ def test_renderer_refuses_wrong_subject_receipt(tmp_path):
     result = service.render_claim("task_recorded", task.task_public_no)
 
     assert result.ok is False
+    assert result.source == "refusal"
     assert result.reason == "receipt-backed evidence not found"
 
 
@@ -80,6 +114,7 @@ def test_renderer_renders_action_blocked_when_policy_receipt_exists(tmp_path):
     result = service.render_claim("action_blocked", "external.send")
 
     assert result.ok is True
+    assert result.source == "receipt"
     assert "Action external.send was blocked by policy" in result.text
 
 
@@ -92,4 +127,5 @@ def test_renderer_refuses_unsafe_schema_healthy_claim(tmp_path):
     result = FounderAssistantService(db_path).render_claim("schema_healthy")
 
     assert result.ok is False
+    assert result.source == "refusal"
     assert result.reason == "doctor/schema state is not healthy"

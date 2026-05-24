@@ -154,7 +154,7 @@ class FounderAssistantService:
         if claim_class == "schema_healthy":
             return renderer.render_schema_healthy(self.doctor())
         if not subject:
-            return RenderResult(False, "", claim_class, None, "subject is required")
+            return RenderResult(False, "", claim_class, "refusal", None, "subject is required")
         with connect(self.db_path) as conn:
             apply_schema(conn)
             views = RuntimeReceiptViews(conn)
@@ -169,7 +169,7 @@ class FounderAssistantService:
             elif claim_class == "action_blocked":
                 evidence = views.action_blocked(subject)
             else:
-                return RenderResult(False, "", claim_class, None, "unsupported claim class")
+                return RenderResult(False, "", claim_class, "refusal", None, "unsupported claim class")
         return renderer.render_current(claim_class, evidence)
 
     def list_tasks(self) -> list[TaskSummary]:

@@ -11,6 +11,7 @@ def test_artifact_format_mismatch_repairs_to_receipt_format():
     result = renderer.render_artifact_created(view, proposed_format="pdf")
 
     assert result.ok is True
+    assert result.source == "synthetic_receipt_view"
     assert "DOCX" in result.text
     assert "PDF" not in result.text
 
@@ -22,6 +23,7 @@ def test_unknown_artifact_format_fails_closed():
     result = renderer.render_artifact_created(view)
 
     assert result.ok is False
+    assert result.source == "refusal"
     assert result.reason == "unknown artifact format"
 
 
@@ -52,6 +54,8 @@ def test_wrong_subject_claim_class_fails_closed():
         subject="TR-000001",
         subject_type="task",
         receipt_public_id="RCPT-1",
+        receipt_type="ledger.event",
+        action_class="internal.task.create",
         receipt_status="ok",
         policy_result="allowed",
         claim_type="task_recorded",
@@ -71,6 +75,8 @@ def test_wrong_claim_type_fails_closed():
         subject="TR-000001",
         subject_type="task",
         receipt_public_id="RCPT-1",
+        receipt_type="ledger.event",
+        action_class="internal.task.create",
         receipt_status="ok",
         policy_result="allowed",
         claim_type="decision_recorded",
@@ -81,4 +87,3 @@ def test_wrong_claim_type_fails_closed():
 
     assert result.ok is False
     assert result.reason == "claim type mismatch"
-

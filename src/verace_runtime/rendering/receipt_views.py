@@ -15,7 +15,7 @@ class RuntimeReceiptViews:
         row = self.conn.execute(
             """
             SELECT t.public_no AS subject, r.public_id AS receipt_public_id,
-                   r.status AS receipt_status, r.policy_result, c.claim_type,
+                   r.receipt_type, r.action_class, r.status AS receipt_status, r.policy_result, c.claim_type,
                    c.status AS claim_status
             FROM tasks t
             JOIN receipts r ON r.subject_type = 'task' AND r.subject_id = t.id
@@ -32,7 +32,7 @@ class RuntimeReceiptViews:
         row = self.conn.execute(
             """
             SELECT d.public_id AS subject, r.public_id AS receipt_public_id,
-                   r.status AS receipt_status, r.policy_result, c.claim_type,
+                   r.receipt_type, r.action_class, r.status AS receipt_status, r.policy_result, c.claim_type,
                    c.status AS claim_status
             FROM decisions d
             JOIN receipts r ON r.subject_type = 'decision' AND r.subject_id = d.id
@@ -49,7 +49,7 @@ class RuntimeReceiptViews:
         row = self.conn.execute(
             """
             SELECT i.public_id AS subject, r.public_id AS receipt_public_id,
-                   r.status AS receipt_status, r.policy_result, c.claim_type,
+                   r.receipt_type, r.action_class, r.status AS receipt_status, r.policy_result, c.claim_type,
                    c.status AS claim_status, e.event_type
             FROM review_items i
             JOIN review_events e ON e.review_item_id = i.id AND e.event_type = ?
@@ -67,7 +67,7 @@ class RuntimeReceiptViews:
         row = self.conn.execute(
             """
             SELECT r.subject_id AS subject, r.public_id AS receipt_public_id,
-                   r.status AS receipt_status, r.policy_result, c.claim_type,
+                   r.receipt_type, r.action_class, r.status AS receipt_status, r.policy_result, c.claim_type,
                    c.status AS claim_status
             FROM receipts r
             JOIN claims c ON c.receipt_id = r.id AND c.claim_type = 'action_blocked'
@@ -86,10 +86,11 @@ class RuntimeReceiptViews:
             subject=row["subject"],
             subject_type=subject_type,
             receipt_public_id=row["receipt_public_id"],
+            receipt_type=row["receipt_type"],
+            action_class=row["action_class"],
             receipt_status=row["receipt_status"],
             policy_result=row["policy_result"],
             claim_type=row["claim_type"],
             claim_status=row["claim_status"],
             event_type=row["event_type"] if "event_type" in row.keys() else None,
         )
-

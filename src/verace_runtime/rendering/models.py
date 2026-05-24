@@ -11,6 +11,8 @@ class EvidenceView:
     subject: str
     subject_type: str
     receipt_public_id: str
+    receipt_type: str
+    action_class: str
     receipt_status: str
     policy_result: str
     claim_type: str
@@ -35,6 +37,6 @@ class RenderResult:
     ok: bool
     text: str
     claim_class: str
+    source: str
     receipt_public_id: str | None = None
     reason: str | None = None
-

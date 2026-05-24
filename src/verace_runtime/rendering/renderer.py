@@ -19,6 +19,14 @@ class ResponseClaimRenderer:
         "review_resolved": "review.item.resolved",
         "review_dismissed": "review.item.dismissed",
     }
+    expected_receipts = {
+        "task_recorded": ("ledger.event", "internal.task.create"),
+        "decision_recorded": ("ledger.event", "internal.decision.record"),
+        "review_created": ("ledger.event", "internal.review.create"),
+        "review_resolved": ("ledger.event", "internal.review.resolve"),
+        "review_dismissed": ("ledger.event", "internal.review.resolve"),
+        "action_blocked": ("policy.blocked", None),
+    }
     artifact_formats = frozenset({"pdf", "docx", "txt"})
 
     def render_current(self, claim_class: str, evidence: EvidenceView | None) -> RenderResult:
@@ -31,6 +39,11 @@ class ResponseClaimRenderer:
             return self._fail(claim_class, "evidence claim class mismatch")
         if evidence.claim_type != expected_claim:
             return self._fail(claim_class, "claim type mismatch")
+        expected_receipt_type, expected_action = self.expected_receipts[claim_class]
+        if evidence.receipt_type != expected_receipt_type:
+            return self._fail(claim_class, "receipt type mismatch")
+        if expected_action is not None and evidence.action_class != expected_action:
+            return self._fail(claim_class, "receipt action class mismatch")
         expected_event = self.review_events.get(claim_class)
         if expected_event and evidence.event_type != expected_event:
             return self._fail(claim_class, "review lifecycle event mismatch")
@@ -41,7 +54,7 @@ class ResponseClaimRenderer:
             return self._fail(claim_class, "receipt is not an allowed ok receipt")
         if evidence.claim_status != "verified_by_receipt":
             return self._fail(claim_class, "claim is not verified by receipt")
-        return RenderResult(True, self._text(claim_class, evidence), claim_class, evidence.receipt_public_id)
+        return RenderResult(True, self._text(claim_class, evidence), claim_class, "receipt", evidence.receipt_public_id)
 
     def render_schema_healthy(self, doctor: dict[str, object]) -> RenderResult:
         if not doctor.get("ok") or not doctor.get("schema_current"):
@@ -49,7 +62,7 @@ class ResponseClaimRenderer:
         name = doctor.get("schema_name") or "unknown"
         version = doctor.get("schema_version")
         text = f"Runtime schema is healthy: {name} v{version} is current."
-        return RenderResult(True, text, "schema_healthy")
+        return RenderResult(True, text, "schema_healthy", "doctor")
 
     def render_artifact_created(self, view: SyntheticReceiptView, proposed_format: str | None = None) -> RenderResult:
         fmt = (view.artifact_format or "").lower()
@@ -58,17 +71,17 @@ class ResponseClaimRenderer:
         if view.receipt_status != "ok" or view.claim_type != "artifact_created":
             return self._fail(view.claim_class, "artifact receipt or claim is not sufficient")
         text = f"Artifact {view.subject} was prepared as {fmt.upper()}."
-        return RenderResult(True, f"{text} Receipt: {view.receipt_public_id}.", view.claim_class, view.receipt_public_id)
+        return RenderResult(True, f"{text} Receipt: {view.receipt_public_id}.", view.claim_class, "synthetic_receipt_view", view.receipt_public_id)
 
     def render_external_send_completed(self, view: SyntheticReceiptView) -> RenderResult:
         if view.delivery_state != "sent":
             return self._fail(view.claim_class, "external-send receipt is not sent")
-        return RenderResult(True, f"External send for {view.subject} completed. Receipt: {view.receipt_public_id}.", view.claim_class, view.receipt_public_id)
+        return RenderResult(True, f"External send for {view.subject} completed. Receipt: {view.receipt_public_id}.", view.claim_class, "synthetic_receipt_view", view.receipt_public_id)
 
     def render_tests_passed(self, view: SyntheticReceiptView) -> RenderResult:
         if view.check_state != "passed":
             return self._fail(view.claim_class, "check receipt does not say passed")
-        return RenderResult(True, f"Checks passed for {view.subject}. Receipt: {view.receipt_public_id}.", view.claim_class, view.receipt_public_id)
+        return RenderResult(True, f"Checks passed for {view.subject}. Receipt: {view.receipt_public_id}.", view.claim_class, "synthetic_receipt_view", view.receipt_public_id)
 
     def _text(self, claim_class: str, evidence: EvidenceView) -> str:
         phrases = {
@@ -82,4 +95,4 @@ class ResponseClaimRenderer:
         return f"{phrases[claim_class]} Receipt: {evidence.receipt_public_id}."
 
     def _fail(self, claim_class: str, reason: str) -> RenderResult:
-        return RenderResult(False, "", claim_class, None, reason)
+        return RenderResult(False, "", claim_class, "refusal", None, reason)

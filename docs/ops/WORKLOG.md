@@ -1,5 +1,17 @@
 # Worklog
 
+## 2026-05-24 - REVIEW-FIX-TR005A: Complete Renderer Evidence Contract
+
+**Goal:** Close Response Claim Renderer contract gaps before PR #5 merge.
+
+**Summary:**
+
+- Added explicit source provenance to `RenderResult`.
+- Added receipt type and action class evidence fields.
+- Renderer now validates receipt type and action class for current runtime claim classes.
+- Added tests for source provenance and receipt/action-class mismatch.
+- No runtime behavior expansion.
+
 ## 2026-05-24 - IMPL-TR005: Response Claim Renderer
 
 **Goal:** Implement BRIEF-TR005: Response Claim Renderer.
