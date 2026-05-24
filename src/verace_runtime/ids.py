@@ -17,5 +17,9 @@ def task_public_no(seq: int) -> str:
     return f"TR-{seq:06d}"
 
 
+def decision_public_no(seq: int) -> str:
+    return f"DEC-{seq:06d}"
+
+
 def review_public_no(seq: int) -> str:
     return f"REV-{seq:06d}"

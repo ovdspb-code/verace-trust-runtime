@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sqlite3
 
-from verace_runtime.ids import new_id, new_public_id, task_public_no
+from verace_runtime.ids import decision_public_no, new_id, new_public_id, task_public_no
 from verace_runtime.ledger.models import DecisionSummary, TaskSummary
 
 
@@ -90,13 +90,14 @@ class LedgerRepository:
 
     def create_decision(self, contour_id: str, mandate_id: str, message_id: str | None, title: str, text: str, now: str) -> sqlite3.Row:
         decision_id = new_id("decision")
+        seq = self.conn.execute("SELECT COUNT(*) AS n FROM decisions").fetchone()["n"] + 1
         self.conn.execute(
             """
             INSERT INTO decisions
             (id, public_id, contour_id, mandate_id, message_id, title, decision_text, status, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?)
             """,
-            (decision_id, new_public_id("DEC"), contour_id, mandate_id, message_id, title, text, now),
+            (decision_id, decision_public_no(seq), contour_id, mandate_id, message_id, title, text, now),
         )
         return self._required("SELECT * FROM decisions WHERE id = ?", (decision_id,))
 
