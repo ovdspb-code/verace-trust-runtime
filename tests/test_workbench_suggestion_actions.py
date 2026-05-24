@@ -121,6 +121,30 @@ def test_missing_suggestion_key_fails_without_task_mutation(tmp_path):
     assert after == before
 
 
+def test_accept_task_suggestion_before_init_fails_gracefully(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    with running_server(db_path) as base:
+        html = post(base, "/suggestions/task", {"key": "next-work-task", "text": "Should not be created"})
+
+    assert "Сначала инициализируйте локальный ledger." in html
+    assert "Инициализировать" in html
+    assert "Required ledger row not found" not in html
+    assert "Traceback" not in html
+    assert not db_path.exists()
+
+
+def test_accept_review_suggestion_before_init_fails_gracefully(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    with running_server(db_path) as base:
+        html = post(base, "/suggestions/review", {"key": "risk-1-review", "title": "Nope", "body": "Nope", "review_type": "risk", "priority": "high"})
+
+    assert "Сначала инициализируйте локальный ledger." in html
+    assert "Инициализировать" in html
+    assert "Required ledger row not found" not in html
+    assert "Traceback" not in html
+    assert not db_path.exists()
+
+
 def test_unknown_suggestion_key_fails_without_review_mutation(tmp_path):
     db_path = tmp_path / "runtime.sqlite3"
     service = FounderAssistantService(db_path)

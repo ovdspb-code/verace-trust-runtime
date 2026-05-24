@@ -26,6 +26,11 @@ def dashboard(service: FounderAssistantService, notice: str | None = None) -> st
     return page("Verace", body, notice)
 
 
+def first_run_dashboard(notice: str | None = None) -> str:
+    body = _first_run_block()
+    return page("Verace", body, notice)
+
+
 def task_form() -> str:
     return page("Задача", "<section><h2>Добавить задачу</h2><form method='post' action='/tasks'><label>Что нужно сделать?</label><textarea name='text' required rows='4'></textarea><button>Добавить задачу</button></form></section>")
 
@@ -71,6 +76,20 @@ def doctor_page(service: FounderAssistantService) -> str:
     return page("Диагностика", _doctor_block(service.doctor()))
 
 
+def first_run_doctor_page() -> str:
+    body = (
+        "<section><h2>Диагностика: требуется инициализация</h2>"
+        "<p>Локальный ledger еще не подготовлен. Сначала выполните первый запуск.</p>"
+        f"{_init_form()}</section>"
+    )
+    return page("Диагностика", body)
+
+
+def first_run_required_page(message: str = "Сначала инициализируйте локальный ledger.") -> str:
+    body = f"<section><h2>Первый запуск</h2><p>{esc(message)}</p>{_init_form()}</section>"
+    return page("Первый запуск", body)
+
+
 def error_page(message: str, status: int = 400) -> tuple[int, str]:
     return status, page("Ошибка", "", error=message)
 
@@ -90,7 +109,7 @@ def _hero(doctor: dict[str, object]) -> str:
     )
 
 
-def plan_page(service: FounderAssistantService, notice: str | None = None, dismissed: set[str] | None = None) -> str:
+def plan_page(service: FounderAssistantService, notice: str | None = None, dismissed: set[str] | None = None, first_run: bool = False) -> str:
     context = read_project_context()
     dismissed = dismissed or set()
     suggestions = [item for item in build_suggestions(context) if item.id not in dismissed]
@@ -101,6 +120,8 @@ def plan_page(service: FounderAssistantService, notice: str | None = None, dismi
         f"<p>Текущая работа: {esc(context.current_work or context.recent_work or 'не указана')}</p>"
         f"<p>Следующий шаг: {esc(context.next_work or 'не указан')}</p></section>"
     )
+    if first_run:
+        body += _first_run_banner()
     body += "<div class='grid'>"
     body += _panel("Открытые риски", [f"<strong>{esc(risk.title)}</strong>: {esc(risk.mitigation)}" for risk in context.open_risks[:5]], "Пока нет открытых рисков.")
     body += _panel("Последние решения", [esc(row) for row in context.latest_decisions], "Пока нет решений в журнале.")
@@ -196,6 +217,14 @@ def _doctor_block(doctor: dict[str, object]) -> str:
 
 def _init_form() -> str:
     return "<section><h2>Первый запуск</h2><p>Нужно подготовить локальный ledger перед работой.</p><form method='post' action='/init'><button>Инициализировать</button></form></section>"
+
+
+def _first_run_block() -> str:
+    return "<section class='hero'><h2>Первый запуск</h2><p>Нужно подготовить локальный ledger перед работой.</p><form method='post' action='/init'><button>Инициализировать</button></form></section>"
+
+
+def _first_run_banner() -> str:
+    return "<section class='hero'><h2>Первый запуск</h2><p>План можно читать уже сейчас. Чтобы принять предложение или создать запись, сначала подготовьте локальный ledger.</p><form method='post' action='/init'><button>Инициализировать</button></form></section>"
 
 
 def _panel(title: str, rows: list[str], empty: str) -> str:

@@ -1,5 +1,15 @@
 # Worklog
 
+## 2026-05-24 - FOUNDER-TRIAL-FIX-002: First-Run State Handling
+
+**Summary:**
+
+- FOUNDER-TRIAL-003 passed for plan/documents/suggested queue.
+- Fixed first-run trap where empty runtime could expose `Required ledger row not found`.
+- Added clear first-run state and initialization CTA.
+- Preserved unsafe DB fail-closed behavior.
+- No runtime feature expansion.
+
 ## 2026-05-24 - MERGE-TR007: Merge Project Context Intake and Suggested Work Queue
 
 **Goal:** Merge PR #9 into `main` with a merge commit and record post-merge state.
