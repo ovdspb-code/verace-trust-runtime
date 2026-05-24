@@ -1,5 +1,22 @@
 # Worklog
 
+## 2026-05-24 - Session TR-006: Add ADR-TR006 Runtime Schema and Migration Policy
+
+**Goal:** Add ADR-TR006 as the next proposed architecture decision.
+
+**Changed files:**
+
+- `docs/adr/ADR-TR006-Runtime-Schema-and-Migration-Policy.md`
+- `docs/adr/README.md`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/WORKLOG.md`
+
+**Checks:**
+
+- SHA-256 copy verification passed: `3164f2cbe6cb03bc4d9a454dd7118aed3b0b666a2aaec6a396109a8b2e851483`.
+- ADR-TR006 remains `Proposed v1.0`.
+- No code or runtime files were changed.
+
 ## 2026-05-24 - MERGE-TR002: Merge Project Operating Memory
 
 **Goal:** Merge PR #2 into `main` with a merge commit and record post-merge state.
