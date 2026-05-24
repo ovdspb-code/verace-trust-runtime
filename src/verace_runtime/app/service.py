@@ -12,6 +12,9 @@ from verace_runtime.ledger.migrations import doctor_schema_state
 from verace_runtime.ledger.repository import LedgerRepository
 from verace_runtime.policy.engine import PolicyEngine
 from verace_runtime.receipts.factory import ReceiptFactory
+from verace_runtime.rendering.models import RenderResult
+from verace_runtime.rendering.receipt_views import RuntimeReceiptViews
+from verace_runtime.rendering.renderer import ResponseClaimRenderer
 from verace_runtime.time import utc_now_iso
 
 
@@ -145,6 +148,29 @@ class FounderAssistantService:
 
     def session_brief(self) -> dict[str, object]:
         return build_session_brief(self.db_path, self.policy, self.doctor)
+
+    def render_claim(self, claim_class: str, subject: str | None = None) -> RenderResult:
+        renderer = ResponseClaimRenderer()
+        if claim_class == "schema_healthy":
+            return renderer.render_schema_healthy(self.doctor())
+        if not subject:
+            return RenderResult(False, "", claim_class, None, "subject is required")
+        with connect(self.db_path) as conn:
+            apply_schema(conn)
+            views = RuntimeReceiptViews(conn)
+            if claim_class == "task_recorded":
+                evidence = views.task_recorded(subject)
+            elif claim_class == "decision_recorded":
+                evidence = views.decision_recorded(subject)
+            elif claim_class in {"review_created", "review_resolved", "review_dismissed"}:
+                event = ResponseClaimRenderer.review_events[claim_class]
+                claim = ResponseClaimRenderer.current_claim_types[claim_class]
+                evidence = views.review_lifecycle(subject, claim_class, event, claim)
+            elif claim_class == "action_blocked":
+                evidence = views.action_blocked(subject)
+            else:
+                return RenderResult(False, "", claim_class, None, "unsupported claim class")
+        return renderer.render_current(claim_class, evidence)
 
     def list_tasks(self) -> list[TaskSummary]:
         with connect(self.db_path) as conn:

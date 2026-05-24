@@ -1,5 +1,26 @@
 # Worklog
 
+## 2026-05-24 - IMPL-TR005: Response Claim Renderer
+
+**Goal:** Implement BRIEF-TR005: Response Claim Renderer.
+
+**Summary:**
+
+- Copied BRIEF-TR005 into `docs/briefs/`.
+- Added deterministic receipt-rendered prose for task, decision, review lifecycle, schema health, and blocked-action claims.
+- Added fail-closed synthetic renderer tests for artifact format, delivery state, check receipts, subject mismatch, and claim-type mismatch.
+- Added read-only CLI command: `render-claim`.
+- No Telegram, LLM provider, channel adapter, external API, payment, legal, sensitive, destructive, approval-execution, or external-send integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed.
+- `python -m pytest` passed: 75 tests.
+- Healthy manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Unsafe unversioned DB smoke reported explicit schema failure without a healthy claim.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+
 ## 2026-05-24 - Session TR-007B: Ratify ADR-TR007
 
 **Goal:** Record founder ratification of ADR-TR007.

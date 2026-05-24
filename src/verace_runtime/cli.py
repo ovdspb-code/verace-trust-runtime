@@ -54,6 +54,9 @@ def build_parser() -> argparse.ArgumentParser:
     resolve.add_argument("--status", default="resolved")
     sub.add_parser("session-brief", parents=[common])
     sub.add_parser("schema-status", parents=[common])
+    render = sub.add_parser("render-claim", parents=[common])
+    render.add_argument("--claim-class", required=True)
+    render.add_argument("--subject")
     sub.add_parser("doctor", parents=[common])
     return parser
 
@@ -125,6 +128,12 @@ def main(argv: list[str] | None = None) -> int:
             _print_session_brief(service)
         elif args.command == "schema-status":
             _print_schema_status(service.schema_status())
+        elif args.command == "render-claim":
+            result = service.render_claim(args.claim_class, args.subject)
+            if not result.ok:
+                print(f"error: cannot render {args.claim_class}: {result.reason}", file=sys.stderr)
+                return 2
+            print(result.text)
         return 0
     except (RuntimeError, sqlite3.Error) as exc:
         print(f"error: {exc}", file=sys.stderr)
