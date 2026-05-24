@@ -33,10 +33,11 @@
 - Current product capability: Project Context Intake and Suggested Work Queue.
 - Recent work: FOUNDER-TRIAL-FIX-002: First-Run State Handling — merged in PR #10.
 - Recent trial: FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake — passed. Oleg reported that the browser flow worked end-to-end.
+- Current work: RUN-FIX-TR011: Workbench Run Control and Stale PID Guard.
 
 ## Next Intended Work
 
-- Conversation Capture Inbox — product brief TBD.
+- BRIEF-TR008: Conversation Capture Inbox.
 
 ## Current Repository Fact
 

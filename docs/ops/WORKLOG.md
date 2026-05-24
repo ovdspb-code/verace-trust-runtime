@@ -1,5 +1,16 @@
 # Worklog
 
+## 2026-05-24 - RUN-FIX-TR011: Workbench Run Control and Stale PID Guard
+
+**Summary:**
+
+- FOUNDER-TRIAL-004 passed, but revealed local server launch fragility.
+- Added internal run-control command for start/open/status/stop/restart.
+- Stale pid files are detected and cleared.
+- Existing healthy server is reused.
+- Unknown port conflicts fail explicitly.
+- No founder terminal UX introduced.
+
 ## 2026-05-24 - FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake
 
 **Goal:** Use Browser Founder Workbench as the cockpit for a real Verace session.

@@ -56,6 +56,16 @@ FOUNDER-TRIAL-001 found first-use friction in the browser UI: the dashboard was 
 
 The workbench is not intended to be a manual notebook. It reads local project documentation, shows project context, and suggests next work for Oleg to review, edit, and approve.
 
+### Workbench launch control
+
+Codex/admin may use:
+
+```bash
+verace-workbench-control open
+```
+
+This handles stale pid files, reuses a healthy local server, and opens `/plan`. This is internal/admin machinery. Founder UX remains the browser page.
+
 ## Ledger Seed Quickstart
 
 ```bash
