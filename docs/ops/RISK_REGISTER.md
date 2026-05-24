@@ -19,7 +19,9 @@
 | Backup/restore policy absent | Open | ADR-TR006 governs schema safety, but backup/restore product policy remains out of scope until a future brief or ADR. |
 | Review queue mistaken for approval system | Open | BRIEF-TR004 review items are human-inspection work only; approval grants and approval execution remain explicit non-goals. |
 | Patch accepted as fix | Open | Every bugfix/review-fix must include Failure-Class Closure: class axis, invariant, parametric tests, fail-closed unknowns, receipt/claim boundary, and residual risk. A single green demonstrated case is not acceptance. |
-| Receipt/prose mismatch | Open | BRIEF-TR005 adds a deterministic Response Claim Renderer on its work branch; risk remains open until merged and required by future channel/LLM response paths. The LLM may draft style, not operational facts. |
+| Receipt/prose mismatch for current runtime entities | Mitigated in PR #5 | BRIEF-TR005 added a deterministic Response Claim Renderer for task, decision, review lifecycle, schema-health, and blocked-action claims with receipt/action-class validation and source provenance. |
+| Receipt/prose mismatch in future artifact/channel/LLM layers | Open | Future artifact, delivery, channel, and LLM response paths must use or validate against the Response Claim Renderer before making system-action statements. |
+| Product loop not yet proven | Open | Next brief is BRIEF-TR006: Local Founder Workbench, focused on a daily-use founder loop rather than another internal foundation layer. |
 
 ## Review Rule
 

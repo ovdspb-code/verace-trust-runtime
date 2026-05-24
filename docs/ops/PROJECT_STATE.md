@@ -23,11 +23,11 @@
 - BRIEF-TR002: Project Operating Memory — merged in PR #2.
 - BRIEF-TR003: Runtime Schema Migration Runner — merged in PR #3.
 - BRIEF-TR004: Review Queue and Session Brief — merged in PR #4.
-- BRIEF-TR005: Response Claim Renderer — in progress on branch `work/brief-tr005-response-claim-renderer`.
+- BRIEF-TR005: Response Claim Renderer — merged in PR #5.
 
 ## Next Intended Document
 
-- To be set after BRIEF-TR005 review and merge decision.
+- BRIEF-TR006: Local Founder Workbench.
 
 ## Current Repository Fact
 
@@ -58,3 +58,4 @@ Runtime implementation may proceed only inside an issued implementation brief an
 - PR #2 merged `work/brief-tr002-project-operating-memory` into `main` with merge commit `e2a2dc6`.
 - PR #3 merged `work/brief-tr003-schema-migration-runner` into `main` with merge commit `bb5ee0c`.
 - PR #4 merged `work/brief-tr004-review-queue-session-brief` into `main` with merge commit `01c3a46`.
+- PR #5 merged `work/brief-tr005-response-claim-renderer` into `main` with merge commit `0e90edd`.
