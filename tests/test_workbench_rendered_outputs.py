@@ -38,7 +38,7 @@ def test_state_changing_browser_confirmations_are_receipt_rendered(tmp_path):
         dismissed = post(base, "/reviews/REV-000001/resolve", {"resolution": "Not needed.", "status": "dismissed"})
 
     for html in (task, decision, review, dismissed):
-        assert "Receipt-backed confirmation" in html
+        assert "Подтверждено receipt-записью" in html
         assert "Receipt: RCPT-" in html
     assert "Task TR-000001 was recorded in the ledger." in task
     assert "Decision DEC-000001 was recorded in the ledger." in decision
@@ -54,3 +54,17 @@ def test_browser_pages_do_not_emit_private_internal_ids(tmp_path):
     assert "task_" not in html
     assert "message_" not in html
 
+
+def test_review_page_uses_cards_and_human_review_copy(tmp_path):
+    with running_server(tmp_path / "runtime.sqlite3") as base:
+        post(base, "/init", {})
+        post(base, "/reviews", {"title": "Review without task", "body": "Body.", "review_type": "risk", "priority": "normal", "task": ""})
+        html = post(base, "/reviews", {"title": "Review with task", "body": "Body.", "review_type": "architecture", "priority": "high", "task": ""})
+
+    assert "review-card" in html
+    assert "Закрыть проверку" in html
+    assert "без задачи" in html
+    assert "task=--" not in html
+    assert "class='inline'" not in html
+    assert ">resolved<" not in html
+    assert "Решено" in html

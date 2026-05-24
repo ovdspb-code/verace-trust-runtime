@@ -26,9 +26,13 @@
 - BRIEF-TR005: Response Claim Renderer — merged in PR #5.
 - BRIEF-TR006: Browser Founder Workbench — merged in PR #7.
 
+## Current Work
+
+- FOUNDER-TRIAL-FIX-001: Browser Workbench First-Use UX Cleanup.
+
 ## Next Intended Work
 
-- FOUNDER-TRIAL-001: Browser Workbench First Human Trial.
+- FOUNDER-TRIAL-001 continuation / Founder Workbench human trial after UX cleanup.
 
 ## Current Repository Fact
 

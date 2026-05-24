@@ -54,8 +54,14 @@ def test_browser_founder_product_loop(tmp_path):
     assert "Decision DEC-000001 was recorded in the ledger. Receipt: RCPT-" in decision
     assert "Review REV-000001 was created. Receipt: RCPT-" in review
     assert "REV-000001" in reviews
+    assert "Закрыть проверку" in reviews
+    assert "задача TR-000001" in reviews
+    assert "task=--" not in reviews
+    assert "class='inline'" not in reviews
+    assert ">resolved<" not in reviews
+    assert "Решено" in reviews
     assert "Review REV-000001 was resolved. Receipt: RCPT-" in resolved
     assert "Подготовить тестовую задачу" in dashboard
     assert "Browser decision" in dashboard
-    assert "Doctor: <span class='ok'>OK</span>" in doctor
-
+    assert "Система готова" in dashboard
+    assert "Диагностика: <span class='ok'>OK</span>" in doctor

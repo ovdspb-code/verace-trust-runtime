@@ -61,10 +61,30 @@ def test_dashboard_renders_on_fresh_and_initialized_db(tmp_path):
         fresh = get(base)
         initialized = post(base, "/init", {})
 
-    assert "Verace Founder Workbench" in fresh
-    assert "Doctor: <span class='fail'>FAIL</span>" in fresh
+    assert "Рабочая панель проекта" in fresh
+    assert "Требуется инициализация или проверка" in fresh
+    assert "Инициализировать" in fresh
     assert "Runtime initialized. Receipt: RCPT-" in initialized
-    assert "Doctor: <span class='ok'>OK</span>" in initialized
+    assert "Система готова" in initialized
+    assert "Пока нет открытых задач." in initialized
+    assert "Пока нет вопросов на проверке." in initialized
+    assert "Пока нет записанных решений." in initialized
+    assert "Пока нет событий." in initialized
+    assert "current=True" not in initialized
+    assert "Reason: current" not in initialized
+    assert "receipts=" not in initialized
+    assert "claims=" not in initialized
+
+
+def test_dashboard_navigation_and_primary_actions_are_russian(tmp_path):
+    with running_server(tmp_path / "runtime.sqlite3") as base:
+        post(base, "/init", {})
+        html = get(base)
+
+    for label in ("Обзор", "Задача", "Решение", "Проверки", "На проверку", "Диагностика"):
+        assert label in html
+    for label in ("Добавить задачу", "Записать решение", "Добавить на проверку"):
+        assert label in html
 
 
 def test_browser_error_has_no_raw_traceback(tmp_path):
@@ -72,6 +92,6 @@ def test_browser_error_has_no_raw_traceback(tmp_path):
         post(base, "/init", {})
         html = post(base, "/tasks", {"text": ""})
 
-    assert "Error" in html
+    assert "Ошибка" in html
     assert "Message text is empty" in html
     assert "Traceback" not in html

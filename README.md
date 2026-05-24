@@ -52,6 +52,8 @@ Oleg's product workflow starts in the browser at the local workbench URL. The la
 
 The workbench shows session brief, doctor/schema state, open tasks, review queue, and latest decisions. It supports browser forms for task, decision, review creation, and review resolution. State-changing confirmations use receipt-rendered runtime prose where supported.
 
+FOUNDER-TRIAL-001 found first-use friction in the browser UI: the dashboard was too technical, review layout was cramped, and several labels looked internal. The browser workbench is being refined from that human trial feedback. CLI remains internal/admin only.
+
 ## Ledger Seed Quickstart
 
 ```bash
