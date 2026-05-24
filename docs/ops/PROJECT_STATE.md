@@ -31,9 +31,9 @@
 
 - Current product surface: Browser Founder Workbench.
 - Current product capability: Project Context Intake and Suggested Work Queue.
-- Recent work: FOUNDER-TRIAL-FIX-002: First-Run State Handling — merged in PR #10.
+- Recent work: RUN-FIX-TR011: Workbench Run Control and Stale PID Guard — merged in PR #11.
 - Recent trial: FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake — passed. Oleg reported that the browser flow worked end-to-end.
-- Current work: RUN-FIX-TR011: Workbench Run Control and Stale PID Guard.
+- Current work: Post-merge state recorded for RUN-FIX-TR011.
 
 ## Next Intended Work
 
@@ -73,3 +73,4 @@ Runtime implementation may proceed only inside an issued implementation brief an
 - PR #8 merged `work/founder-trial-fix-001-workbench-ux` into `main` with merge commit `a8a160d`.
 - PR #9 merged `work/brief-tr007-project-context-intake` into `main` with merge commit `cc2bf7c`.
 - PR #10 merged `work/founder-trial-fix-002-first-run-state` into `main` with merge commit `d766e48`.
+- PR #11 merged `work/run-fix-tr011-workbench-run-control` into `main` with merge commit `0feb48e`.

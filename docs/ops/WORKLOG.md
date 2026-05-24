@@ -1,5 +1,28 @@
 # Worklog
 
+## 2026-05-24 - MERGE-TR011: Merge Workbench Run Control
+
+**Goal:** Merge PR #11 into `main` with a merge commit and record post-merge state.
+
+**Summary:**
+
+- PR #11 merged into `main`.
+- Merge commit: `0feb48e`.
+- Product effect: Codex/admin can safely start/open/status/stop/restart Browser Workbench without stale PID traps.
+- Founder UX remains browser-only; run-control is internal/admin machinery.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed on merged `main`.
+- `python -m pytest` passed on merged `main`: 120 tests.
+- Run-control smoke passed for status, start, duplicate start reuse, `/plan` health check, stop, and final status.
+- Unowned PID safety smoke passed: stale live unowned pid was removed from the pid file without stopping the unrelated process.
+- Unknown port conflict smoke failed explicitly without killing unrelated processes.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+- GitHub Actions on `main`: success for merge commit `0feb48e`.
+
 ## 2026-05-24 - RUN-FIX-TR011: Workbench Run Control and Stale PID Guard
 
 **Summary:**
