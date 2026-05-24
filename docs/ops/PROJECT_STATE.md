@@ -24,10 +24,11 @@
 - BRIEF-TR003: Runtime Schema Migration Runner — merged in PR #3.
 - BRIEF-TR004: Review Queue and Session Brief — merged in PR #4.
 - BRIEF-TR005: Response Claim Renderer — merged in PR #5.
+- BRIEF-TR006: Browser Founder Workbench — in progress on branch `work/brief-tr006-browser-founder-workbench`.
 
 ## Next Intended Document
 
-- BRIEF-TR006: Local Founder Workbench.
+- To be set after BRIEF-TR006 review and merge decision.
 
 ## Current Repository Fact
 

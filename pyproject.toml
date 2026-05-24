@@ -16,6 +16,7 @@ dev = [
 
 [project.scripts]
 verace-runtime = "verace_runtime.cli:main"
+verace-workbench = "verace_runtime.workbench.server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

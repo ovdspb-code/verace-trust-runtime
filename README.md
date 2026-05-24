@@ -31,6 +31,25 @@ Phase 1 - Founder Assistant Seed.
 
 The current implementation slice is the local Ledger Seed: a small CLI over SQLite that records founder-project work as durable messages, tasks, events, receipts, and claims.
 
+## Founder Workbench
+
+Oleg's product surface is the browser workbench, not the terminal.
+
+Codex/admin launch command:
+
+```bash
+python -m pip install -e ".[dev]"
+VERACE_RUNTIME_DB=.runtime/verace.sqlite3 verace-workbench --host 127.0.0.1 --port 8765
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8765/
+```
+
+The workbench shows session brief, doctor/schema state, open tasks, review queue, and latest decisions. It supports browser forms for task, decision, review creation, and review resolution. State-changing confirmations use receipt-rendered runtime prose where supported.
+
 ## Ledger Seed Quickstart
 
 ```bash
