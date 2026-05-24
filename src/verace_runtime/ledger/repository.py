@@ -9,6 +9,7 @@ from verace_runtime.ledger.models import DecisionSummary, TaskSummary
 
 
 COUNT_TABLES = [
+    "runtime_meta",
     "persons",
     "contours",
     "contour_memberships",

@@ -21,7 +21,7 @@ def test_init_is_idempotent_and_seeds_founder(tmp_path):
                 "SELECT name FROM sqlite_master WHERE type = 'table'"
             ).fetchall()
         }
-        assert {"persons", "contours", "mandates", "messages", "tasks", "receipts", "claims"} <= tables
+        assert {"runtime_meta", "persons", "contours", "mandates", "messages", "tasks", "receipts", "claims"} <= tables
         assert conn.execute("SELECT COUNT(*) FROM persons WHERE slug = 'oleg'").fetchone()[0] == 1
         assert conn.execute("SELECT COUNT(*) FROM contours WHERE slug = 'verace_project'").fetchone()[0] == 1
         assert conn.execute("SELECT COUNT(*) FROM mandates WHERE status = 'active'").fetchone()[0] == 1

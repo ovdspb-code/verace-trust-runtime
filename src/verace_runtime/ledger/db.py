@@ -6,6 +6,8 @@ import sqlite3
 from importlib import resources
 from pathlib import Path
 
+from verace_runtime.ledger.migrations import ensure_schema_current
+
 
 def connect(db_path: str | Path) -> sqlite3.Connection:
     path = Path(db_path)
@@ -21,4 +23,4 @@ def connect(db_path: str | Path) -> sqlite3.Connection:
 
 def apply_schema(conn: sqlite3.Connection) -> None:
     schema = resources.files("verace_runtime.ledger").joinpath("schema.sql").read_text()
-    conn.executescript(schema)
+    ensure_schema_current(conn, schema)

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from verace_runtime.ledger.db import apply_schema, connect
 from verace_runtime.ledger.models import DecisionResult, DecisionSummary, IngestResult, InitResult, PolicyResult, TaskMutationResult, TaskSummary
+from verace_runtime.ledger.migrations import doctor_schema_state
 from verace_runtime.ledger.repository import LedgerRepository
 from verace_runtime.policy.engine import PolicyEngine
 from verace_runtime.receipts.factory import ReceiptFactory
@@ -161,8 +162,13 @@ class FounderAssistantService:
             apply_schema(conn)
             return LedgerRepository(conn).counts()
 
+    def schema_status(self) -> dict[str, object]:
+        with connect(self.db_path) as conn:
+            return doctor_schema_state(conn)
+
     def doctor(self) -> dict[str, object]:
         required = [
+            "runtime_meta",
             "persons",
             "contours",
             "contour_memberships",
@@ -177,11 +183,13 @@ class FounderAssistantService:
             "outbox_items",
         ]
         with connect(self.db_path) as conn:
+            schema_state = doctor_schema_state(conn)
             repo = LedgerRepository(conn)
-            schema_ok = set(required) <= repo.table_names()
             pragma_ok = conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
             integrity_ok = conn.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
             foreign_keys_ok = len(conn.execute("PRAGMA foreign_key_check").fetchall()) == 0
+            schema_current = bool(schema_state["schema_current"])
+            schema_ok = schema_current and set(required) <= repo.table_names()
             counts = repo.counts() if schema_ok else {}
             invariants = repo.invariant_counts() if schema_ok else {}
             seed_ok = repo.seed_ok() if schema_ok else False
@@ -196,6 +204,7 @@ class FounderAssistantService:
                 pragma_ok,
                 integrity_ok,
                 foreign_keys_ok,
+                schema_state["schema_current"],
                 seed_ok,
                 claim_receipt_ok,
                 task_event_receipt_ok,
@@ -206,6 +215,7 @@ class FounderAssistantService:
         )
         return {
             "ok": ok,
+            **schema_state,
             "schema_ok": schema_ok,
             "pragma_ok": pragma_ok,
             "integrity_ok": integrity_ok,
