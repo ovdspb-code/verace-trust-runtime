@@ -29,7 +29,8 @@
 
 ## Current Work
 
-- Current product surface: Browser Founder Workbench with Project Context Intake and Suggested Work Queue.
+- Current product surface: Browser Founder Workbench.
+- Current product capability: Project Context Intake and Suggested Work Queue.
 - Recent work: BRIEF-TR007: Project Context Intake and Suggested Work Queue — merged in PR #9.
 
 ## Next Intended Work
