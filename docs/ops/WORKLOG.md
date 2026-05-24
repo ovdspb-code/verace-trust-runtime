@@ -1,5 +1,24 @@
 # Worklog
 
+## 2026-05-24 - GOV-TR001: Add Failure-Class Closure Governance
+
+**Goal:** Adopt Porthos memo lessons into Verace Trust Runtime governance.
+
+**Summary:**
+
+- Added `docs/ops/FAILURE_CLASS_CLOSURE.md`.
+- Added D-TR-009 Failure-Class Closure Rule.
+- Added D-TR-010 Receipt-Rendered System-Action Prose Rule.
+- Updated Session Protocol with Failure-Class Closure and Receipt-Rendered Prose gates.
+- Added risks for patch-acceptance and receipt/prose mismatch.
+- Did not commit the raw Porthos memo.
+
+**Checks:**
+
+- Docs-only change.
+- No code/runtime files changed.
+- No secrets/DB/log/private files committed.
+
 ## 2026-05-24 - MERGE-TR004: Merge Review Queue and Session Brief
 
 **Goal:** Merge PR #4 into `main` with a merge commit and record post-merge state.

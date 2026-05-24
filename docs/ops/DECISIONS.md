@@ -12,6 +12,8 @@ Durable operating decisions for Verace - Trust Runtime.
 | D-TR-006 | ADR-TR004 Runtime Ledger Minimal Contract accepted; Runtime Ledger is operational source of truth. | ADR-TR004 |
 | D-TR-007 | ADR-TR005 Receipt and Approval Policy accepted; consequential external action requires mandate or approval, and success claims require receipts. | ADR-TR005 |
 | D-TR-008 | ADR-TR006 Runtime Schema and Migration Policy accepted; runtime schemas are versioned contracts and unknown schema states must fail closed. | ADR-TR006 |
+| D-TR-009 | Bugfixes and hardening changes are accepted only when the failure class is closed, not when the demonstrated case is green. Every fix must define the class axis, invariant, parametric tests, fail-closed behavior for unknown variants, and residual risk. | FAILURE_CLASS_CLOSURE / Porthos memo 2026-05-24 |
+| D-TR-010 | Human-facing factual statements about the system's own actions must be rendered from ledger/receipt fields or validated against receipts; otherwise the runtime must fail closed, repair, clarify, or downgrade the statement. | FAILURE_CLASS_CLOSURE / ADR-TR002 |
 
 ## Decision Discipline
 
