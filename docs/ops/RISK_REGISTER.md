@@ -31,6 +31,7 @@
 | Suggestion state is session-local | Open | Accepted/dismissed suggestions are hidden for the current server session only; add durable suggestion state later only if repeated sessions need it. |
 | Future LLM/channel layers bypass hard facts boundary | Open | Future LLM/channel layers must remain thin wrappers over ledger, receipts, claims, renderer output, and policy state. |
 | First-run runtime trap | Mitigated in FOUNDER-TRIAL-FIX-002 | Workbench shows first-run initialization state instead of raw missing-ledger errors; unsafe DB still fails closed. |
+| First-run reset of non-empty runtime DB | Mitigated in REVIEW-FIX-TR010A | Workbench classifies seed-missing non-empty runtime as unsafe and does not reset it as first-run. |
 
 ## Review Rule
 

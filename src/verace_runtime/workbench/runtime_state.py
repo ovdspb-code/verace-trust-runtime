@@ -46,12 +46,12 @@ def classify_runtime(db_path: str | Path) -> WorkbenchRuntimeState:
         return WorkbenchRuntimeState("unsafe", f"sqlite error: {exc}")
     except RuntimeError as exc:
         if str(exc) == "Required ledger row not found":
-            return WorkbenchRuntimeState("first_run", "required seed rows are absent")
+            return _seed_missing_state(path)
         return WorkbenchRuntimeState("unsafe", str(exc))
     if doctor["ok"]:
         return WorkbenchRuntimeState("ready", "ready")
     if not doctor.get("seed_ok", False):
-        return WorkbenchRuntimeState("first_run", "required seed rows are absent")
+        return _seed_missing_state(path)
     return WorkbenchRuntimeState("unsafe", str(doctor.get("schema_reason") or "runtime checks failed"))
 
 
@@ -70,12 +70,25 @@ def _non_current_state(conn: sqlite3.Connection, reason: str) -> WorkbenchRuntim
     return WorkbenchRuntimeState("unsafe", reason)
 
 
+def _seed_missing_state(path: Path) -> WorkbenchRuntimeState:
+    try:
+        with sqlite3.connect(path) as conn:
+            conn.row_factory = sqlite3.Row
+            if _has_only_empty_runtime_tables(conn):
+                return WorkbenchRuntimeState("first_run", "required seed rows are absent")
+    except sqlite3.Error as exc:
+        return WorkbenchRuntimeState("unsafe", f"sqlite error: {exc}")
+    return WorkbenchRuntimeState("unsafe", "required seed rows are absent in non-empty runtime")
+
+
 def _has_only_empty_runtime_tables(conn: sqlite3.Connection) -> bool:
     tables = _table_names(conn)
     if not tables:
         return True
     for table in tables:
         if table.startswith("sqlite_"):
+            continue
+        if table == "runtime_meta":
             continue
         if table not in COUNT_TABLES:
             return False

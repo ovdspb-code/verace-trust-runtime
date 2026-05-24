@@ -44,7 +44,12 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
             service = FounderAssistantService(self.runtime_db)
             state = classify_runtime(self.runtime_db)
             if path == "/":
-                self._html(200, views.first_run_dashboard() if state.first_run else views.dashboard(service))
+                if state.first_run:
+                    self._html(200, views.first_run_dashboard())
+                elif state.unsafe:
+                    self._html(*views.error_page(f"Unsafe runtime schema: {state.reason}", 200))
+                else:
+                    self._html(200, views.dashboard(service))
             elif path == "/plan":
                 self._html(200, views.plan_page(service, dismissed=self.dismissed_suggestions, first_run=state.first_run))
             elif path == "/documents":
@@ -79,6 +84,9 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
             service = FounderAssistantService(self.runtime_db)
             state = classify_runtime(self.runtime_db)
             if path == "/init":
+                if state.unsafe:
+                    self._html(*views.error_page(f"Unsafe runtime schema: {state.reason}", 400))
+                    return
                 if state.first_run:
                     reset_first_run_runtime(self.runtime_db)
                     service = FounderAssistantService(self.runtime_db)

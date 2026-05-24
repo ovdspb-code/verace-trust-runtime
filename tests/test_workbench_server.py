@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sqlite3
 import threading
 from contextlib import contextmanager
 from urllib.parse import urlencode
@@ -120,3 +121,37 @@ def test_schema_current_seed_missing_is_first_run(tmp_path):
     assert "Инициализировать" in html
     assert "Required ledger row not found" not in html
     assert "Traceback" not in html
+
+
+def test_seed_missing_non_empty_runtime_is_unsafe_and_not_reset(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    service = FounderAssistantService(db_path)
+    service.init_runtime()
+    service.ingest_message("oleg", "verace_project", "Preserve this task")
+    with sqlite3.connect(db_path) as conn:
+        before_tasks = conn.execute("SELECT COUNT(*) FROM tasks").fetchone()[0]
+        before_messages = conn.execute("SELECT COUNT(*) FROM messages").fetchone()[0]
+        conn.execute("DELETE FROM mandates")
+        conn.commit()
+
+    with running_server(db_path) as base:
+        html = get(base)
+        init_html = post(base, "/init", {})
+
+    with sqlite3.connect(db_path) as conn:
+        after_tasks = conn.execute("SELECT COUNT(*) FROM tasks").fetchone()[0]
+        after_messages = conn.execute("SELECT COUNT(*) FROM messages").fetchone()[0]
+        mandate_count = conn.execute("SELECT COUNT(*) FROM mandates").fetchone()[0]
+
+    assert before_tasks == 1
+    assert before_messages == 1
+    assert "Первый запуск" not in html
+    assert "Unsafe runtime schema" in html
+    assert "required seed rows are absent in non-empty runtime" in html
+    assert "Required ledger row not found" not in html
+    assert "Traceback" not in html
+    assert "Unsafe runtime schema" in init_html
+    assert "Runtime initialized" not in init_html
+    assert after_tasks == before_tasks
+    assert after_messages == before_messages
+    assert mandate_count == 0
