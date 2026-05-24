@@ -1,5 +1,26 @@
 # Worklog
 
+## 2026-05-24 - IMPL-TR006: Local Founder Workbench
+
+**Goal:** Implement BRIEF-TR006: Local Founder Workbench.
+
+**Summary:**
+
+- Copied BRIEF-TR006 into `docs/briefs/`.
+- Added `verace` console command for local founder sessions.
+- Added compact workbench commands for init, brief, add, decision, review, and doctor.
+- State-changing task, decision, and review outputs use receipt-rendered prose.
+- No Telegram, LLM provider, channel adapter, external API, payment, legal, sensitive, destructive, artifact-delivery, approval-execution, or external-send integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed.
+- `python -m pytest` passed: 83 tests.
+- Manual local founder workbench smoke against `.runtime-test/verace.sqlite3` passed.
+- Unsafe unversioned DB smoke reported explicit schema failure without a healthy claim.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+
 ## 2026-05-24 - MERGE-TR005: Merge Response Claim Renderer
 
 **Goal:** Merge PR #5 into `main` with a merge commit and record post-merge state.

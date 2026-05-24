@@ -21,7 +21,7 @@
 | Patch accepted as fix | Open | Every bugfix/review-fix must include Failure-Class Closure: class axis, invariant, parametric tests, fail-closed unknowns, receipt/claim boundary, and residual risk. A single green demonstrated case is not acceptance. |
 | Receipt/prose mismatch for current runtime entities | Mitigated in PR #5 | BRIEF-TR005 added a deterministic Response Claim Renderer for task, decision, review lifecycle, schema-health, and blocked-action claims with receipt/action-class validation and source provenance. |
 | Receipt/prose mismatch in future artifact/channel/LLM layers | Open | Future artifact, delivery, channel, and LLM response paths must use or validate against the Response Claim Renderer before making system-action statements. |
-| Product loop not yet proven | Open | Next brief is BRIEF-TR006: Local Founder Workbench, focused on a daily-use founder loop rather than another internal foundation layer. |
+| Product loop not yet proven | Open | BRIEF-TR006 branch adds the first local founder workbench; risk remains open until reviewed, merged, and used in real founder sessions. |
 
 ## Review Rule
 
