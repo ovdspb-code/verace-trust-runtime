@@ -52,6 +52,20 @@ def test_doctor_covers_review_receipts_claims_and_events(tmp_path):
     assert result["review_event_receipt_ok"] is True
     assert result["review_resolution_ok"] is True
     assert result["review_status_ok"] is True
+    assert result["review_created_event_ok"] is True
+
+
+def test_doctor_covers_resolved_review_event_and_claim(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+    review = service.add_review("oleg", "verace_project", "Review", "Synthetic review.", "risk", "normal")
+    service.resolve_review(review.public_id, "Synthetic resolution.")
+
+    result = service.doctor()
+
+    assert result["ok"] is True
+    assert result["review_resolution_event_ok"] is True
+    assert result["review_resolution_claim_ok"] is True
 
 
 def test_doctor_detects_review_item_without_receipt_or_claim(tmp_path):
@@ -75,6 +89,38 @@ def test_doctor_detects_review_item_without_receipt_or_claim(tmp_path):
     assert result["ok"] is False
     assert result["review_item_receipt_ok"] is False
     assert result["review_item_claim_ok"] is False
+
+
+def test_doctor_detects_review_without_created_event(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    service = FounderAssistantService(db_path)
+    service.init_runtime()
+    service.add_review("oleg", "verace_project", "Review", "Synthetic review.", "risk", "normal")
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("DELETE FROM review_events WHERE event_type = 'review.item.created'")
+
+    result = service.doctor()
+
+    assert result["ok"] is False
+    assert result["review_created_event_ok"] is False
+
+
+def test_doctor_detects_resolved_review_without_lifecycle_event_or_claim(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    service = FounderAssistantService(db_path)
+    service.init_runtime()
+    review = service.add_review("oleg", "verace_project", "Review", "Synthetic review.", "risk", "normal")
+    with sqlite3.connect(db_path) as conn:
+        conn.execute(
+            "UPDATE review_items SET status = 'resolved', resolution_text = 'Synthetic resolution.' WHERE public_id = ?",
+            (review.public_id,),
+        )
+
+    result = service.doctor()
+
+    assert result["ok"] is False
+    assert result["review_resolution_event_ok"] is False
+    assert result["review_resolution_claim_ok"] is False
 
 
 def test_doctor_detects_invalid_review_resolution_and_status(tmp_path):

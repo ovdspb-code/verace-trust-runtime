@@ -231,6 +231,7 @@ def _print_doctor(service: FounderAssistantService) -> None:
     print(f"decision_receipt_ok={result['decision_receipt_ok']} decision_claim_ok={result['decision_claim_ok']}")
     print(f"review_item_receipt_ok={result['review_item_receipt_ok']} review_item_claim_ok={result['review_item_claim_ok']}")
     print(f"review_event_receipt_ok={result['review_event_receipt_ok']} review_resolution_ok={result['review_resolution_ok']} review_status_ok={result['review_status_ok']}")
+    print(f"review_created_event_ok={result['review_created_event_ok']} review_resolution_event_ok={result['review_resolution_event_ok']} review_resolution_claim_ok={result['review_resolution_claim_ok']}")
     print(f"tables={len(result['required_tables'])} tasks={counts.get('tasks', 0)} receipts={counts.get('receipts', 0)}")
 
 

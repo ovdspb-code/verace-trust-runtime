@@ -240,6 +240,9 @@ class LedgerRepository:
             "review_events_missing_receipt": "SELECT COUNT(*) AS n FROM review_events e LEFT JOIN receipts r ON r.id = e.receipt_id WHERE e.receipt_id IS NULL OR r.id IS NULL",
             "review_resolutions_missing_text": "SELECT COUNT(*) AS n FROM review_items WHERE status IN ('resolved', 'dismissed') AND (resolution_text IS NULL OR trim(resolution_text) = '')",
             "review_items_invalid_status": "SELECT COUNT(*) AS n FROM review_items WHERE status NOT IN ('open', 'resolved', 'dismissed')",
+            "review_items_missing_created_event": "SELECT COUNT(*) AS n FROM review_items i LEFT JOIN review_events e ON e.review_item_id = i.id AND e.event_type = 'review.item.created' WHERE e.id IS NULL",
+            "review_resolutions_missing_event": "SELECT COUNT(*) AS n FROM review_items i LEFT JOIN review_events e ON e.review_item_id = i.id AND e.event_type = 'review.item.' || i.status WHERE i.status IN ('resolved', 'dismissed') AND e.id IS NULL",
+            "review_resolutions_missing_claim": "SELECT COUNT(*) AS n FROM review_items i LEFT JOIN claims c ON c.subject_type = 'review_item' AND c.subject_id = i.id AND c.claim_type = 'review_item_' || i.status WHERE i.status IN ('resolved', 'dismissed') AND c.id IS NULL",
         }
         return {name: self.conn.execute(sql).fetchone()["n"] for name, sql in queries.items()}
 

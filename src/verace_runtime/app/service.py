@@ -197,36 +197,22 @@ class FounderAssistantService:
             counts = repo.counts() if schema_ok else {}
             invariants = repo.invariant_counts() if schema_ok else {}
             seed_ok = repo.seed_ok() if schema_ok else False
-        claim_receipt_ok = invariants.get("claims_missing_receipt", 1) == 0
-        task_event_receipt_ok = invariants.get("task_events_missing_receipt", 1) == 0
-        outbox_receipt_ok = invariants.get("outbox_missing_receipt", 1) == 0
-        decision_receipt_ok = invariants.get("decisions_missing_receipt", 1) == 0
-        decision_claim_ok = invariants.get("decisions_missing_claim", 1) == 0
-        review_item_receipt_ok = invariants.get("review_items_missing_receipt", 1) == 0
-        review_item_claim_ok = invariants.get("review_items_missing_claim", 1) == 0
-        review_event_receipt_ok = invariants.get("review_events_missing_receipt", 1) == 0
-        review_resolution_ok = invariants.get("review_resolutions_missing_text", 1) == 0
-        review_status_ok = invariants.get("review_items_invalid_status", 1) == 0
-        ok = all(
-            [
-                schema_ok,
-                pragma_ok,
-                integrity_ok,
-                foreign_keys_ok,
-                schema_state["schema_current"],
-                seed_ok,
-                claim_receipt_ok,
-                task_event_receipt_ok,
-                outbox_receipt_ok,
-                decision_receipt_ok,
-                decision_claim_ok,
-                review_item_receipt_ok,
-                review_item_claim_ok,
-                review_event_receipt_ok,
-                review_resolution_ok,
-                review_status_ok,
-            ]
-        )
+        checks = {
+            "claim_receipt_ok": invariants.get("claims_missing_receipt", 1) == 0,
+            "task_event_receipt_ok": invariants.get("task_events_missing_receipt", 1) == 0,
+            "outbox_receipt_ok": invariants.get("outbox_missing_receipt", 1) == 0,
+            "decision_receipt_ok": invariants.get("decisions_missing_receipt", 1) == 0,
+            "decision_claim_ok": invariants.get("decisions_missing_claim", 1) == 0,
+            "review_item_receipt_ok": invariants.get("review_items_missing_receipt", 1) == 0,
+            "review_item_claim_ok": invariants.get("review_items_missing_claim", 1) == 0,
+            "review_event_receipt_ok": invariants.get("review_events_missing_receipt", 1) == 0,
+            "review_resolution_ok": invariants.get("review_resolutions_missing_text", 1) == 0,
+            "review_status_ok": invariants.get("review_items_invalid_status", 1) == 0,
+            "review_created_event_ok": invariants.get("review_items_missing_created_event", 1) == 0,
+            "review_resolution_event_ok": invariants.get("review_resolutions_missing_event", 1) == 0,
+            "review_resolution_claim_ok": invariants.get("review_resolutions_missing_claim", 1) == 0,
+        }
+        ok = all([schema_ok, pragma_ok, integrity_ok, foreign_keys_ok, schema_state["schema_current"], seed_ok, *checks.values()])
         return {
             "ok": ok,
             **schema_state,
@@ -235,16 +221,7 @@ class FounderAssistantService:
             "integrity_ok": integrity_ok,
             "foreign_keys_ok": foreign_keys_ok,
             "seed_ok": seed_ok,
-            "claim_receipt_ok": claim_receipt_ok,
-            "task_event_receipt_ok": task_event_receipt_ok,
-            "outbox_receipt_ok": outbox_receipt_ok,
-            "decision_receipt_ok": decision_receipt_ok,
-            "decision_claim_ok": decision_claim_ok,
-            "review_item_receipt_ok": review_item_receipt_ok,
-            "review_item_claim_ok": review_item_claim_ok,
-            "review_event_receipt_ok": review_event_receipt_ok,
-            "review_resolution_ok": review_resolution_ok,
-            "review_status_ok": review_status_ok,
+            **checks,
             "required_tables": required,
             "counts": counts,
             "invariants": invariants,

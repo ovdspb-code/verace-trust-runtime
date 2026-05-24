@@ -1,5 +1,16 @@
 # Worklog
 
+## 2026-05-24 - REVIEW-FIX-TR004A: Harden Review Lifecycle Invariants
+
+**Goal:** Make review creation and resolution/dismissal lifecycle events part of doctor/audit coverage before PR #4 merge.
+
+**Summary:**
+
+- Added doctor invariants for missing review creation events.
+- Added doctor invariants for missing review resolution/dismissal events and claims.
+- Extended tests for direct DB invariant breakage.
+- No runtime behavior expansion.
+
 ## 2026-05-24 - IMPL-TR004: Review Queue and Session Brief
 
 **Goal:** Implement BRIEF-TR004: Review Queue and Session Brief.

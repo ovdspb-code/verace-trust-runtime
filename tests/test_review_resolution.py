@@ -33,6 +33,22 @@ def test_resolved_review_not_in_default_open_list(tmp_path):
     assert service.list_reviews(None)[0].status == "resolved"
 
 
+def test_dismiss_review_creates_lifecycle_receipt_event_and_claim(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+    review = service.add_review("oleg", "verace_project", "Dismiss me", "Body.", "decision", "low")
+
+    result = service.resolve_review(review.public_id, "Synthetic dismissal.", status="dismissed")
+    doctor = service.doctor()
+
+    assert result.status == "dismissed"
+    assert result.claim_status == "verified_by_receipt"
+    assert service.list_reviews() == []
+    assert service.list_reviews(None)[0].status == "dismissed"
+    assert doctor["review_resolution_event_ok"] is True
+    assert doctor["review_resolution_claim_ok"] is True
+
+
 def test_invalid_review_id_rejected_without_mutation(tmp_path):
     service = FounderAssistantService(tmp_path / "runtime.sqlite3")
     service.init_runtime()
