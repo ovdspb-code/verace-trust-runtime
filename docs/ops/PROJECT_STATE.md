@@ -12,6 +12,10 @@
 - ADR-TR005: Receipt and Approval Policy — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
 - ADR-TR006: Runtime Schema and Migration Policy — Accepted v1.0, ratified 2026-05-24 by Oleg Dolgikh.
 
+## Proposed ADRs
+
+- ADR-TR007: Human-Facing System-Action Claim Rendering — Proposed v1.0.
+
 ## Accepted Plans
 
 - PLAN-TR001: Verace Work Plan - From Founder Assistant to Trust Runtime — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
@@ -25,7 +29,7 @@
 
 ## Next Intended Document
 
-- ADR-TR007: Human-Facing System-Action Claim Rendering.
+- BRIEF-TR005: Response Claim Renderer.
 
 ## Current Repository Fact
 

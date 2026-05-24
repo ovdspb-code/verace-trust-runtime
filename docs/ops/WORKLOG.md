@@ -1,5 +1,23 @@
 # Worklog
 
+## 2026-05-24 - Session TR-007: Add ADR-TR007 Human-Facing System-Action Claim Rendering
+
+**Goal:** Add ADR-TR007 as the next proposed architecture decision.
+
+**Changed files:**
+
+- `docs/adr/ADR-TR007-Human-Facing-System-Action-Claim-Rendering.md`
+- `docs/adr/README.md`
+- `docs/ops/PROJECT_STATE.md`
+- `docs/ops/WORKLOG.md`
+
+**Checks:**
+
+- SHA-256 copy verification passed: `7105ec65243d1ed8432c15e281e740615e89eadcc132dabd309cb3f681503677`.
+- ADR-TR007 remains `Proposed v1.0`.
+- Raw Porthos memo was not committed.
+- No code or runtime files were changed.
+
 ## 2026-05-24 - GOV-TR001: Add Failure-Class Closure Governance
 
 **Goal:** Adopt Porthos memo lessons into Verace Trust Runtime governance.
