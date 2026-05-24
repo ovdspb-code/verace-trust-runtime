@@ -31,11 +31,12 @@
 
 - Current product surface: Browser Founder Workbench.
 - Current product capability: Project Context Intake and Suggested Work Queue.
-- Recent work: BRIEF-TR007: Project Context Intake and Suggested Work Queue — merged in PR #9.
+- Current work: FOUNDER-TRIAL-FIX-002: First-Run State Handling.
+- Recent work: FOUNDER-TRIAL-003: Plan and Suggested Work Queue Trial with Oleg — passed.
 
 ## Next Intended Work
 
-- FOUNDER-TRIAL-003: Plan and Suggested Work Queue Trial with Oleg.
+- FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake.
 
 ## Current Repository Fact
 

@@ -39,6 +39,9 @@ def test_plan_page_renders_project_status_and_suggestions(tmp_path):
     assert "source:" in html
     assert "Принять как задачу" in html
     assert "Codex task" in html
+    assert "Инициализировать" in html
+    assert "Required ledger row not found" not in html
+    assert "Traceback" not in html
 
 
 def test_documents_page_renders_documentation_map(tmp_path):
@@ -51,6 +54,7 @@ def test_documents_page_renders_documentation_map(tmp_path):
     assert "ADRs" in html
     assert "Briefs" in html
     assert "Plans" in html
+    assert "Traceback" not in html
 
 
 def test_plan_and_documents_are_read_only(tmp_path):

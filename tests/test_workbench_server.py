@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sqlite3
 import threading
 from contextlib import contextmanager
 from urllib.parse import urlencode
@@ -8,6 +9,7 @@ from urllib.error import HTTPError
 
 import pytest
 
+from verace_runtime.app.service import FounderAssistantService
 from verace_runtime.workbench.server import DEFAULT_HOST, make_server
 
 
@@ -56,14 +58,15 @@ def test_server_refuses_non_localhost_bind(tmp_path):
         make_server(host="0.0.0.0", port=0, db_path=tmp_path / "runtime.sqlite3")
 
 
-def test_dashboard_renders_on_fresh_and_initialized_db(tmp_path):
+def test_dashboard_renders_first_run_and_initialized_db(tmp_path):
     with running_server(tmp_path / "runtime.sqlite3") as base:
         fresh = get(base)
         initialized = post(base, "/init", {})
 
-    assert "Рабочая панель проекта" in fresh
-    assert "Требуется инициализация или проверка" in fresh
+    assert "Первый запуск" in fresh
     assert "Инициализировать" in fresh
+    assert "Required ledger row not found" not in fresh
+    assert "Traceback" not in fresh
     assert "Runtime initialized. Receipt: RCPT-" in initialized
     assert "Система готова" in initialized
     assert "Пока нет открытых задач." in initialized
@@ -95,3 +98,60 @@ def test_browser_error_has_no_raw_traceback(tmp_path):
     assert "Ошибка" in html
     assert "Message text is empty" in html
     assert "Traceback" not in html
+
+
+def test_first_run_doctor_shows_initialization_required(tmp_path):
+    with running_server(tmp_path / "runtime.sqlite3") as base:
+        html = get(base, "/doctor")
+
+    assert "Диагностика: требуется инициализация" in html
+    assert "Инициализировать" in html
+    assert "Required ledger row not found" not in html
+    assert "Traceback" not in html
+    assert "Диагностика: <span class='ok'>OK</span>" not in html
+
+
+def test_schema_current_seed_missing_is_first_run(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    FounderAssistantService(db_path).status()
+    with running_server(db_path) as base:
+        html = get(base)
+
+    assert "Первый запуск" in html
+    assert "Инициализировать" in html
+    assert "Required ledger row not found" not in html
+    assert "Traceback" not in html
+
+
+def test_seed_missing_non_empty_runtime_is_unsafe_and_not_reset(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    service = FounderAssistantService(db_path)
+    service.init_runtime()
+    service.ingest_message("oleg", "verace_project", "Preserve this task")
+    with sqlite3.connect(db_path) as conn:
+        before_tasks = conn.execute("SELECT COUNT(*) FROM tasks").fetchone()[0]
+        before_messages = conn.execute("SELECT COUNT(*) FROM messages").fetchone()[0]
+        conn.execute("DELETE FROM mandates")
+        conn.commit()
+
+    with running_server(db_path) as base:
+        html = get(base)
+        init_html = post(base, "/init", {})
+
+    with sqlite3.connect(db_path) as conn:
+        after_tasks = conn.execute("SELECT COUNT(*) FROM tasks").fetchone()[0]
+        after_messages = conn.execute("SELECT COUNT(*) FROM messages").fetchone()[0]
+        mandate_count = conn.execute("SELECT COUNT(*) FROM mandates").fetchone()[0]
+
+    assert before_tasks == 1
+    assert before_messages == 1
+    assert "Первый запуск" not in html
+    assert "Unsafe runtime schema" in html
+    assert "required seed rows are absent in non-empty runtime" in html
+    assert "Required ledger row not found" not in html
+    assert "Traceback" not in html
+    assert "Unsafe runtime schema" in init_html
+    assert "Runtime initialized" not in init_html
+    assert after_tasks == before_tasks
+    assert after_messages == before_messages
+    assert mandate_count == 0

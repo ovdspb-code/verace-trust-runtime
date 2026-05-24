@@ -63,5 +63,8 @@ def test_unsafe_db_shows_failure_without_healthy_claim(tmp_path):
 
     assert "Диагностика: <span class='fail'>FAIL</span>" in html
     assert "missing runtime_meta" in html
+    assert "Первый запуск" not in html
+    assert "требуется инициализация" not in html.lower()
     assert "Диагностика: <span class='ok'>OK</span>" not in html
+    assert "Required ledger row not found" not in html
     assert "Traceback" not in html

@@ -1,5 +1,24 @@
 # Worklog
 
+## 2026-05-24 - FOUNDER-TRIAL-FIX-002: First-Run State Handling
+
+**Summary:**
+
+- FOUNDER-TRIAL-003 passed for plan/documents/suggested queue.
+- Fixed first-run trap where empty runtime could expose `Required ledger row not found`.
+- Added clear first-run state and initialization CTA.
+- Preserved unsafe DB fail-closed behavior.
+- No runtime feature expansion.
+
+## 2026-05-24 - REVIEW-FIX-TR010A: Prevent First-Run Reset of Non-Empty Runtime DB
+
+**Summary:**
+
+- Seed-missing runtime DB with data is now unsafe, not first-run.
+- First-run reset remains allowed only for missing, empty, or empty-runtime DB states.
+- Added regression test preventing accidental reset of non-empty runtime DB.
+- No feature expansion.
+
 ## 2026-05-24 - MERGE-TR007: Merge Project Context Intake and Suggested Work Queue
 
 **Goal:** Merge PR #9 into `main` with a merge commit and record post-merge state.
