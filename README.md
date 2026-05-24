@@ -31,6 +31,26 @@ Phase 1 - Founder Assistant Seed.
 
 The current implementation slice is the local Ledger Seed: a small CLI over SQLite that records founder-project work as durable messages, tasks, events, receipts, and claims.
 
+## Local Founder Workbench
+
+The `verace` command is the daily-use local surface over the runtime ledger.
+
+```bash
+python -m pip install -e ".[dev]"
+verace init
+verace brief
+verace add "Подготовить план следующей Codex-сессии"
+verace decision "Product mode" --text "After BRIEF-TR005, work shifts to founder daily-use loop."
+verace review add "Check next workbench output" --body "Confirm output is useful for Oleg." --type architecture --priority high
+verace review list
+verace review resolve REV-000001 --resolution "Reviewed. Proceed."
+verace doctor
+```
+
+By default, `verace` uses `.runtime/verace.sqlite3`. Override with `VERACE_RUNTIME_DB` or `--db`.
+
+State-changing task, decision, and review outputs are rendered from ledger receipts and claims. Runtime DB files live under `.runtime/` by default and must never be committed.
+
 ## Ledger Seed Quickstart
 
 ```bash
@@ -58,4 +78,4 @@ python -m verace_runtime.cli add-task-event --db .runtime/verace.sqlite3 --task 
 python -m verace_runtime.cli project-brief --db .runtime/verace.sqlite3
 ```
 
-Runtime DB files live under `.runtime/` by default and must never be committed. The MVP has no Telegram, LLM provider, external API, payment, legal, or external-send integration.
+The MVP has no Telegram, LLM provider, external API, payment, legal, or external-send integration.
