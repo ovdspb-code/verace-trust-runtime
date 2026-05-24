@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import socket
+import subprocess
+import sys
 from pathlib import Path
 from urllib.request import urlopen
 
@@ -18,6 +20,25 @@ def _config(tmp_path: Path, port: int | None = None) -> run_control.ControlConfi
     return run_control.build_config("127.0.0.1", port or _free_port(), str(runtime), str(runtime / "verace.sqlite3"))
 
 
+def _unowned_process() -> subprocess.Popen:
+    return subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+
+
+def _write_pid(config: run_control.ControlConfig, pid: int) -> None:
+    config.runtime_dir.mkdir(parents=True, exist_ok=True)
+    config.pid_file.write_text(str(pid))
+
+
+def _cleanup_process(process: subprocess.Popen) -> None:
+    if process.poll() is None:
+        process.terminate()
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
+
+
 def _body(config: run_control.ControlConfig, path: str = "/plan") -> str:
     with urlopen(f"http://{config.host}:{config.port}{path}", timeout=5) as response:
         assert response.status == 200
@@ -26,8 +47,7 @@ def _body(config: run_control.ControlConfig, path: str = "/plan") -> str:
 
 def test_stale_pid_is_removed_and_status_reports_not_running(tmp_path, capsys):
     config = _config(tmp_path)
-    config.runtime_dir.mkdir(parents=True)
-    config.pid_file.write_text("999999999")
+    _write_pid(config, 999999999)
 
     assert run_control.status(config) == 1
 
@@ -103,3 +123,67 @@ def test_control_refuses_non_localhost_host(tmp_path, capsys):
 
     assert rc == 1
     assert "127.0.0.1" in capsys.readouterr().out
+
+
+def test_stop_does_not_kill_unowned_alive_pid(tmp_path):
+    config = _config(tmp_path)
+    process = _unowned_process()
+    try:
+        _write_pid(config, process.pid)
+
+        assert run_control.stop(config) == 1
+
+        assert process.poll() is None
+        assert not config.pid_file.exists()
+    finally:
+        _cleanup_process(process)
+
+
+def test_status_removes_unowned_pid_without_treating_it_as_running(tmp_path, capsys):
+    config = _config(tmp_path)
+    process = _unowned_process()
+    try:
+        _write_pid(config, process.pid)
+
+        assert run_control.status(config) == 1
+
+        assert process.poll() is None
+        assert not config.pid_file.exists()
+        output = capsys.readouterr().out
+        assert "unowned" in output or "stale" in output
+    finally:
+        _cleanup_process(process)
+
+
+def test_start_ignores_unowned_pid_when_port_free(tmp_path):
+    config = _config(tmp_path)
+    process = _unowned_process()
+    try:
+        _write_pid(config, process.pid)
+
+        assert run_control.start(config) == 0
+        owned_pid = int(config.pid_file.read_text())
+        body = _body(config)
+
+        assert owned_pid != process.pid
+        assert process.poll() is None
+        assert "План проекта" in body
+    finally:
+        run_control.stop(config)
+        _cleanup_process(process)
+
+
+def test_restart_does_not_kill_unowned_pid(tmp_path):
+    config = _config(tmp_path)
+    process = _unowned_process()
+    try:
+        _write_pid(config, process.pid)
+
+        assert run_control.restart(config) == 0
+
+        assert process.poll() is None
+        assert config.pid_file.exists()
+        assert int(config.pid_file.read_text()) != process.pid
+    finally:
+        run_control.stop(config)
+        _cleanup_process(process)

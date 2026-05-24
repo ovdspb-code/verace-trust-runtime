@@ -115,6 +115,10 @@ def stop(config: ControlConfig) -> int:
         _remove_pid(config.pid_file)
         print("stale: removed stale pid")
         return 1
+    if not _pid_owned_workbench(pid):
+        _remove_pid(config.pid_file)
+        print("unowned pid: removed pid file without stopping process")
+        return 1
     _signal_process(pid, signal.SIGTERM)
     for _ in range(30):
         _reap_pid(pid)
@@ -167,6 +171,12 @@ def _server_state(config: ControlConfig, clean_stale: bool) -> tuple[str, str]:
     pid = _read_pid(config.pid_file)
     if pid is not None:
         if _pid_alive(pid):
+            if not _pid_owned_workbench(pid):
+                if clean_stale:
+                    _remove_pid(config.pid_file)
+                if _port_open(config.host, config.port):
+                    return _port_state_without_pid(config)
+                return "unowned", "removed unowned pid" if clean_stale else "pid is not a workbench server"
             if _health_ok(config):
                 return "running", f"pid {pid} responds at {config.plan_url}"
             return "dead", f"pid {pid} is alive but {PLAN_PATH} health check failed"
@@ -232,6 +242,26 @@ def _pid_alive(pid: int) -> bool:
     except OSError:
         return False
     return True
+
+
+def _pid_command(pid: int) -> str:
+    try:
+        result = subprocess.run(
+            ["ps", "-p", str(pid), "-o", "command="],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=2,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+    if result.returncode != 0:
+        return ""
+    return result.stdout.strip()
+
+
+def _pid_owned_workbench(pid: int) -> bool:
+    return "verace_runtime.workbench.server" in _pid_command(pid)
 
 
 def _signal_process(pid: int, sig: int) -> None:

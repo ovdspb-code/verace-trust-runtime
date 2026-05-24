@@ -11,6 +11,16 @@
 - Unknown port conflicts fail explicitly.
 - No founder terminal UX introduced.
 
+## 2026-05-24 - REVIEW-FIX-TR011A: Prevent Killing Unowned PID
+
+**Summary:**
+
+- Added ownership check for pid-file process.
+- Run-control no longer kills live unrelated PIDs from stale pid files.
+- Start, status, and restart handle unowned live PID safely.
+- Added regression tests for unowned PID safety.
+- No founder terminal UX introduced.
+
 ## 2026-05-24 - FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake
 
 **Goal:** Use Browser Founder Workbench as the cockpit for a real Verace session.
