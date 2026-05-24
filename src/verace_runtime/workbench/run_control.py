@@ -245,9 +245,16 @@ def _pid_alive(pid: int) -> bool:
 
 
 def _pid_command(pid: int) -> str:
+    proc_cmdline = Path(f"/proc/{pid}/cmdline")
+    try:
+        raw = proc_cmdline.read_bytes()
+        if raw:
+            return " ".join(part.decode("utf-8", errors="replace") for part in raw.split(b"\0") if part)
+    except OSError:
+        pass
     try:
         result = subprocess.run(
-            ["ps", "-p", str(pid), "-o", "command="],
+            ["ps", "-ww", "-p", str(pid), "-o", "command="],
             check=False,
             capture_output=True,
             text=True,
