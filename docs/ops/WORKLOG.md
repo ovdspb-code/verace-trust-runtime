@@ -1,5 +1,19 @@
 # Worklog
 
+## 2026-05-24 - FOUNDER-TRIAL-FIX-001: Browser Workbench UX Cleanup
+
+**Goal:** Improve first-use Browser Founder Workbench UX after Oleg's first human trial.
+
+**Summary:**
+
+- Recorded Oleg's first browser trial feedback.
+- Browser opened and core task/decision/review/resolve flow worked.
+- Fixed dashboard first-use clarity.
+- Fixed review page layout.
+- Localized visible navigation and empty states.
+- Removed low-level diagnostic clutter from dashboard.
+- No runtime behavior expansion.
+
 ## 2026-05-24 - MERGE-TR006: Merge Browser Founder Workbench
 
 **Goal:** Merge PR #7 into `main` with a merge commit and record post-merge state.

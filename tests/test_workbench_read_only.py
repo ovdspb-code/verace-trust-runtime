@@ -61,8 +61,7 @@ def test_unsafe_db_shows_failure_without_healthy_claim(tmp_path):
     with running_server(db_path) as base:
         html = get(base, "/doctor")
 
-    assert "Doctor: <span class='fail'>FAIL</span>" in html
+    assert "Диагностика: <span class='fail'>FAIL</span>" in html
     assert "missing runtime_meta" in html
-    assert "Doctor: <span class='ok'>OK</span>" not in html
+    assert "Диагностика: <span class='ok'>OK</span>" not in html
     assert "Traceback" not in html
-
