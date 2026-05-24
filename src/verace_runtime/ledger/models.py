@@ -60,3 +60,23 @@ class TaskMutationResult:
     status: str
     receipt_public_id: str
     claim_status: str
+
+
+@dataclass(frozen=True)
+class ReviewResult:
+    public_id: str
+    receipt_public_id: str
+    claim_status: str
+    status: str
+
+
+@dataclass(frozen=True)
+class ReviewSummary:
+    public_id: str
+    title: str
+    status: str
+    priority: str
+    review_type: str
+    contour: str
+    task_public_no: str | None
+    created_at: str

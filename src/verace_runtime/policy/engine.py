@@ -24,6 +24,10 @@ class PolicyEngine:
             "internal.decision.record",
             "internal.task.status_change",
             "internal.project_brief.read",
+            "internal.review.create",
+            "internal.review.resolve",
+            "internal.review.read",
+            "internal.session_brief.read",
             "ledger.event",
         }
     )

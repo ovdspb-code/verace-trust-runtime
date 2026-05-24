@@ -21,10 +21,11 @@
 - BRIEF-TR001: Founder Assistant MVP — Ledger Seed — merged in PR #1.
 - BRIEF-TR002: Project Operating Memory — merged in PR #2.
 - BRIEF-TR003: Runtime Schema Migration Runner — merged in PR #3.
+- BRIEF-TR004: Review Queue and Session Brief — in progress on branch `work/brief-tr004-review-queue-session-brief`.
 
 ## Next Intended Document
 
-- BRIEF-TR004: Review Queue and Session Brief.
+- TBD after PR #4 review.
 
 ## Current Repository Fact
 

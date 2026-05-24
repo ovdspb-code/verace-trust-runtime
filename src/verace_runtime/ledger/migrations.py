@@ -10,7 +10,7 @@ from verace_runtime.time import utc_now_iso
 
 
 CURRENT_SCHEMA_NAME = "verace_runtime"
-CURRENT_SCHEMA_VERSION = 1
+CURRENT_SCHEMA_VERSION = 2
 
 
 class SchemaError(RuntimeError):
@@ -37,7 +37,40 @@ class Migration:
     destructive: bool = False
 
 
-PRODUCTION_MIGRATIONS: tuple[Migration, ...] = ()
+PRODUCTION_MIGRATIONS: tuple[Migration, ...] = (
+    Migration(2, "add review queue tables", lambda conn: conn.executescript(_REVIEW_QUEUE_SQL)),
+)
+
+
+_REVIEW_QUEUE_SQL = """
+CREATE TABLE IF NOT EXISTS review_items (
+  id TEXT PRIMARY KEY,
+  public_id TEXT NOT NULL UNIQUE,
+  contour_id TEXT NOT NULL REFERENCES contours(id),
+  mandate_id TEXT NOT NULL REFERENCES mandates(id),
+  task_id TEXT REFERENCES tasks(id),
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  review_type TEXT NOT NULL,
+  priority TEXT NOT NULL,
+  status TEXT NOT NULL,
+  resolution_text TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS review_events (
+  id TEXT PRIMARY KEY,
+  review_item_id TEXT NOT NULL REFERENCES review_items(id),
+  event_type TEXT NOT NULL,
+  summary TEXT NOT NULL,
+  receipt_id TEXT NOT NULL REFERENCES receipts(id),
+  created_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_review_items_status ON review_items(status, created_at, public_id);
+CREATE INDEX IF NOT EXISTS idx_review_events_created_at ON review_events(created_at, id);
+"""
 
 
 def inspect_schema_state(conn: sqlite3.Connection, target_version: int = CURRENT_SCHEMA_VERSION) -> SchemaState:

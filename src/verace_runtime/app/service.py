@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from verace_runtime.app.review_queue import add_review_item, list_review_items, resolve_review_item
+from verace_runtime.app.session_brief import build_project_brief, build_session_brief
 from verace_runtime.ledger.db import apply_schema, connect
-from verace_runtime.ledger.models import DecisionResult, DecisionSummary, IngestResult, InitResult, PolicyResult, TaskMutationResult, TaskSummary
+from verace_runtime.ledger.models import DecisionResult, DecisionSummary, IngestResult, InitResult, PolicyResult, ReviewResult, ReviewSummary, TaskMutationResult, TaskSummary
 from verace_runtime.ledger.migrations import doctor_schema_state
 from verace_runtime.ledger.repository import LedgerRepository
 from verace_runtime.policy.engine import PolicyEngine
@@ -130,19 +132,19 @@ class FounderAssistantService:
         return self._mutate_task("internal.task.event", task_ref, None, clean_type, clean_summary)
 
     def project_brief(self) -> dict[str, object]:
-        decision = self.policy.evaluate("internal.project_brief.read")
-        if not decision.allowed:
-            raise RuntimeError(decision.reason)
-        with connect(self.db_path) as conn:
-            apply_schema(conn)
-            repo = LedgerRepository(conn)
-            return {
-                "doctor": self.doctor(),
-                "counts": repo.counts(),
-                "tasks": [dict(row) for row in repo.brief_tasks()],
-                "decisions": [decision.__dict__ for decision in repo.decision_summaries(limit=5)],
-                "events": [dict(row) for row in repo.recent_task_events(limit=5)],
-            }
+        return build_project_brief(self.db_path, self.policy, self.doctor)
+
+    def add_review(self, principal: str, contour: str, title: str, body: str, review_type: str, priority: str, task_ref: str | None = None) -> ReviewResult:
+        return add_review_item(self.db_path, self.policy, self.receipts, principal, contour, title, body, review_type, priority, task_ref)
+
+    def list_reviews(self, status: str | None = "open") -> list[ReviewSummary]:
+        return list_review_items(self.db_path, self.policy, status)
+
+    def resolve_review(self, review_ref: str, resolution: str, status: str = "resolved") -> ReviewResult:
+        return resolve_review_item(self.db_path, self.policy, self.receipts, review_ref, resolution, status)
+
+    def session_brief(self) -> dict[str, object]:
+        return build_session_brief(self.db_path, self.policy, self.doctor)
 
     def list_tasks(self) -> list[TaskSummary]:
         with connect(self.db_path) as conn:
@@ -175,8 +177,10 @@ class FounderAssistantService:
             "mandates",
             "messages",
             "decisions",
+            "review_items",
             "tasks",
             "task_events",
+            "review_events",
             "approvals",
             "receipts",
             "claims",
@@ -193,26 +197,22 @@ class FounderAssistantService:
             counts = repo.counts() if schema_ok else {}
             invariants = repo.invariant_counts() if schema_ok else {}
             seed_ok = repo.seed_ok() if schema_ok else False
-        claim_receipt_ok = invariants.get("claims_missing_receipt", 1) == 0
-        task_event_receipt_ok = invariants.get("task_events_missing_receipt", 1) == 0
-        outbox_receipt_ok = invariants.get("outbox_missing_receipt", 1) == 0
-        decision_receipt_ok = invariants.get("decisions_missing_receipt", 1) == 0
-        decision_claim_ok = invariants.get("decisions_missing_claim", 1) == 0
-        ok = all(
-            [
-                schema_ok,
-                pragma_ok,
-                integrity_ok,
-                foreign_keys_ok,
-                schema_state["schema_current"],
-                seed_ok,
-                claim_receipt_ok,
-                task_event_receipt_ok,
-                outbox_receipt_ok,
-                decision_receipt_ok,
-                decision_claim_ok,
-            ]
-        )
+        checks = {
+            "claim_receipt_ok": invariants.get("claims_missing_receipt", 1) == 0,
+            "task_event_receipt_ok": invariants.get("task_events_missing_receipt", 1) == 0,
+            "outbox_receipt_ok": invariants.get("outbox_missing_receipt", 1) == 0,
+            "decision_receipt_ok": invariants.get("decisions_missing_receipt", 1) == 0,
+            "decision_claim_ok": invariants.get("decisions_missing_claim", 1) == 0,
+            "review_item_receipt_ok": invariants.get("review_items_missing_receipt", 1) == 0,
+            "review_item_claim_ok": invariants.get("review_items_missing_claim", 1) == 0,
+            "review_event_receipt_ok": invariants.get("review_events_missing_receipt", 1) == 0,
+            "review_resolution_ok": invariants.get("review_resolutions_missing_text", 1) == 0,
+            "review_status_ok": invariants.get("review_items_invalid_status", 1) == 0,
+            "review_created_event_ok": invariants.get("review_items_missing_created_event", 1) == 0,
+            "review_resolution_event_ok": invariants.get("review_resolutions_missing_event", 1) == 0,
+            "review_resolution_claim_ok": invariants.get("review_resolutions_missing_claim", 1) == 0,
+        }
+        ok = all([schema_ok, pragma_ok, integrity_ok, foreign_keys_ok, schema_state["schema_current"], seed_ok, *checks.values()])
         return {
             "ok": ok,
             **schema_state,
@@ -221,11 +221,7 @@ class FounderAssistantService:
             "integrity_ok": integrity_ok,
             "foreign_keys_ok": foreign_keys_ok,
             "seed_ok": seed_ok,
-            "claim_receipt_ok": claim_receipt_ok,
-            "task_event_receipt_ok": task_event_receipt_ok,
-            "outbox_receipt_ok": outbox_receipt_ok,
-            "decision_receipt_ok": decision_receipt_ok,
-            "decision_claim_ok": decision_claim_ok,
+            **checks,
             "required_tables": required,
             "counts": counts,
             "invariants": invariants,

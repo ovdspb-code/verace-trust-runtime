@@ -59,6 +59,22 @@ CREATE TABLE IF NOT EXISTS decisions (
   created_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS review_items (
+  id TEXT PRIMARY KEY,
+  public_id TEXT NOT NULL UNIQUE,
+  contour_id TEXT NOT NULL REFERENCES contours(id),
+  mandate_id TEXT NOT NULL REFERENCES mandates(id),
+  task_id TEXT REFERENCES tasks(id),
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  review_type TEXT NOT NULL,
+  priority TEXT NOT NULL,
+  status TEXT NOT NULL,
+  resolution_text TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS tasks (
   seq INTEGER PRIMARY KEY AUTOINCREMENT,
   id TEXT NOT NULL UNIQUE,
@@ -75,6 +91,15 @@ CREATE TABLE IF NOT EXISTS tasks (
 CREATE TABLE IF NOT EXISTS task_events (
   id TEXT PRIMARY KEY,
   task_id TEXT NOT NULL REFERENCES tasks(id),
+  event_type TEXT NOT NULL,
+  summary TEXT NOT NULL,
+  receipt_id TEXT NOT NULL REFERENCES receipts(id),
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS review_events (
+  id TEXT PRIMARY KEY,
+  review_item_id TEXT NOT NULL REFERENCES review_items(id),
   event_type TEXT NOT NULL,
   summary TEXT NOT NULL,
   receipt_id TEXT NOT NULL REFERENCES receipts(id),
@@ -130,5 +155,7 @@ WHERE status = 'active';
 CREATE INDEX IF NOT EXISTS idx_tasks_public_no ON tasks(public_no);
 CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
 CREATE INDEX IF NOT EXISTS idx_decisions_created_at ON decisions(created_at, public_id);
+CREATE INDEX IF NOT EXISTS idx_review_items_status ON review_items(status, created_at, public_id);
+CREATE INDEX IF NOT EXISTS idx_review_events_created_at ON review_events(created_at, id);
 CREATE INDEX IF NOT EXISTS idx_receipts_subject ON receipts(subject_type, subject_id);
 CREATE INDEX IF NOT EXISTS idx_claims_subject ON claims(subject_type, subject_id);
