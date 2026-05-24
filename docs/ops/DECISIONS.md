@@ -14,6 +14,7 @@ Durable operating decisions for Verace - Trust Runtime.
 | D-TR-008 | ADR-TR006 Runtime Schema and Migration Policy accepted; runtime schemas are versioned contracts and unknown schema states must fail closed. | ADR-TR006 |
 | D-TR-009 | Bugfixes and hardening changes are accepted only when the failure class is closed, not when the demonstrated case is green. Every fix must define the class axis, invariant, parametric tests, fail-closed behavior for unknown variants, and residual risk. | FAILURE_CLASS_CLOSURE / Porthos memo 2026-05-24 |
 | D-TR-010 | Human-facing factual statements about the system's own actions must be rendered from ledger/receipt fields or validated against receipts; otherwise the runtime must fail closed, repair, clarify, or downgrade the statement. | FAILURE_CLASS_CLOSURE / ADR-TR002 |
+| D-TR-011 | ADR-TR007 Human-Facing System-Action Claim Rendering accepted; future channel/LLM-facing system-action statements must be rendered from or validated against receipt-backed runtime state. | ADR-TR007 |
 
 ## Decision Discipline
 

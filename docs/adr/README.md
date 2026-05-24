@@ -9,7 +9,7 @@ Architecture Decision Records for Verace - Trust Runtime.
 | [ADR-TR004](ADR-TR004-Runtime-Ledger-Minimal-Contract.md) | Accepted v1.0 | 2026-05-23 by Oleg Dolgikh | Defines the minimal durable Runtime Ledger contract for contours, mandates, tasks, messages, events, approvals, receipts, claims, outbox, artifacts, and scheduled wakeups. |
 | [ADR-TR005](ADR-TR005-Receipt-and-Approval-Policy.md) | Accepted v1.0 | 2026-05-23 by Oleg Dolgikh | Defines the first receipt, approval, review, and block policy for Founder Assistant and Verace Runtime actions. |
 | [ADR-TR006](ADR-TR006-Runtime-Schema-and-Migration-Policy.md) | Accepted v1.0 | 2026-05-24 by Oleg Dolgikh | Defines schema versioning, migration discipline, doctor schema checks, and fail-closed behavior for unknown runtime DB schemas. |
-| [ADR-TR007](ADR-TR007-Human-Facing-System-Action-Claim-Rendering.md) | Proposed v1.0 | - | Defines receipt-rendered human-facing system-action prose and the response boundary required before channel/LLM integration. |
+| [ADR-TR007](ADR-TR007-Human-Facing-System-Action-Claim-Rendering.md) | Accepted v1.0 | 2026-05-24 by Oleg Dolgikh | Defines receipt-rendered human-facing system-action prose and the response boundary required before channel/LLM integration. |
 
 ## Notes
 

@@ -1,5 +1,16 @@
 # Worklog
 
+## 2026-05-24 - Session TR-007B: Ratify ADR-TR007
+
+**Goal:** Record founder ratification of ADR-TR007.
+
+**Summary:**
+
+- Updated ADR-TR007 status to `Accepted v1.0`.
+- Added ratification receipt: `2026-05-24 by Oleg Dolgikh`.
+- Updated ADR index, project state, and decision log.
+- No code or runtime files were changed.
+
 ## 2026-05-24 - Session TR-007: Add ADR-TR007 Human-Facing System-Action Claim Rendering
 
 **Goal:** Add ADR-TR007 as the next proposed architecture decision.

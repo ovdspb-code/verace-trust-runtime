@@ -1,6 +1,7 @@
 # ADR-TR007: Human-Facing System-Action Claim Rendering
 
-**Status:** Proposed v1.0  
+**Status:** Accepted v1.0  
+**Ratified:** 2026-05-24 by Oleg Dolgikh  
 **Date:** 2026-05-24  
 **Owner:** Oleg Dolgikh  
 **Project:** Verace — Trust Runtime  
