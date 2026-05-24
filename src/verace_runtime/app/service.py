@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from verace_runtime.ledger.db import apply_schema, connect
-from verace_runtime.ledger.models import IngestResult, InitResult, PolicyResult, TaskSummary
+from verace_runtime.ledger.models import DecisionResult, DecisionSummary, IngestResult, InitResult, PolicyResult, TaskMutationResult, TaskSummary
 from verace_runtime.ledger.repository import LedgerRepository
 from verace_runtime.policy.engine import PolicyEngine
 from verace_runtime.receipts.factory import ReceiptFactory
@@ -13,6 +13,8 @@ from verace_runtime.time import utc_now_iso
 
 
 class FounderAssistantService:
+    allowed_statuses = frozenset({"open", "waiting", "blocked", "done", "canceled"})
+
     def __init__(self, db_path: str | Path, policy: PolicyEngine | None = None) -> None:
         self.db_path = Path(db_path)
         self.policy = policy or PolicyEngine()
@@ -85,6 +87,62 @@ class FounderAssistantService:
             repo.insert_claim("action_blocked", f"Action {action_class} was blocked by policy", "policy", action_class, receipt["id"], now)
             return PolicyResult(action_class, False, receipt["public_id"], decision.reason)
 
+    def record_decision(self, principal: str, contour: str, title: str, text: str) -> DecisionResult:
+        clean_title = title.strip()
+        clean_text = text.strip()
+        if not clean_title or not clean_text:
+            raise RuntimeError("Decision title and text are required")
+        with connect(self.db_path) as conn:
+            apply_schema(conn)
+            repo = LedgerRepository(conn)
+            now = utc_now_iso()
+            contour_row = repo.find_contour(contour)
+            mandate = repo.active_mandate(principal, contour)
+            policy_decision = self.policy.evaluate("internal.decision.record")
+            if not policy_decision.allowed:
+                receipt = self._policy_receipt(repo, policy_decision, now)
+                return DecisionResult("blocked", receipt["public_id"], "blocked")
+            item = repo.create_decision(contour_row["id"], mandate["id"], None, clean_title, clean_text, now)
+            receipt = repo.insert_receipt(
+                self.receipts.build(policy_decision, "ledger.event", "decision", item["id"], f"Decision {item['public_id']} recorded")
+            )
+            repo.insert_claim("decision_recorded", f"Decision {item['public_id']} was recorded in the ledger", "decision", item["id"], receipt["id"], now)
+            return DecisionResult(item["public_id"], receipt["public_id"], "verified_by_receipt")
+
+    def list_decisions(self) -> list[DecisionSummary]:
+        with connect(self.db_path) as conn:
+            apply_schema(conn)
+            return LedgerRepository(conn).decision_summaries()
+
+    def set_task_status(self, task_ref: str, status: str, note: str) -> TaskMutationResult:
+        clean_status = status.strip().lower()
+        clean_note = note.strip() or f"Status changed to {clean_status}"
+        if clean_status not in self.allowed_statuses:
+            raise RuntimeError(f"Invalid task status: {status}")
+        return self._mutate_task("internal.task.status_change", task_ref, clean_status, "task.status.changed", clean_note)
+
+    def add_task_event(self, task_ref: str, event_type: str, summary: str) -> TaskMutationResult:
+        clean_type = event_type.strip()
+        clean_summary = summary.strip()
+        if not clean_type or not clean_summary:
+            raise RuntimeError("Event type and summary are required")
+        return self._mutate_task("internal.task.event", task_ref, None, clean_type, clean_summary)
+
+    def project_brief(self) -> dict[str, object]:
+        decision = self.policy.evaluate("internal.project_brief.read")
+        if not decision.allowed:
+            raise RuntimeError(decision.reason)
+        with connect(self.db_path) as conn:
+            apply_schema(conn)
+            repo = LedgerRepository(conn)
+            return {
+                "doctor": self.doctor(),
+                "counts": repo.counts(),
+                "tasks": [dict(row) for row in repo.brief_tasks()],
+                "decisions": [decision.__dict__ for decision in repo.decision_summaries(limit=5)],
+                "events": [dict(row) for row in repo.recent_task_events(limit=5)],
+            }
+
     def list_tasks(self) -> list[TaskSummary]:
         with connect(self.db_path) as conn:
             apply_schema(conn)
@@ -110,6 +168,7 @@ class FounderAssistantService:
             "contour_memberships",
             "mandates",
             "messages",
+            "decisions",
             "tasks",
             "task_events",
             "approvals",
@@ -159,6 +218,25 @@ class FounderAssistantService:
         )
         repo.insert_claim("action_blocked", f"Action {decision.action_class} was blocked by policy", subject_type, subject, receipt["id"], now)
         return receipt
+
+    def _mutate_task(self, action_class: str, task_ref: str, status: str | None, event_type: str, summary: str) -> TaskMutationResult:
+        with connect(self.db_path) as conn:
+            apply_schema(conn)
+            repo = LedgerRepository(conn)
+            now = utc_now_iso()
+            task = repo.task_detail(task_ref)
+            decision = self.policy.evaluate(action_class)
+            if not decision.allowed:
+                receipt = self._policy_receipt(repo, decision, now, "task", task["id"])
+                return TaskMutationResult(task["public_no"], task["status"], receipt["public_id"], "blocked")
+            note = f"Task {task['public_no']} {event_type}"
+            receipt = repo.insert_receipt(self.receipts.build(decision, "ledger.event", "task", task["id"], note))
+            if status is not None:
+                repo.update_task_status(task["id"], status, now)
+            repo.create_event(task["id"], event_type, summary, receipt["id"], now)
+            claim_text = f"Task {task['public_no']} recorded event {event_type}"
+            repo.insert_claim(event_type.replace(".", "_"), claim_text, "task", task["id"], receipt["id"], now)
+            return TaskMutationResult(task["public_no"], status or task["status"], receipt["public_id"], "verified_by_receipt")
 
     def _is_note(self, text: str) -> bool:
         return text.lower().startswith(("note:", "status:", "/status"))

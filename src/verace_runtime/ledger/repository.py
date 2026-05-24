@@ -5,7 +5,23 @@ from __future__ import annotations
 import sqlite3
 
 from verace_runtime.ids import new_id, new_public_id, task_public_no
-from verace_runtime.ledger.models import TaskSummary
+from verace_runtime.ledger.models import DecisionSummary, TaskSummary
+
+
+COUNT_TABLES = [
+    "persons",
+    "contours",
+    "contour_memberships",
+    "mandates",
+    "messages",
+    "decisions",
+    "tasks",
+    "task_events",
+    "approvals",
+    "receipts",
+    "claims",
+    "outbox_items",
+]
 
 
 class LedgerRepository:
@@ -18,27 +34,12 @@ class LedgerRepository:
         self.conn.execute(
             """
             INSERT OR IGNORE INTO contour_memberships
-            (person_id, contour_id, role, created_at) VALUES (?, ?, ?, ?)
+            (person_id, contour_id, role, created_at) VALUES (?, ?, 'principal', ?)
             """,
-            (person_id, contour_id, "principal", now),
+            (person_id, contour_id, now),
         )
         mandate_id = self.ensure_mandate(person_id, contour_id, now, "MANDATE-FOUNDING-001")
         return {"person_id": person_id, "contour_id": contour_id, "mandate_id": mandate_id}
-
-    def active_mandate(self, principal: str, contour: str) -> sqlite3.Row:
-        row = self.conn.execute(
-            """
-            SELECT m.* FROM mandates m
-            JOIN persons p ON p.id = m.principal_person_id
-            JOIN contours c ON c.id = m.contour_id
-            WHERE p.slug = ? AND c.slug = ? AND m.status = 'active'
-            ORDER BY m.created_at LIMIT 1
-            """,
-            (principal, contour),
-        ).fetchone()
-        if row is None:
-            raise RuntimeError(f"No active mandate for {principal}/{contour}")
-        return row
 
     def find_person(self, slug: str) -> sqlite3.Row:
         return self._required("SELECT * FROM persons WHERE slug = ?", (slug,))
@@ -46,16 +47,27 @@ class LedgerRepository:
     def find_contour(self, slug: str) -> sqlite3.Row:
         return self._required("SELECT * FROM contours WHERE slug = ?", (slug,))
 
+    def active_mandate(self, principal: str, contour: str) -> sqlite3.Row:
+        return self._required(
+            """
+            SELECT m.* FROM mandates m
+            JOIN persons p ON p.id = m.principal_person_id
+            JOIN contours c ON c.id = m.contour_id
+            WHERE p.slug = ? AND c.slug = ? AND m.status = 'active'
+            ORDER BY m.created_at, m.public_id LIMIT 1
+            """,
+            (principal, contour),
+        )
+
     def create_message(self, person_id: str, contour_id: str, text: str, now: str) -> sqlite3.Row:
         msg_id = new_id("message")
-        public_id = new_public_id("MSG")
         self.conn.execute(
             """
             INSERT INTO messages
             (id, public_id, contour_id, principal_person_id, text, kind, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, 'synthetic_inbound', ?)
             """,
-            (msg_id, public_id, contour_id, person_id, text, "synthetic_inbound", now),
+            (msg_id, new_public_id("MSG"), contour_id, person_id, text, now),
         )
         return self._required("SELECT * FROM messages WHERE id = ?", (msg_id,))
 
@@ -73,6 +85,18 @@ class LedgerRepository:
         self.conn.execute("UPDATE tasks SET public_no = ? WHERE id = ?", (task_public_no(seq), task_id))
         return self._required("SELECT * FROM tasks WHERE id = ?", (task_id,))
 
+    def create_decision(self, contour_id: str, mandate_id: str, message_id: str | None, title: str, text: str, now: str) -> sqlite3.Row:
+        decision_id = new_id("decision")
+        self.conn.execute(
+            """
+            INSERT INTO decisions
+            (id, public_id, contour_id, mandate_id, message_id, title, decision_text, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?)
+            """,
+            (decision_id, new_public_id("DEC"), contour_id, mandate_id, message_id, title, text, now),
+        )
+        return self._required("SELECT * FROM decisions WHERE id = ?", (decision_id,))
+
     def create_event(self, task_id: str, event_type: str, summary: str, receipt_id: str, now: str) -> str:
         event_id = new_id("event")
         self.conn.execute(
@@ -83,6 +107,9 @@ class LedgerRepository:
             (event_id, task_id, event_type, summary, receipt_id, now),
         )
         return event_id
+
+    def update_task_status(self, task_id: str, status: str, now: str) -> None:
+        self.conn.execute("UPDATE tasks SET status = ?, updated_at = ? WHERE id = ?", (status, now, task_id))
 
     def insert_receipt(self, payload) -> sqlite3.Row:
         self.conn.execute(
@@ -119,26 +146,30 @@ class LedgerRepository:
 
     def insert_outbox_block(self, action_class: str, payload: str, receipt_id: str, now: str) -> None:
         self.conn.execute(
-            """
-            INSERT INTO outbox_items (id, action_class, payload, status, receipt_id, created_at)
-            VALUES (?, ?, ?, 'blocked', ?, ?)
-            """,
+            "INSERT INTO outbox_items (id, action_class, payload, status, receipt_id, created_at) VALUES (?, ?, ?, 'blocked', ?, ?)",
             (new_id("outbox"), action_class, payload, receipt_id, now),
         )
 
     def task_summaries(self) -> list[TaskSummary]:
         rows = self.conn.execute(
             """
-            SELECT t.public_no, t.title, t.status, c.slug AS contour,
-                   COUNT(r.id) AS receipt_count
+            SELECT t.public_no, t.title, t.status, c.slug AS contour, COUNT(r.id) AS receipt_count
             FROM tasks t
             JOIN contours c ON c.id = t.contour_id
             LEFT JOIN receipts r ON r.subject_type = 'task' AND r.subject_id = t.id
-            GROUP BY t.id
-            ORDER BY t.seq
+            GROUP BY t.id ORDER BY t.seq
             """
         ).fetchall()
         return [TaskSummary(**dict(row)) for row in rows]
+
+    def decision_summaries(self, limit: int | None = None) -> list[DecisionSummary]:
+        sql = """
+            SELECT d.public_id, d.title, d.status, c.slug AS contour, d.created_at
+            FROM decisions d JOIN contours c ON c.id = d.contour_id
+            ORDER BY d.rowid DESC
+        """
+        rows = self.conn.execute(sql + (" LIMIT ?" if limit else ""), (() if limit is None else (limit,))).fetchall()
+        return [DecisionSummary(**dict(row)) for row in rows]
 
     def task_detail(self, task_ref: str) -> sqlite3.Row:
         return self._required(
@@ -154,33 +185,34 @@ class LedgerRepository:
 
     def task_receipts(self, task_id: str) -> list[sqlite3.Row]:
         return self.conn.execute(
-            """
-            SELECT * FROM receipts
-            WHERE subject_type = 'task' AND subject_id = ?
-            ORDER BY created_at, public_id
-            """,
+            "SELECT * FROM receipts WHERE subject_type = 'task' AND subject_id = ? ORDER BY created_at, public_id",
             (task_id,),
         ).fetchall()
 
+    def brief_tasks(self) -> list[sqlite3.Row]:
+        return self.conn.execute(
+            """
+            SELECT public_no, status, title FROM tasks
+            WHERE status IN ('open', 'waiting', 'blocked')
+            ORDER BY seq
+            """
+        ).fetchall()
+
+    def recent_task_events(self, limit: int = 5) -> list[sqlite3.Row]:
+        return self.conn.execute(
+            """
+            SELECT t.public_no, e.event_type, e.summary, e.created_at
+            FROM task_events e JOIN tasks t ON t.id = e.task_id
+            ORDER BY e.rowid DESC LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+
     def counts(self) -> dict[str, int]:
-        names = [
-            "persons",
-            "contours",
-            "contour_memberships",
-            "mandates",
-            "messages",
-            "tasks",
-            "task_events",
-            "approvals",
-            "receipts",
-            "claims",
-            "outbox_items",
-        ]
-        return {name: self.conn.execute(f"SELECT COUNT(*) AS n FROM {name}").fetchone()["n"] for name in names}
+        return {name: self.conn.execute(f"SELECT COUNT(*) AS n FROM {name}").fetchone()["n"] for name in COUNT_TABLES}
 
     def table_names(self) -> set[str]:
-        rows = self.conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'").fetchall()
-        return {row["name"] for row in rows}
+        return {row["name"] for row in self.conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
 
     def seed_ok(self) -> bool:
         row = self.conn.execute(
@@ -195,21 +227,9 @@ class LedgerRepository:
 
     def invariant_counts(self) -> dict[str, int]:
         queries = {
-            "claims_missing_receipt": """
-                SELECT COUNT(*) AS n FROM claims c
-                LEFT JOIN receipts r ON r.id = c.receipt_id
-                WHERE c.receipt_id IS NULL OR r.id IS NULL
-            """,
-            "task_events_missing_receipt": """
-                SELECT COUNT(*) AS n FROM task_events e
-                LEFT JOIN receipts r ON r.id = e.receipt_id
-                WHERE e.receipt_id IS NULL OR r.id IS NULL
-            """,
-            "outbox_missing_receipt": """
-                SELECT COUNT(*) AS n FROM outbox_items o
-                LEFT JOIN receipts r ON r.id = o.receipt_id
-                WHERE o.status = 'blocked' AND (o.receipt_id IS NULL OR r.id IS NULL)
-            """,
+            "claims_missing_receipt": "SELECT COUNT(*) AS n FROM claims c LEFT JOIN receipts r ON r.id = c.receipt_id WHERE c.receipt_id IS NULL OR r.id IS NULL",
+            "task_events_missing_receipt": "SELECT COUNT(*) AS n FROM task_events e LEFT JOIN receipts r ON r.id = e.receipt_id WHERE e.receipt_id IS NULL OR r.id IS NULL",
+            "outbox_missing_receipt": "SELECT COUNT(*) AS n FROM outbox_items o LEFT JOIN receipts r ON r.id = o.receipt_id WHERE o.status = 'blocked' AND (o.receipt_id IS NULL OR r.id IS NULL)",
         }
         return {name: self.conn.execute(sql).fetchone()["n"] for name, sql in queries.items()}
 
@@ -221,23 +241,19 @@ class LedgerRepository:
 
     def ensure_mandate(self, person_id: str, contour_id: str, now: str, public_id: str | None = None) -> str:
         row = self.conn.execute(
-            """
-            SELECT id FROM mandates
-            WHERE principal_person_id = ? AND contour_id = ? AND status = 'active'
-            """,
+            "SELECT id FROM mandates WHERE principal_person_id = ? AND contour_id = ? AND status = 'active'",
             (person_id, contour_id),
         ).fetchone()
         if row:
             return row["id"]
         mandate_id = new_id("mandate")
-        mandate_public_id = public_id or new_public_id("MANDATE")
         self.conn.execute(
             """
             INSERT INTO mandates
             (id, public_id, principal_person_id, contour_id, title, scope, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, 'active', ?)
+            VALUES (?, ?, ?, ?, 'Manage Verace project work', 'internal_project_work', 'active', ?)
             """,
-            (mandate_id, mandate_public_id, person_id, contour_id, "Manage Verace project work", "internal_project_work", now),
+            (mandate_id, public_id or new_public_id("MANDATE"), person_id, contour_id, now),
         )
         return mandate_id
 
@@ -248,8 +264,7 @@ class LedgerRepository:
         item_id = new_id(table[:-1])
         columns = ["id", "slug", *fields.keys(), "created_at"]
         values = [item_id, slug, *fields.values(), now]
-        marks = ", ".join("?" for _ in values)
-        self.conn.execute(f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({marks})", values)
+        self.conn.execute(f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({', '.join('?' for _ in values)})", values)
         return item_id
 
     def _required(self, sql: str, params: tuple[str, ...]) -> sqlite3.Row:

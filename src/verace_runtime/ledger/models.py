@@ -36,3 +36,27 @@ class PolicyResult:
     allowed: bool
     receipt_public_id: str | None
     reason: str
+
+
+@dataclass(frozen=True)
+class DecisionResult:
+    public_id: str
+    receipt_public_id: str
+    claim_status: str
+
+
+@dataclass(frozen=True)
+class DecisionSummary:
+    public_id: str
+    title: str
+    status: str
+    contour: str
+    created_at: str
+
+
+@dataclass(frozen=True)
+class TaskMutationResult:
+    task_public_no: str
+    status: str
+    receipt_public_id: str
+    claim_status: str

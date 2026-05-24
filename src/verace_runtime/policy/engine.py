@@ -21,6 +21,9 @@ class PolicyEngine:
             "internal.task.create",
             "internal.task.event",
             "internal.status.query",
+            "internal.decision.record",
+            "internal.task.status_change",
+            "internal.project_brief.read",
             "ledger.event",
         }
     )
