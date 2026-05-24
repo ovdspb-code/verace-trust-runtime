@@ -1,5 +1,27 @@
 # Worklog
 
+## 2026-05-24 - MERGE-TR010: Merge First-Run State Handling
+
+**Goal:** Merge PR #10 into `main` with a merge commit and record post-merge state.
+
+**Summary:**
+
+- PR #10 merged into `main`.
+- Merge commit: `d766e48`.
+- Product effect: Workbench renders first-run setup UX instead of raw ledger errors and prevents reset of non-empty seed-missing runtime DB.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed on merged `main`.
+- `python -m pytest` passed on merged `main`: 109 tests.
+- Healthy browser smoke passed for first-run UX, `/plan`, `/documents`, `/init`, suggestion accept, and `/doctor`.
+- Unsafe unversioned DB browser smoke reported explicit schema failure without a healthy claim.
+- Non-empty seed-missing DB safety smoke preserved existing task/message rows and blocked `/init`.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+- GitHub Actions status on merge commit `d766e48`: in progress during post-merge docs update.
+
 ## 2026-05-24 - FOUNDER-TRIAL-FIX-002: First-Run State Handling
 
 **Summary:**

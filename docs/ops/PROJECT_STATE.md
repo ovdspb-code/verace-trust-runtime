@@ -31,8 +31,8 @@
 
 - Current product surface: Browser Founder Workbench.
 - Current product capability: Project Context Intake and Suggested Work Queue.
-- Current work: FOUNDER-TRIAL-FIX-002: First-Run State Handling.
-- Recent work: FOUNDER-TRIAL-003: Plan and Suggested Work Queue Trial with Oleg — passed.
+- Recent work: FOUNDER-TRIAL-FIX-002: First-Run State Handling — merged in PR #10.
+- Recent trial: FOUNDER-TRIAL-003: Plan and Suggested Work Queue Trial with Oleg — passed.
 
 ## Next Intended Work
 
@@ -71,3 +71,4 @@ Runtime implementation may proceed only inside an issued implementation brief an
 - PR #7 merged `work/brief-tr006-browser-founder-workbench` into `main` with merge commit `57471ec`.
 - PR #8 merged `work/founder-trial-fix-001-workbench-ux` into `main` with merge commit `a8a160d`.
 - PR #9 merged `work/brief-tr007-project-context-intake` into `main` with merge commit `cc2bf7c`.
+- PR #10 merged `work/founder-trial-fix-002-first-run-state` into `main` with merge commit `d766e48`.
