@@ -1,5 +1,26 @@
 # Worklog
 
+## 2026-05-24 - IMPL-TR006: Browser Founder Workbench
+
+**Goal:** Implement BRIEF-TR006: Browser Founder Workbench.
+
+**Summary:**
+
+- Added local-only browser workbench for founder-facing use.
+- Added server-rendered dashboard, task, decision, review, and doctor pages.
+- Added browser form actions with receipt-rendered confirmations where supported.
+- Kept terminal/CLI as internal engineering/admin surface, not founder product UX.
+- No Telegram, LLM provider, channel adapter, external API, payment, legal, sensitive, destructive, artifact-delivery, approval-execution, or external-send integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed.
+- `python -m pytest` passed: 86 tests.
+- Healthy browser workbench smoke against `.runtime-test/verace.sqlite3` passed.
+- Unsafe unversioned DB browser smoke reported explicit schema failure without a healthy claim.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+
 ## 2026-05-24 - MERGE-TR005: Merge Response Claim Renderer
 
 **Goal:** Merge PR #5 into `main` with a merge commit and record post-merge state.
