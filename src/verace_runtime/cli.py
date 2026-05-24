@@ -38,6 +38,7 @@ def build_parser() -> argparse.ArgumentParser:
     event.add_argument("--event-type", required=True)
     event.add_argument("--summary", required=True)
     sub.add_parser("project-brief", parents=[common])
+    sub.add_parser("schema-status", parents=[common])
     sub.add_parser("doctor", parents=[common])
     return parser
 
@@ -91,6 +92,8 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Receipt: {result.receipt_public_id}")
         elif args.command == "project-brief":
             _print_project_brief(service)
+        elif args.command == "schema-status":
+            _print_schema_status(service.schema_status())
         return 0
     except (RuntimeError, sqlite3.Error) as exc:
         print(f"error: {exc}", file=sys.stderr)
@@ -156,11 +159,21 @@ def _print_doctor(service: FounderAssistantService) -> None:
     result = service.doctor()
     print("Doctor: OK" if result["ok"] else "Doctor: FAIL")
     counts = result["counts"]
+    _print_schema_status(result)
     print(f"schema_ok={result['schema_ok']} pragma_ok={result['pragma_ok']} integrity_ok={result['integrity_ok']}")
     print(f"foreign_keys_ok={result['foreign_keys_ok']} seed_ok={result['seed_ok']}")
     print(f"claim_receipt_ok={result['claim_receipt_ok']} task_event_receipt_ok={result['task_event_receipt_ok']} outbox_receipt_ok={result['outbox_receipt_ok']}")
     print(f"decision_receipt_ok={result['decision_receipt_ok']} decision_claim_ok={result['decision_claim_ok']}")
     print(f"tables={len(result['required_tables'])} tasks={counts.get('tasks', 0)} receipts={counts.get('receipts', 0)}")
+
+
+def _print_schema_status(result: dict[str, object]) -> None:
+    print(f"Schema: {result['schema_name'] or 'unknown'}")
+    print(f"Version: {result['schema_version'] if result['schema_version'] is not None else 'unknown'}")
+    print(f"Known: {result['schema_known']}")
+    print(f"Current: {result['schema_current']}")
+    print(f"Migration required: {result['migration_required']}")
+    print(f"Reason: {result['schema_reason']}")
 
 
 if __name__ == "__main__":

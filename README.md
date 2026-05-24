@@ -42,6 +42,12 @@ python -m verace_runtime.cli status --db .runtime/verace.sqlite3
 python -m verace_runtime.cli doctor --db .runtime/verace.sqlite3
 ```
 
+Schema visibility:
+
+```bash
+python -m verace_runtime.cli schema-status --db .runtime/verace.sqlite3
+```
+
 Project memory commands:
 
 ```bash

@@ -1,5 +1,27 @@
 # Worklog
 
+## 2026-05-24 - IMPL-TR003: Runtime Schema Migration Runner
+
+**Goal:** Implement BRIEF-TR003: Runtime Schema Migration Runner.
+
+**Summary:**
+
+- Copied BRIEF-TR003 into `docs/briefs/`.
+- Added explicit runtime schema metadata and current schema version inspection.
+- Added fail-closed handling for unversioned, newer, malformed, or unknown schema states.
+- Added a minimal ordered/idempotent migration runner abstraction.
+- Added read-only `schema-status` CLI and doctor schema fields.
+- No Telegram, LLM provider, external API, payment, legal, sensitive, destructive, or external-send integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed.
+- `python -m pytest` passed: 41 tests.
+- Healthy manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Unsafe unversioned DB smoke reported explicit schema failure without a healthy claim.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+
 ## 2026-05-24 - Session TR-006B: Ratify ADR-TR006
 
 **Goal:** Record founder ratification of ADR-TR006.

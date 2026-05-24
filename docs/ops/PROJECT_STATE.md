@@ -20,10 +20,11 @@
 
 - BRIEF-TR001: Founder Assistant MVP — Ledger Seed — merged in PR #1.
 - BRIEF-TR002: Project Operating Memory — merged in PR #2.
+- BRIEF-TR003: Runtime Schema Migration Runner — active on branch `work/brief-tr003-schema-migration-runner`.
 
 ## Next Intended Document
 
-- BRIEF-TR003: Runtime Schema Migration Runner.
+- TBD after BRIEF-TR003 review.
 
 ## Current Repository Fact
 
