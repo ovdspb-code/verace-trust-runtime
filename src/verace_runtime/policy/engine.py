@@ -21,6 +21,9 @@ class PolicyEngine:
             "internal.task.create",
             "internal.task.event",
             "internal.status.query",
+            "internal.decision.record",
+            "internal.task.status_change",
+            "internal.project_brief.read",
             "ledger.event",
         }
     )
@@ -44,5 +47,5 @@ class PolicyEngine:
         if action_class in self.allowed_actions:
             return Decision(action_class, True, "allowed", "internal MVP action")
         if action_class in self.blocked_actions:
-            return Decision(action_class, False, "blocked", "outside BRIEF-TR001")
+            return Decision(action_class, False, "blocked", "outside current approved runtime scope")
         return Decision(action_class, False, "blocked", "unknown action class")

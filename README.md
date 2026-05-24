@@ -42,4 +42,14 @@ python -m verace_runtime.cli status --db .runtime/verace.sqlite3
 python -m verace_runtime.cli doctor --db .runtime/verace.sqlite3
 ```
 
+Project memory commands:
+
+```bash
+python -m verace_runtime.cli record-decision --db .runtime/verace.sqlite3 --principal oleg --contour verace_project --title "Test decision" --text "Synthetic decision."
+python -m verace_runtime.cli decisions --db .runtime/verace.sqlite3
+python -m verace_runtime.cli set-task-status --db .runtime/verace.sqlite3 --task TR-000001 --status waiting --note "Synthetic waiting state"
+python -m verace_runtime.cli add-task-event --db .runtime/verace.sqlite3 --task TR-000001 --event-type "review.note" --summary "Synthetic event"
+python -m verace_runtime.cli project-brief --db .runtime/verace.sqlite3
+```
+
 Runtime DB files live under `.runtime/` by default and must never be committed. The MVP has no Telegram, LLM provider, external API, payment, legal, or external-send integration.

@@ -1,5 +1,36 @@
 # Worklog
 
+## 2026-05-24 - REVIEW-FIX-TR002A: Harden Decision Receipt Coverage
+
+**Goal:** Make decision records part of doctor/audit invariant coverage before PR #2 merge.
+
+**Summary:**
+
+- Added doctor invariants for decisions missing receipts and claims.
+- Strengthened project-brief read-only test to compare full status counts.
+- Replaced stale BRIEF-TR001 blocked-policy reason with current runtime-scope wording.
+- No runtime behavior expansion.
+
+## 2026-05-24 - IMPL-TR002: Project Operating Memory
+
+**Goal:** Implement BRIEF-TR002: Project Operating Memory.
+
+**Summary:**
+
+- Copied BRIEF-TR002 into `docs/briefs/`.
+- Added ledger-backed project decisions.
+- Added task status transitions and explicit task event recording.
+- Added read-only project brief for counts, open/waiting/blocked tasks, latest decisions, recent events, and doctor status.
+- Added pytest coverage for decisions, task transitions, project brief read-only behavior, restart-safe recall, and CLI smoke.
+- No Telegram, LLM provider, external API, payment, legal, sensitive, destructive, or external-send integration was added.
+
+**Checks:**
+
+- `python -m pytest` passed: 24 tests.
+- Manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+
 ## 2026-05-24 - MERGE-TR001: Merge Founder Assistant Ledger Seed
 
 **Goal:** Merge PR #1 into `main` with a merge commit and record post-merge state.

@@ -18,10 +18,11 @@
 ## Active Implementation Brief
 
 - BRIEF-TR001: Founder Assistant MVP — Ledger Seed — merged in PR #1.
+- BRIEF-TR002: Project Operating Memory — active on branch `work/brief-tr002-project-operating-memory`.
 
 ## Next Intended Document
 
-- BRIEF-TR002: Project Operating Memory.
+- TBD after BRIEF-TR002 review.
 
 ## Current Repository Fact
 
