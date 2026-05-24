@@ -1,5 +1,16 @@
 # Worklog
 
+## 2026-05-24 - REVIEW-FIX-TR002A: Harden Decision Receipt Coverage
+
+**Goal:** Make decision records part of doctor/audit invariant coverage before PR #2 merge.
+
+**Summary:**
+
+- Added doctor invariants for decisions missing receipts and claims.
+- Strengthened project-brief read-only test to compare full status counts.
+- Replaced stale BRIEF-TR001 blocked-policy reason with current runtime-scope wording.
+- No runtime behavior expansion.
+
 ## 2026-05-24 - IMPL-TR002: Project Operating Memory
 
 **Goal:** Implement BRIEF-TR002: Project Operating Memory.

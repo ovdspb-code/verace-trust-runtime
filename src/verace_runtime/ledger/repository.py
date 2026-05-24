@@ -230,6 +230,8 @@ class LedgerRepository:
             "claims_missing_receipt": "SELECT COUNT(*) AS n FROM claims c LEFT JOIN receipts r ON r.id = c.receipt_id WHERE c.receipt_id IS NULL OR r.id IS NULL",
             "task_events_missing_receipt": "SELECT COUNT(*) AS n FROM task_events e LEFT JOIN receipts r ON r.id = e.receipt_id WHERE e.receipt_id IS NULL OR r.id IS NULL",
             "outbox_missing_receipt": "SELECT COUNT(*) AS n FROM outbox_items o LEFT JOIN receipts r ON r.id = o.receipt_id WHERE o.status = 'blocked' AND (o.receipt_id IS NULL OR r.id IS NULL)",
+            "decisions_missing_receipt": "SELECT COUNT(*) AS n FROM decisions d LEFT JOIN receipts r ON r.subject_type = 'decision' AND r.subject_id = d.id WHERE r.id IS NULL",
+            "decisions_missing_claim": "SELECT COUNT(*) AS n FROM decisions d LEFT JOIN claims c ON c.subject_type = 'decision' AND c.subject_id = d.id WHERE c.id IS NULL",
         }
         return {name: self.conn.execute(sql).fetchone()["n"] for name, sql in queries.items()}
 

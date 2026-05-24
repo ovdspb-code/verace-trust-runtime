@@ -21,7 +21,7 @@ def test_project_brief_includes_task_state_and_latest_decision(tmp_path):
     assert brief["doctor"]["ok"] is True
 
 
-def test_project_brief_is_read_only_for_receipts_and_claims(tmp_path):
+def test_project_brief_is_read_only_for_status_counts(tmp_path):
     service = FounderAssistantService(tmp_path / "runtime.sqlite3")
     service.init_runtime()
     service.ingest_message("oleg", "verace_project", "Open task")
@@ -31,5 +31,4 @@ def test_project_brief_is_read_only_for_receipts_and_claims(tmp_path):
     service.project_brief()
     after = service.status()
 
-    assert after["receipts"] == before["receipts"]
-    assert after["claims"] == before["claims"]
+    assert after == before

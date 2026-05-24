@@ -27,6 +27,41 @@ def test_doctor_detects_healthy_seed(tmp_path):
     assert result["task_event_receipt_ok"] is True
 
 
+def test_doctor_covers_recorded_decision_receipt_and_claim(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+    service.record_decision("oleg", "verace_project", "Decision", "Synthetic decision.")
+
+    result = service.doctor()
+
+    assert result["ok"] is True
+    assert result["decision_receipt_ok"] is True
+    assert result["decision_claim_ok"] is True
+
+
+def test_doctor_detects_decision_without_receipt_or_claim(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    service = FounderAssistantService(db_path)
+    service.init_runtime()
+    with sqlite3.connect(db_path) as conn:
+        contour_id = conn.execute("SELECT id FROM contours WHERE slug = 'verace_project'").fetchone()[0]
+        mandate_id = conn.execute("SELECT id FROM mandates WHERE status = 'active'").fetchone()[0]
+        conn.execute(
+            """
+            INSERT INTO decisions
+            (id, public_id, contour_id, mandate_id, title, decision_text, status, created_at)
+            VALUES (?, 'DEC-ORPHAN', ?, ?, 'Orphan decision', 'No receipt or claim.', 'active', ?)
+            """,
+            (new_id("decision"), contour_id, mandate_id, utc_now_iso()),
+        )
+
+    result = service.doctor()
+
+    assert result["ok"] is False
+    assert result["decision_receipt_ok"] is False
+    assert result["decision_claim_ok"] is False
+
+
 def test_doctor_detects_broken_claim_receipt(tmp_path):
     db_path = tmp_path / "runtime.sqlite3"
     service = FounderAssistantService(db_path)

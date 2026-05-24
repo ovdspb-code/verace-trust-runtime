@@ -188,7 +188,22 @@ class FounderAssistantService:
         claim_receipt_ok = invariants.get("claims_missing_receipt", 1) == 0
         task_event_receipt_ok = invariants.get("task_events_missing_receipt", 1) == 0
         outbox_receipt_ok = invariants.get("outbox_missing_receipt", 1) == 0
-        ok = all([schema_ok, pragma_ok, integrity_ok, foreign_keys_ok, seed_ok, claim_receipt_ok, task_event_receipt_ok, outbox_receipt_ok])
+        decision_receipt_ok = invariants.get("decisions_missing_receipt", 1) == 0
+        decision_claim_ok = invariants.get("decisions_missing_claim", 1) == 0
+        ok = all(
+            [
+                schema_ok,
+                pragma_ok,
+                integrity_ok,
+                foreign_keys_ok,
+                seed_ok,
+                claim_receipt_ok,
+                task_event_receipt_ok,
+                outbox_receipt_ok,
+                decision_receipt_ok,
+                decision_claim_ok,
+            ]
+        )
         return {
             "ok": ok,
             "schema_ok": schema_ok,
@@ -199,6 +214,8 @@ class FounderAssistantService:
             "claim_receipt_ok": claim_receipt_ok,
             "task_event_receipt_ok": task_event_receipt_ok,
             "outbox_receipt_ok": outbox_receipt_ok,
+            "decision_receipt_ok": decision_receipt_ok,
+            "decision_claim_ok": decision_claim_ok,
             "required_tables": required,
             "counts": counts,
             "invariants": invariants,
