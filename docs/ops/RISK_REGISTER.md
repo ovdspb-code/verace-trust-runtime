@@ -17,6 +17,7 @@
 | Project brief overclaiming | Open | Project brief is read-only and only reports ledger state already present in local DB; tests assert full status counts do not change. |
 | No runtime schema migration runner | Mitigated in PR #3 | ADR-TR006 is accepted; BRIEF-TR003 added schema metadata, fail-closed inspection, schema-status, and a minimal migration runner. |
 | Backup/restore policy absent | Open | ADR-TR006 governs schema safety, but backup/restore product policy remains out of scope until a future brief or ADR. |
+| Review queue mistaken for approval system | Open | BRIEF-TR004 review items are human-inspection work only; approval grants and approval execution remain explicit non-goals. |
 
 ## Review Rule
 

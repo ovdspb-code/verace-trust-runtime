@@ -23,7 +23,7 @@ def test_unversioned_non_empty_db_fails_closed(tmp_path):
 
 def test_newer_schema_version_fails_closed(tmp_path):
     db_path = tmp_path / "runtime.sqlite3"
-    _write_meta_db(db_path, "verace_runtime", "2")
+    _write_meta_db(db_path, "verace_runtime", "3")
 
     with pytest.raises(RuntimeError, match="Unsafe runtime schema"):
         FounderAssistantService(db_path).status()

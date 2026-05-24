@@ -16,8 +16,10 @@ COUNT_TABLES = [
     "mandates",
     "messages",
     "decisions",
+    "review_items",
     "tasks",
     "task_events",
+    "review_events",
     "approvals",
     "receipts",
     "claims",
@@ -233,6 +235,11 @@ class LedgerRepository:
             "outbox_missing_receipt": "SELECT COUNT(*) AS n FROM outbox_items o LEFT JOIN receipts r ON r.id = o.receipt_id WHERE o.status = 'blocked' AND (o.receipt_id IS NULL OR r.id IS NULL)",
             "decisions_missing_receipt": "SELECT COUNT(*) AS n FROM decisions d LEFT JOIN receipts r ON r.subject_type = 'decision' AND r.subject_id = d.id WHERE r.id IS NULL",
             "decisions_missing_claim": "SELECT COUNT(*) AS n FROM decisions d LEFT JOIN claims c ON c.subject_type = 'decision' AND c.subject_id = d.id WHERE c.id IS NULL",
+            "review_items_missing_receipt": "SELECT COUNT(*) AS n FROM review_items i LEFT JOIN receipts r ON r.subject_type = 'review_item' AND r.subject_id = i.id AND r.action_class = 'internal.review.create' WHERE r.id IS NULL",
+            "review_items_missing_claim": "SELECT COUNT(*) AS n FROM review_items i LEFT JOIN claims c ON c.subject_type = 'review_item' AND c.subject_id = i.id AND c.claim_type = 'review_item_created' WHERE c.id IS NULL",
+            "review_events_missing_receipt": "SELECT COUNT(*) AS n FROM review_events e LEFT JOIN receipts r ON r.id = e.receipt_id WHERE e.receipt_id IS NULL OR r.id IS NULL",
+            "review_resolutions_missing_text": "SELECT COUNT(*) AS n FROM review_items WHERE status IN ('resolved', 'dismissed') AND (resolution_text IS NULL OR trim(resolution_text) = '')",
+            "review_items_invalid_status": "SELECT COUNT(*) AS n FROM review_items WHERE status NOT IN ('open', 'resolved', 'dismissed')",
         }
         return {name: self.conn.execute(sql).fetchone()["n"] for name, sql in queries.items()}
 

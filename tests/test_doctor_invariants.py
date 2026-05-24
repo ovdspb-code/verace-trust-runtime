@@ -39,6 +39,69 @@ def test_doctor_covers_recorded_decision_receipt_and_claim(tmp_path):
     assert result["decision_claim_ok"] is True
 
 
+def test_doctor_covers_review_receipts_claims_and_events(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+    service.add_review("oleg", "verace_project", "Review", "Synthetic review.", "risk", "normal")
+
+    result = service.doctor()
+
+    assert result["ok"] is True
+    assert result["review_item_receipt_ok"] is True
+    assert result["review_item_claim_ok"] is True
+    assert result["review_event_receipt_ok"] is True
+    assert result["review_resolution_ok"] is True
+    assert result["review_status_ok"] is True
+
+
+def test_doctor_detects_review_item_without_receipt_or_claim(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    service = FounderAssistantService(db_path)
+    service.init_runtime()
+    with sqlite3.connect(db_path) as conn:
+        contour_id = conn.execute("SELECT id FROM contours WHERE slug = 'verace_project'").fetchone()[0]
+        mandate_id = conn.execute("SELECT id FROM mandates WHERE status = 'active'").fetchone()[0]
+        conn.execute(
+            """
+            INSERT INTO review_items
+            (id, public_id, contour_id, mandate_id, title, body, review_type, priority, status, created_at, updated_at)
+            VALUES (?, 'REV-ORPHAN', ?, ?, 'Orphan review', 'No receipt.', 'risk', 'normal', 'open', ?, ?)
+            """,
+            (new_id("review"), contour_id, mandate_id, utc_now_iso(), utc_now_iso()),
+        )
+
+    result = service.doctor()
+
+    assert result["ok"] is False
+    assert result["review_item_receipt_ok"] is False
+    assert result["review_item_claim_ok"] is False
+
+
+def test_doctor_detects_invalid_review_resolution_and_status(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    service = FounderAssistantService(db_path)
+    service.init_runtime()
+    review = service.add_review("oleg", "verace_project", "Review", "Synthetic review.", "risk", "normal")
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("UPDATE review_items SET status = 'resolved', resolution_text = '' WHERE public_id = ?", (review.public_id,))
+        contour_id = conn.execute("SELECT id FROM contours WHERE slug = 'verace_project'").fetchone()[0]
+        mandate_id = conn.execute("SELECT id FROM mandates WHERE status = 'active'").fetchone()[0]
+        conn.execute(
+            """
+            INSERT INTO review_items
+            (id, public_id, contour_id, mandate_id, title, body, review_type, priority, status, created_at, updated_at)
+            VALUES (?, 'REV-BADSTATUS', ?, ?, 'Bad status', 'Synthetic.', 'risk', 'normal', 'bad', ?, ?)
+            """,
+            (new_id("review"), contour_id, mandate_id, utc_now_iso(), utc_now_iso()),
+        )
+
+    result = service.doctor()
+
+    assert result["ok"] is False
+    assert result["review_resolution_ok"] is False
+    assert result["review_status_ok"] is False
+
+
 def test_doctor_detects_decision_without_receipt_or_claim(tmp_path):
     db_path = tmp_path / "runtime.sqlite3"
     service = FounderAssistantService(db_path)

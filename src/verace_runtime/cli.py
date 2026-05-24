@@ -38,6 +38,21 @@ def build_parser() -> argparse.ArgumentParser:
     event.add_argument("--event-type", required=True)
     event.add_argument("--summary", required=True)
     sub.add_parser("project-brief", parents=[common])
+    review = sub.add_parser("add-review", parents=[common])
+    review.add_argument("--principal", required=True)
+    review.add_argument("--contour", required=True)
+    review.add_argument("--title", required=True)
+    review.add_argument("--body", required=True)
+    review.add_argument("--review-type", required=True)
+    review.add_argument("--priority", required=True)
+    review.add_argument("--task")
+    reviews = sub.add_parser("reviews", parents=[common])
+    reviews.add_argument("--status", default="open")
+    resolve = sub.add_parser("resolve-review", parents=[common])
+    resolve.add_argument("--review", required=True)
+    resolve.add_argument("--resolution", required=True)
+    resolve.add_argument("--status", default="resolved")
+    sub.add_parser("session-brief", parents=[common])
     sub.add_parser("schema-status", parents=[common])
     sub.add_parser("doctor", parents=[common])
     return parser
@@ -92,6 +107,22 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Receipt: {result.receipt_public_id}")
         elif args.command == "project-brief":
             _print_project_brief(service)
+        elif args.command == "add-review":
+            result = service.add_review(args.principal, args.contour, args.title, args.body, args.review_type, args.priority, args.task)
+            print(f"Review recorded: {result.public_id}")
+            print(f"Status: {result.status}")
+            print(f"Claim: {result.claim_status}")
+            print(f"Receipt: {result.receipt_public_id}")
+        elif args.command == "reviews":
+            _print_reviews(service, None if args.status == "all" else args.status)
+        elif args.command == "resolve-review":
+            result = service.resolve_review(args.review, args.resolution, args.status)
+            print(f"Review updated: {result.public_id}")
+            print(f"Status: {result.status}")
+            print(f"Claim: {result.claim_status}")
+            print(f"Receipt: {result.receipt_public_id}")
+        elif args.command == "session-brief":
+            _print_session_brief(service)
         elif args.command == "schema-status":
             _print_schema_status(service.schema_status())
         return 0
@@ -114,6 +145,7 @@ def _print_status(service: FounderAssistantService) -> None:
     print("Verace Runtime status")
     print(f"persons={counts['persons']} contours={counts['contours']} mandates={counts['mandates']}")
     print(f"tasks={counts['tasks']} events={counts['task_events']} receipts={counts['receipts']} claims={counts['claims']}")
+    print(f"reviews={counts['review_items']} review_events={counts['review_events']}")
 
 
 def _print_task(service: FounderAssistantService, task_ref: str) -> None:
@@ -155,6 +187,39 @@ def _print_project_brief(service: FounderAssistantService) -> None:
         print(f"- {event['public_no']} {event['event_type']}: {event['summary']}")
 
 
+def _print_reviews(service: FounderAssistantService, status: str | None) -> None:
+    reviews = service.list_reviews(status)
+    if not reviews:
+        print("No review items.")
+        return
+    for item in reviews:
+        task = item.task_public_no or "-"
+        print(f"{item.public_id} | {item.status} | {item.priority} | {item.review_type} | {item.contour} | task={task} | {item.created_at} | {item.title}")
+
+
+def _print_session_brief(service: FounderAssistantService) -> None:
+    brief = service.session_brief()
+    counts = brief["counts"]
+    schema = brief["schema"]
+    print("Session brief")
+    print("Doctor: OK" if brief["doctor"]["ok"] else "Doctor: FAIL")
+    print(f"Schema: {schema['schema_name']} v{schema['schema_version']} current={schema['schema_current']}")
+    print(f"tasks={counts['tasks']} reviews={counts['review_items']} decisions={counts['decisions']} receipts={counts['receipts']} claims={counts['claims']}")
+    print("Open reviews:")
+    for item in brief["reviews"]:
+        task = item["task_public_no"] or "-"
+        print(f"- {item['public_id']} [{item['priority']}/{item['review_type']}] task={task} {item['title']}")
+    print("Tasks:")
+    for task in brief["tasks"]:
+        print(f"- {task['public_no']} [{task['status']}] {task['title']}")
+    print("Latest decisions:")
+    for decision in brief["decisions"]:
+        print(f"- {decision['public_id']} [{decision['status']}] {decision['title']}")
+    print("Recent review events:")
+    for event in brief["review_events"]:
+        print(f"- {event['public_id']} {event['event_type']}: {event['summary']}")
+
+
 def _print_doctor(service: FounderAssistantService) -> None:
     result = service.doctor()
     print("Doctor: OK" if result["ok"] else "Doctor: FAIL")
@@ -164,6 +229,8 @@ def _print_doctor(service: FounderAssistantService) -> None:
     print(f"foreign_keys_ok={result['foreign_keys_ok']} seed_ok={result['seed_ok']}")
     print(f"claim_receipt_ok={result['claim_receipt_ok']} task_event_receipt_ok={result['task_event_receipt_ok']} outbox_receipt_ok={result['outbox_receipt_ok']}")
     print(f"decision_receipt_ok={result['decision_receipt_ok']} decision_claim_ok={result['decision_claim_ok']}")
+    print(f"review_item_receipt_ok={result['review_item_receipt_ok']} review_item_claim_ok={result['review_item_claim_ok']}")
+    print(f"review_event_receipt_ok={result['review_event_receipt_ok']} review_resolution_ok={result['review_resolution_ok']} review_status_ok={result['review_status_ok']}")
     print(f"tables={len(result['required_tables'])} tasks={counts.get('tasks', 0)} receipts={counts.get('receipts', 0)}")
 
 

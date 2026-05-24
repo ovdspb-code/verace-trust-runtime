@@ -1,5 +1,29 @@
 # Worklog
 
+## 2026-05-24 - IMPL-TR004: Review Queue and Session Brief
+
+**Goal:** Implement BRIEF-TR004: Review Queue and Session Brief.
+
+**Summary:**
+
+- Copied BRIEF-TR004 into `docs/briefs/`.
+- Advanced runtime schema to version 2 with `review_items` and `review_events`.
+- Added deterministic v1 to v2 migration for review queue tables.
+- Added receipt-backed review creation and resolution.
+- Added read-only session brief with doctor/schema state, open reviews, task state, decisions, and recent events.
+- Extended doctor with review queue receipt, claim, event, resolution, and status invariants.
+- Added CLI commands: `add-review`, `reviews`, `resolve-review`, `session-brief`.
+- No Telegram, LLM provider, external API, payment, legal, sensitive, destructive, approval-execution, or external-send integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed.
+- `python -m pytest` passed: 56 tests.
+- Manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Unsafe unversioned DB smoke reported explicit schema failure without a healthy claim.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+
 ## 2026-05-24 - MERGE-TR003: Merge Runtime Schema Migration Runner
 
 **Goal:** Merge PR #3 into `main` with a merge commit and record post-merge state.
