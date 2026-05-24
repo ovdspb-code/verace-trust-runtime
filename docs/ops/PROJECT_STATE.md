@@ -28,11 +28,12 @@
 
 ## Current Work
 
-- FOUNDER-TRIAL-FIX-001: Browser Workbench First-Use UX Cleanup.
+- Current product surface: Browser Founder Workbench.
+- Recent work: FOUNDER-TRIAL-FIX-001: Browser Workbench First-Use UX Cleanup — merged in PR #8.
 
 ## Next Intended Work
 
-- FOUNDER-TRIAL-001 continuation / Founder Workbench human trial after UX cleanup.
+- FOUNDER-TRIAL-002: Browser Workbench Re-trial with Oleg.
 
 ## Current Repository Fact
 
@@ -65,3 +66,4 @@ Runtime implementation may proceed only inside an issued implementation brief an
 - PR #4 merged `work/brief-tr004-review-queue-session-brief` into `main` with merge commit `01c3a46`.
 - PR #5 merged `work/brief-tr005-response-claim-renderer` into `main` with merge commit `0e90edd`.
 - PR #7 merged `work/brief-tr006-browser-founder-workbench` into `main` with merge commit `57471ec`.
+- PR #8 merged `work/founder-trial-fix-001-workbench-ux` into `main` with merge commit `a8a160d`.

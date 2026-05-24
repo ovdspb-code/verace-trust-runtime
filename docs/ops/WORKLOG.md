@@ -1,5 +1,27 @@
 # Worklog
 
+## 2026-05-24 - MERGE-FOUNDER-TRIAL-FIX-001: Merge Browser Workbench UX Cleanup
+
+**Goal:** Merge PR #8 into `main` with a merge commit and record post-merge state.
+
+**Summary:**
+
+- PR #8 merged into `main`.
+- Merge commit: `a8a160d`.
+- Founder feedback addressed: dashboard clarity, review page layout, Russian UI copy, and lower diagnostic clutter.
+- Next work is FOUNDER-TRIAL-002: Browser Workbench Re-trial with Oleg, not another foundation layer.
+- No Telegram, LLM provider, channel adapter, external API, payment, legal, sensitive, destructive, artifact-delivery, approval-execution, or external-send integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed on merged `main`.
+- `python -m pytest` passed on merged `main`: 88 tests.
+- Healthy browser workbench smoke against `.runtime-test/verace.sqlite3` passed.
+- Unsafe unversioned DB browser smoke reported explicit schema failure without a healthy claim.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+- GitHub Actions status on merge commit `a8a160d`: pending during post-merge docs update.
+
 ## 2026-05-24 - FOUNDER-TRIAL-FIX-001: Browser Workbench UX Cleanup
 
 **Goal:** Improve first-use Browser Founder Workbench UX after Oleg's first human trial.

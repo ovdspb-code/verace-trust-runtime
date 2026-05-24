@@ -23,7 +23,8 @@
 | Receipt/prose mismatch in future artifact/channel/LLM layers | Open | Future artifact, delivery, channel, and LLM response paths must use or validate against the Response Claim Renderer before making system-action statements. |
 | CLI mistaken for founder UX | Mitigated in PR #7 | Terminal/CLI is internal engineering/admin surface only; BRIEF-TR006 Browser Founder Workbench is the founder-facing local surface. |
 | Product loop not yet proven | Partially mitigated in PR #7 | Browser workbench exists and passed engineering product-loop tests; real founder human trial is still pending. |
-| First-use friction | Partially mitigated in FOUNDER-TRIAL-FIX-001 | Browser opened and core flow worked, but Oleg found first-use confusion. FOUNDER-TRIAL-FIX-001 improves dashboard clarity, review layout, and Russian UI copy. Must be re-tested by Oleg. |
+| First-use friction | Partially mitigated in PR #8 | Browser opened and core flow worked, but Oleg found first-use confusion. PR #8 improves dashboard clarity, review layout, and Russian UI copy. Must be re-tested by Oleg. |
+| Founder usability not yet proven after UX cleanup | Open | Run FOUNDER-TRIAL-002 with Oleg using the browser UI. |
 
 ## Review Rule
 
