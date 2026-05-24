@@ -13,7 +13,7 @@ def test_healthy_doctor_includes_schema_state(tmp_path):
 
     assert result["ok"] is True
     assert result["schema_name"] == "verace_runtime"
-    assert result["schema_version"] == 2
+    assert result["schema_version"] == 3
     assert result["schema_known"] is True
     assert result["schema_current"] is True
     assert result["migration_required"] is False

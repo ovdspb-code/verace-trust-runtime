@@ -56,6 +56,12 @@ FOUNDER-TRIAL-001 found first-use friction in the browser UI: the dashboard was 
 
 The workbench is not intended to be a manual notebook. It reads local project documentation, shows project context, and suggests next work for Oleg to review, edit, and approve.
 
+### Conversation Capture Inbox
+
+The Workbench also accepts pasted working text from ChatGPT, Codex reports, Claude notes, Telegram text, or local notes.
+
+The first capture implementation is deterministic and local-only: it stores the pasted text in the runtime DB, proposes editable task/decision/review/risk-review/Codex-task/ignore suggestions, and waits for Oleg to approve before ledger mutation. Accepted task, decision, and review entries use receipt-backed runtime paths. There is no LLM, provider, Telegram, channel, or external API integration yet.
+
 ### Workbench launch control
 
 Codex/admin may use:

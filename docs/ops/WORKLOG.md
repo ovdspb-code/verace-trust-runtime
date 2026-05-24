@@ -1,5 +1,18 @@
 # Worklog
 
+## 2026-05-24 - IMPL-TR008: Conversation Capture Inbox
+
+**Goal:** Bridge Oleg's real working text into editable Workbench suggestions.
+
+**Summary:**
+
+- Added BRIEF-TR008 for Conversation Capture Inbox.
+- Added deterministic capture classification for decisions, Codex reports, blocker/risk text, task-like text, Codex-task prompts, and ignore cases.
+- Added local capture storage and receipt-backed capture records.
+- Added browser inbox routes for paste, preview, accept as task/review/decision, Codex task preview, and dismiss.
+- Accepted task/review/decision suggestions reuse existing receipt-backed runtime paths.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
 ## 2026-05-24 - MERGE-TR011: Merge Workbench Run Control
 
 **Goal:** Merge PR #11 into `main` with a merge commit and record post-merge state.

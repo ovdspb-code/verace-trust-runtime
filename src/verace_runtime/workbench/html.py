@@ -35,6 +35,7 @@ def page(title: str, body: str, notice: str | None = None, error: str | None = N
 <title>{escape(title)}</title><style>{STYLE}</style></head>
 <body><header><h1>Verace</h1><nav>
 <a href="/">Обзор</a><a href="/plan">План</a><a href="/documents">Документы</a>
+<a href="/capture">Входящие</a>
 <a href="/tasks/new">Задача</a><a href="/decisions/new">Решение</a>
 <a href="/reviews">Проверки</a><a href="/reviews/new">На проверку</a><a href="/doctor">Диагностика</a>
 </nav></header><main>{messages}{body}</main></body></html>"""

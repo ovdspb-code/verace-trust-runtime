@@ -14,12 +14,12 @@ from verace_runtime.time import utc_now_iso
 
 def test_current_version_migration_is_noop(tmp_path):
     with sqlite3.connect(tmp_path / "runtime.sqlite3") as conn:
-        _create_meta(conn, "2")
+        _create_meta(conn, "3")
         state = inspect_schema_state(conn)
-        result = run_migrations(conn, state, 2, [])
+        result = run_migrations(conn, state, 3, [])
 
     assert result.schema_current is True
-    assert result.schema_version == 2
+    assert result.schema_version == 3
 
 
 def test_ordered_synthetic_migrations_apply_once(tmp_path):
@@ -51,7 +51,7 @@ def test_destructive_migration_is_blocked(tmp_path):
             run_migrations(conn, state, 1, [migration])
 
 
-def test_production_migration_from_v1_adds_review_tables_once(tmp_path):
+def test_production_migration_from_v1_adds_review_and_capture_tables_once(tmp_path):
     db_path = tmp_path / "runtime.sqlite3"
     schema = resources.files("verace_runtime.ledger").joinpath("schema.sql").read_text()
     with sqlite3.connect(db_path) as conn:
@@ -68,8 +68,8 @@ def test_production_migration_from_v1_adds_review_tables_once(tmp_path):
         names = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
         meta = dict(conn.execute("SELECT key, value FROM runtime_meta").fetchall())
 
-    assert {"review_items", "review_events"} <= names
-    assert meta["schema_version"] == "2"
+    assert {"review_items", "review_events", "capture_items", "capture_suggestions"} <= names
+    assert meta["schema_version"] == "3"
     assert FounderAssistantService(db_path).doctor()["ok"] is True
 
 

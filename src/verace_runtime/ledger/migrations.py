@@ -10,7 +10,7 @@ from verace_runtime.time import utc_now_iso
 
 
 CURRENT_SCHEMA_NAME = "verace_runtime"
-CURRENT_SCHEMA_VERSION = 2
+CURRENT_SCHEMA_VERSION = 3
 
 
 class SchemaError(RuntimeError):
@@ -39,6 +39,7 @@ class Migration:
 
 PRODUCTION_MIGRATIONS: tuple[Migration, ...] = (
     Migration(2, "add review queue tables", lambda conn: conn.executescript(_REVIEW_QUEUE_SQL)),
+    Migration(3, "add capture inbox tables", lambda conn: conn.executescript(_CAPTURE_INBOX_SQL)),
 )
 
 
@@ -70,6 +71,40 @@ CREATE TABLE IF NOT EXISTS review_events (
 
 CREATE INDEX IF NOT EXISTS idx_review_items_status ON review_items(status, created_at, public_id);
 CREATE INDEX IF NOT EXISTS idx_review_events_created_at ON review_events(created_at, id);
+"""
+
+
+_CAPTURE_INBOX_SQL = """
+CREATE TABLE IF NOT EXISTS capture_items (
+  id TEXT PRIMARY KEY,
+  public_id TEXT NOT NULL UNIQUE,
+  source_type TEXT NOT NULL,
+  source_label TEXT,
+  raw_text TEXT NOT NULL,
+  status TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  receipt_id TEXT NOT NULL REFERENCES receipts(id)
+);
+
+CREATE TABLE IF NOT EXISTS capture_suggestions (
+  id TEXT PRIMARY KEY,
+  public_id TEXT NOT NULL UNIQUE,
+  capture_id TEXT NOT NULL REFERENCES capture_items(id),
+  kind TEXT NOT NULL,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  source_span TEXT,
+  status TEXT NOT NULL,
+  accepted_subject_type TEXT,
+  accepted_subject_ref TEXT,
+  receipt_id TEXT REFERENCES receipts(id),
+  created_at TEXT NOT NULL,
+  updated_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_capture_items_status ON capture_items(status, created_at, public_id);
+CREATE INDEX IF NOT EXISTS idx_capture_suggestions_capture ON capture_suggestions(capture_id, status, public_id);
 """
 
 

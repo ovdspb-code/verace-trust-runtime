@@ -35,6 +35,8 @@
 | One-click launcher / durable setup wizard absent | Open | First-run browser state is safe, but a non-terminal launcher and durable setup wizard remain future product work. |
 | Workbench launch fragility | Mitigated in PR #11 | Internal run-control handles stale pid, dead process, existing server, and safe browser open. Founder still uses browser, not terminal. |
 | Run-control unowned PID kill | Mitigated in PR #11 | Run-control verifies pid ownership before signaling; stale live unowned PIDs are removed from pid file without killing the process. |
+| Capture classifier false positives | Open | TR008 classifier is deterministic and shallow; suggestions are candidates only and require explicit founder approval before ledger mutation. |
+| Capture raw text privacy | Open | Capture text is stored only in the local runtime DB; `.runtime/`, DB files, logs, secrets, and screenshots must not be committed. |
 
 ## Review Rule
 

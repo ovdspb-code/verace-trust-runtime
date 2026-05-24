@@ -26,18 +26,19 @@
 - BRIEF-TR005: Response Claim Renderer — merged in PR #5.
 - BRIEF-TR006: Browser Founder Workbench — merged in PR #7.
 - BRIEF-TR007: Project Context Intake and Suggested Work Queue — merged in PR #9.
+- BRIEF-TR008: Conversation Capture Inbox — active.
 
 ## Current Work
 
 - Current product surface: Browser Founder Workbench.
-- Current product capability: Project Context Intake and Suggested Work Queue.
+- Current product capability: Project Context Intake, Suggested Work Queue, and Conversation Capture Inbox.
 - Recent work: RUN-FIX-TR011: Workbench Run Control and Stale PID Guard — merged in PR #11.
 - Recent trial: FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake — passed. Oleg reported that the browser flow worked end-to-end.
-- Current work: Post-merge state recorded for RUN-FIX-TR011.
+- Current work: BRIEF-TR008: Conversation Capture Inbox.
 
 ## Next Intended Work
 
-- BRIEF-TR008: Conversation Capture Inbox.
+- FOUNDER-TRIAL-005: Capture Inbox Real Text Trial.
 
 ## Current Repository Fact
 
