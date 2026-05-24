@@ -25,6 +25,7 @@ def make_server(host: str = DEFAULT_HOST, port: int = DEFAULT_PORT, db_path: str
 
     class Handler(WorkbenchHandler):
         runtime_db = db
+        dismissed_suggestions: set[str] = set()
 
     return ThreadingHTTPServer((host, port), Handler)
 
@@ -34,10 +35,16 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         try:
-            path = urlparse(self.path).path
+            parsed = urlparse(self.path)
+            path = parsed.path
+            query = parse_qs(parsed.query, keep_blank_values=True)
             service = FounderAssistantService(self.runtime_db)
             if path == "/":
                 self._html(200, views.dashboard(service))
+            elif path == "/plan":
+                self._html(200, views.plan_page(service, dismissed=self.dismissed_suggestions))
+            elif path == "/documents":
+                self._html(200, views.documents_page())
             elif path == "/tasks/new":
                 self._html(200, views.task_form())
             elif path == "/decisions/new":
@@ -46,6 +53,14 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
                 self._html(200, views.reviews(service))
             elif path == "/reviews/new":
                 self._html(200, views.review_form())
+            elif path == "/suggestions/task":
+                self._html(200, views.suggestion_task_form(_query_key(query)))
+            elif path == "/suggestions/review":
+                self._html(200, views.suggestion_review_form(_query_key(query)))
+            elif path == "/suggestions/decision":
+                self._html(200, views.suggestion_decision_form(_query_key(query)))
+            elif path == "/suggestions/codex":
+                self._html(200, views.codex_task_page(_query_key(query)))
             elif path == "/doctor":
                 self._html(200, views.doctor_page(service))
             else:
@@ -74,6 +89,18 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
                 review = path.split("/")[2]
                 notice = actions.resolve_review(service, review, form.get("resolution", ""), form.get("status", "resolved"))
                 self._html(200, views.reviews(service, notice))
+            elif path == "/suggestions/task":
+                notice = actions.create_task(service, form.get("text", ""))
+                self._html(200, views.plan_page(service, notice, self.dismissed_suggestions))
+            elif path == "/suggestions/review":
+                notice = actions.create_review(service, form.get("title", ""), form.get("body", ""), form.get("review_type", "risk"), form.get("priority", "high"), None)
+                self._html(200, views.plan_page(service, notice, self.dismissed_suggestions))
+            elif path == "/suggestions/decision":
+                notice = actions.record_decision(service, form.get("title", ""), form.get("text", ""))
+                self._html(200, views.plan_page(service, notice, self.dismissed_suggestions))
+            elif path == "/suggestions/dismiss":
+                self.dismissed_suggestions.add(form.get("key", ""))
+                self._html(200, views.plan_page(service, "Предложение скрыто для этой сессии.", self.dismissed_suggestions))
             else:
                 self._html(*views.error_page("Unsupported action", 404))
         except (RuntimeError, sqlite3.Error) as exc:
@@ -97,6 +124,13 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
         self.wfile.write(payload)
 
 
+def _query_key(query: dict[str, list[str]]) -> str:
+    values = query.get("key", [])
+    if not values or not values[0]:
+        raise RuntimeError("Suggestion key is required")
+    return values[0]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="verace-workbench")
     parser.add_argument("--host", default=DEFAULT_HOST)
@@ -111,4 +145,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

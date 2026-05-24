@@ -19,6 +19,7 @@ h1,h2{margin:0 0 12px}
 label{display:block;margin:10px 0 4px;font-weight:600}input,textarea,select{width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbd5e1;border-radius:6px}
 button,.button{display:inline-block;margin-top:12px;padding:9px 13px;border:0;border-radius:6px;background:#1d4ed8;color:white;text-decoration:none;cursor:pointer}
 ul{padding-left:20px}.muted{color:#64748b}.meta{color:#475569;font-size:.94rem}.review-card form{margin-top:12px}
+pre{white-space:pre-wrap;background:#0f172a;color:#e2e8f0;border-radius:8px;padding:16px;overflow:auto}
 """
 
 
@@ -33,7 +34,8 @@ def page(title: str, body: str, notice: str | None = None, error: str | None = N
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{escape(title)}</title><style>{STYLE}</style></head>
 <body><header><h1>Verace</h1><nav>
-<a href="/">Обзор</a><a href="/tasks/new">Задача</a><a href="/decisions/new">Решение</a>
+<a href="/">Обзор</a><a href="/plan">План</a><a href="/documents">Документы</a>
+<a href="/tasks/new">Задача</a><a href="/decisions/new">Решение</a>
 <a href="/reviews">Проверки</a><a href="/reviews/new">На проверку</a><a href="/doctor">Диагностика</a>
 </nav></header><main>{messages}{body}</main></body></html>"""
 
