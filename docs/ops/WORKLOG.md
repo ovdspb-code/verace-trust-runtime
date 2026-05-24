@@ -1,5 +1,16 @@
 # Worklog
 
+## 2026-05-24 - Session TR-006B: Ratify ADR-TR006
+
+**Goal:** Record founder ratification of ADR-TR006.
+
+**Summary:**
+
+- Updated ADR-TR006 status to `Accepted v1.0`.
+- Added ratification receipt: `2026-05-24 by Oleg Dolgikh`.
+- Updated ADR index, project state, and decision log.
+- No code or runtime files were changed.
+
 ## 2026-05-24 - Session TR-006: Add ADR-TR006 Runtime Schema and Migration Policy
 
 **Goal:** Add ADR-TR006 as the next proposed architecture decision.

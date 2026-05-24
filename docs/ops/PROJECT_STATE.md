@@ -10,10 +10,7 @@
 - ADR-TR003: Founder Assistant as First Runtime Canary — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
 - ADR-TR004: Runtime Ledger Minimal Contract — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
 - ADR-TR005: Receipt and Approval Policy — Accepted v1.0, ratified 2026-05-23 by Oleg Dolgikh.
-
-## Proposed ADRs
-
-- ADR-TR006: Runtime Schema and Migration Policy — Proposed v1.0.
+- ADR-TR006: Runtime Schema and Migration Policy — Accepted v1.0, ratified 2026-05-24 by Oleg Dolgikh.
 
 ## Accepted Plans
 

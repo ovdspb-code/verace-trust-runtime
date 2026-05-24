@@ -1,7 +1,8 @@
 # ADR-TR006: Runtime Schema and Migration Policy
 
-**Status:** Proposed v1.0  
+**Status:** Accepted v1.0  
 **Date:** 2026-05-24  
+**Ratified:** 2026-05-24 by Oleg Dolgikh  
 **Owner:** Oleg Dolgikh  
 **Project:** Verace — Trust Runtime  
 **Scope:** Runtime ledger schema versioning, migration discipline, compatibility and safety policy  
