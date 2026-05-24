@@ -1,5 +1,27 @@
 # Worklog
 
+## 2026-05-24 - MERGE-TR003: Merge Runtime Schema Migration Runner
+
+**Goal:** Merge PR #3 into `main` with a merge commit and record post-merge state.
+
+**Summary:**
+
+- PR #3 merged into `main`.
+- Merge commit: `bb5ee0c`.
+- No runtime behavior changed after merge.
+- Project state now points next to BRIEF-TR004: Review Queue and Session Brief.
+- No Telegram, LLM provider, external API, payment, legal, sensitive, destructive, or external-send integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed on merged `main`.
+- `python -m pytest` passed on merged `main`: 41 tests.
+- Healthy manual CLI smoke against `.runtime-test/verace.sqlite3` passed.
+- Unsafe unversioned DB smoke reported explicit schema failure without a healthy claim.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+- GitHub Actions on merge commit `bb5ee0c`: success.
+
 ## 2026-05-24 - IMPL-TR003: Runtime Schema Migration Runner
 
 **Goal:** Implement BRIEF-TR003: Runtime Schema Migration Runner.
