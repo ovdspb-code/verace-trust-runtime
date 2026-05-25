@@ -1,5 +1,28 @@
 # Worklog
 
+## 2026-05-25 - REVIEW-FIX-TR008A: Close Capture Inbox Merge Blockers
+
+**Summary:**
+
+- Existing non-empty schema v2 runtime DBs now use governed migration to v3 during Workbench runtime classification instead of being marked unsafe.
+- Capture suggestion accept paths now validate suggestion existence, proposed status, and kind compatibility before creating task/review/decision ledger entries.
+- Repeated, dismissed, unknown, and wrong-kind accept attempts fail before ledger mutation.
+- Added regression tests for v2 migration preservation and duplicate-accept prevention.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
+## 2026-05-24 - IMPL-TR008: Conversation Capture Inbox
+
+**Goal:** Bridge Oleg's real working text into editable Workbench suggestions.
+
+**Summary:**
+
+- Added BRIEF-TR008 for Conversation Capture Inbox.
+- Added deterministic capture classification for decisions, Codex reports, blocker/risk text, task-like text, Codex-task prompts, and ignore cases.
+- Added local capture storage and receipt-backed capture records.
+- Added browser inbox routes for paste, preview, accept as task/review/decision, Codex task preview, and dismiss.
+- Accepted task/review/decision suggestions reuse existing receipt-backed runtime paths.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
 ## 2026-05-24 - MERGE-TR011: Merge Workbench Run Control
 
 **Goal:** Merge PR #11 into `main` with a merge commit and record post-merge state.

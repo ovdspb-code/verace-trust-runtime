@@ -26,7 +26,7 @@ def test_schema_status_cli_reports_healthy_db(tmp_path):
     result = run_cli(db_path, "schema-status")
 
     assert "Schema: verace_runtime" in result.stdout
-    assert "Version: 2" in result.stdout
+    assert "Version: 3" in result.stdout
     assert "Known: True" in result.stdout
     assert "Current: True" in result.stdout
     assert "Migration required: False" in result.stdout
@@ -40,7 +40,7 @@ def test_doctor_cli_includes_schema_state(tmp_path):
 
     assert "Doctor: OK" in result.stdout
     assert "Schema: verace_runtime" in result.stdout
-    assert "Version: 2" in result.stdout
+    assert "Version: 3" in result.stdout
 
 
 def test_schema_status_cli_reports_unsafe_db(tmp_path):

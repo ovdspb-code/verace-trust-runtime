@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from verace_runtime.app.service import FounderAssistantService
-from verace_runtime.ledger.migrations import inspect_schema_state
+from verace_runtime.ledger.db import apply_schema
+from verace_runtime.ledger.migrations import CURRENT_SCHEMA_VERSION, inspect_schema_state
 from verace_runtime.ledger.repository import COUNT_TABLES
 
 
@@ -40,7 +41,10 @@ def classify_runtime(db_path: str | Path) -> WorkbenchRuntimeState:
             if state.empty:
                 return WorkbenchRuntimeState("first_run", state.reason)
             if not state.schema_current:
-                return _non_current_state(conn, state.reason)
+                if _known_migration_available(state):
+                    apply_schema(conn)
+                else:
+                    return _non_current_state(conn, state.reason)
         doctor = FounderAssistantService(path).doctor()
     except sqlite3.Error as exc:
         return WorkbenchRuntimeState("unsafe", f"sqlite error: {exc}")
@@ -68,6 +72,10 @@ def _non_current_state(conn: sqlite3.Connection, reason: str) -> WorkbenchRuntim
     if _has_only_empty_runtime_tables(conn):
         return WorkbenchRuntimeState("first_run", reason)
     return WorkbenchRuntimeState("unsafe", reason)
+
+
+def _known_migration_available(state) -> bool:
+    return bool(state.schema_known and state.schema_version is not None and state.schema_version < CURRENT_SCHEMA_VERSION)
 
 
 def _seed_missing_state(path: Path) -> WorkbenchRuntimeState:

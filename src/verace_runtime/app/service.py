@@ -9,7 +9,7 @@ from verace_runtime.app.session_brief import build_project_brief, build_session_
 from verace_runtime.ledger.db import apply_schema, connect
 from verace_runtime.ledger.models import DecisionResult, DecisionSummary, IngestResult, InitResult, PolicyResult, ReviewResult, ReviewSummary, TaskMutationResult, TaskSummary
 from verace_runtime.ledger.migrations import doctor_schema_state
-from verace_runtime.ledger.repository import LedgerRepository
+from verace_runtime.ledger.repository import COUNT_TABLES, LedgerRepository
 from verace_runtime.policy.engine import PolicyEngine
 from verace_runtime.receipts.factory import ReceiptFactory
 from verace_runtime.rendering.models import RenderResult
@@ -195,23 +195,7 @@ class FounderAssistantService:
             return doctor_schema_state(conn)
 
     def doctor(self) -> dict[str, object]:
-        required = [
-            "runtime_meta",
-            "persons",
-            "contours",
-            "contour_memberships",
-            "mandates",
-            "messages",
-            "decisions",
-            "review_items",
-            "tasks",
-            "task_events",
-            "review_events",
-            "approvals",
-            "receipts",
-            "claims",
-            "outbox_items",
-        ]
+        required = COUNT_TABLES
         with connect(self.db_path) as conn:
             schema_state = doctor_schema_state(conn)
             repo = LedgerRepository(conn)
@@ -237,6 +221,11 @@ class FounderAssistantService:
             "review_created_event_ok": invariants.get("review_items_missing_created_event", 1) == 0,
             "review_resolution_event_ok": invariants.get("review_resolutions_missing_event", 1) == 0,
             "review_resolution_claim_ok": invariants.get("review_resolutions_missing_claim", 1) == 0,
+            "capture_item_receipt_ok": invariants.get("capture_items_missing_receipt", 1) == 0,
+            "capture_item_status_ok": invariants.get("capture_items_invalid_status", 1) == 0,
+            "capture_suggestion_capture_ok": invariants.get("capture_suggestions_missing_capture", 1) == 0,
+            "capture_suggestion_status_ok": invariants.get("capture_suggestions_invalid_status", 1) == 0,
+            "capture_suggestion_accept_ok": invariants.get("accepted_capture_suggestions_incomplete", 1) == 0,
         }
         ok = all([schema_ok, pragma_ok, integrity_ok, foreign_keys_ok, schema_state["schema_current"], seed_ok, *checks.values()])
         return {

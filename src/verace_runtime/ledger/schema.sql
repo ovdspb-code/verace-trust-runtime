@@ -148,6 +148,34 @@ CREATE TABLE IF NOT EXISTS outbox_items (
   created_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS capture_items (
+  id TEXT PRIMARY KEY,
+  public_id TEXT NOT NULL UNIQUE,
+  source_type TEXT NOT NULL,
+  source_label TEXT,
+  raw_text TEXT NOT NULL,
+  status TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  receipt_id TEXT NOT NULL REFERENCES receipts(id)
+);
+
+CREATE TABLE IF NOT EXISTS capture_suggestions (
+  id TEXT PRIMARY KEY,
+  public_id TEXT NOT NULL UNIQUE,
+  capture_id TEXT NOT NULL REFERENCES capture_items(id),
+  kind TEXT NOT NULL,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  source_span TEXT,
+  status TEXT NOT NULL,
+  accepted_subject_type TEXT,
+  accepted_subject_ref TEXT,
+  receipt_id TEXT REFERENCES receipts(id),
+  created_at TEXT NOT NULL,
+  updated_at TEXT
+);
+
 CREATE UNIQUE INDEX IF NOT EXISTS idx_active_mandate_principal_contour
 ON mandates(principal_person_id, contour_id)
 WHERE status = 'active';
@@ -159,3 +187,5 @@ CREATE INDEX IF NOT EXISTS idx_review_items_status ON review_items(status, creat
 CREATE INDEX IF NOT EXISTS idx_review_events_created_at ON review_events(created_at, id);
 CREATE INDEX IF NOT EXISTS idx_receipts_subject ON receipts(subject_type, subject_id);
 CREATE INDEX IF NOT EXISTS idx_claims_subject ON claims(subject_type, subject_id);
+CREATE INDEX IF NOT EXISTS idx_capture_items_status ON capture_items(status, created_at, public_id);
+CREATE INDEX IF NOT EXISTS idx_capture_suggestions_capture ON capture_suggestions(capture_id, status, public_id);

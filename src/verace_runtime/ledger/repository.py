@@ -24,6 +24,8 @@ COUNT_TABLES = [
     "receipts",
     "claims",
     "outbox_items",
+    "capture_items",
+    "capture_suggestions",
 ]
 
 
@@ -244,6 +246,11 @@ class LedgerRepository:
             "review_items_missing_created_event": "SELECT COUNT(*) AS n FROM review_items i LEFT JOIN review_events e ON e.review_item_id = i.id AND e.event_type = 'review.item.created' WHERE e.id IS NULL",
             "review_resolutions_missing_event": "SELECT COUNT(*) AS n FROM review_items i LEFT JOIN review_events e ON e.review_item_id = i.id AND e.event_type = 'review.item.' || i.status WHERE i.status IN ('resolved', 'dismissed') AND e.id IS NULL",
             "review_resolutions_missing_claim": "SELECT COUNT(*) AS n FROM review_items i LEFT JOIN claims c ON c.subject_type = 'review_item' AND c.subject_id = i.id AND c.claim_type = 'review_item_' || i.status WHERE i.status IN ('resolved', 'dismissed') AND c.id IS NULL",
+            "capture_items_missing_receipt": "SELECT COUNT(*) AS n FROM capture_items i LEFT JOIN receipts r ON r.id = i.receipt_id WHERE i.receipt_id IS NULL OR r.id IS NULL",
+            "capture_items_invalid_status": "SELECT COUNT(*) AS n FROM capture_items WHERE status NOT IN ('captured', 'processed', 'archived')",
+            "capture_suggestions_missing_capture": "SELECT COUNT(*) AS n FROM capture_suggestions s LEFT JOIN capture_items i ON i.id = s.capture_id WHERE i.id IS NULL",
+            "capture_suggestions_invalid_status": "SELECT COUNT(*) AS n FROM capture_suggestions WHERE status NOT IN ('proposed', 'accepted', 'dismissed')",
+            "accepted_capture_suggestions_incomplete": "SELECT COUNT(*) AS n FROM capture_suggestions s LEFT JOIN receipts r ON r.id = s.receipt_id WHERE s.status = 'accepted' AND (s.accepted_subject_type IS NULL OR s.accepted_subject_ref IS NULL OR s.receipt_id IS NULL OR r.id IS NULL)",
         }
         return {name: self.conn.execute(sql).fetchone()["n"] for name, sql in queries.items()}
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from verace_runtime.app.service import FounderAssistantService
 from verace_runtime.rendering.models import RenderResult
+from verace_runtime.workbench import capture
 
 
 PRINCIPAL = "oleg"
@@ -38,8 +39,35 @@ def resolve_review(service: FounderAssistantService, review: str, resolution: st
     return _rendered(service.render_claim(claim_class, result.public_id))
 
 
+def record_capture(service: FounderAssistantService, source_type: str, source_label: str, raw_text: str) -> str:
+    item, suggestions = capture.record_capture(service, source_type, source_label, raw_text)
+    return f"Capture {item.public_id} was recorded. Receipt: {item.receipt_public_id}. Suggestions: {len(suggestions)}."
+
+
+def accept_capture_task(service: FounderAssistantService, suggestion: str, text: str) -> str:
+    capture.require_proposed_suggestion(service.db_path, suggestion, {"task", "codex_task"})
+    result = service.ingest_message(PRINCIPAL, CONTOUR, text)
+    if not result.task_public_no:
+        raise RuntimeError("No task was created")
+    capture.mark_suggestion(service.db_path, suggestion, "task", result.task_public_no, result.receipt_public_id)
+    return _rendered(service.render_claim("task_recorded", result.task_public_no))
+
+
+def accept_capture_review(service: FounderAssistantService, suggestion: str, title: str, body: str, review_type: str, priority: str) -> str:
+    capture.require_proposed_suggestion(service.db_path, suggestion, {"review", "risk_review"})
+    result = service.add_review(PRINCIPAL, CONTOUR, title, body, review_type, priority, None)
+    capture.mark_suggestion(service.db_path, suggestion, "review_item", result.public_id, result.receipt_public_id)
+    return _rendered(service.render_claim("review_created", result.public_id))
+
+
+def accept_capture_decision(service: FounderAssistantService, suggestion: str, title: str, text: str) -> str:
+    capture.require_proposed_suggestion(service.db_path, suggestion, {"decision"})
+    result = service.record_decision(PRINCIPAL, CONTOUR, title, text)
+    capture.mark_suggestion(service.db_path, suggestion, "decision", result.public_id, result.receipt_public_id)
+    return _rendered(service.render_claim("decision_recorded", result.public_id))
+
+
 def _rendered(result: RenderResult) -> str:
     if not result.ok:
         raise RuntimeError(f"Cannot render {result.claim_class}: {result.reason}")
     return result.text
-

@@ -13,7 +13,7 @@ from verace_runtime.app.service import FounderAssistantService
 from verace_runtime.workbench.context import read_project_context
 from verace_runtime.workbench.runtime_state import classify_runtime, reset_first_run_runtime
 from verace_runtime.workbench.suggestions import find_suggestion
-from verace_runtime.workbench import actions, views
+from verace_runtime.workbench import actions, capture, views
 
 
 DEFAULT_HOST = "127.0.0.1"
@@ -54,6 +54,20 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
                 self._html(200, views.plan_page(service, dismissed=self.dismissed_suggestions, first_run=state.first_run))
             elif path == "/documents":
                 self._html(200, views.documents_page())
+            elif path == "/capture":
+                if state.unsafe:
+                    self._html(*views.error_page(f"Unsafe runtime schema: {state.reason}", 200))
+                else:
+                    self._html(200, capture.inbox_page(self.runtime_db, first_run=state.first_run))
+            elif path.startswith("/capture/suggestions/"):
+                self._capture_suggestion_get(path, state)
+            elif path.startswith("/capture/"):
+                if state.first_run:
+                    self._html(200, views.first_run_required_page())
+                elif state.unsafe:
+                    self._html(*views.error_page(f"Unsafe runtime schema: {state.reason}", 200))
+                else:
+                    self._html(200, capture.detail_page(self.runtime_db, path.split("/")[2]))
             elif path == "/tasks/new":
                 self._html(200, views.first_run_required_page() if state.first_run else views.task_form())
             elif path == "/decisions/new":
@@ -137,6 +151,15 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
             elif path == "/suggestions/dismiss":
                 self.dismissed_suggestions.add(_valid_suggestion_key(form))
                 self._html(200, views.plan_page(service, "Предложение скрыто для этой сессии.", self.dismissed_suggestions))
+            elif path == "/capture":
+                if _needs_ready(state):
+                    return self._runtime_not_ready(state, service)
+                notice = actions.record_capture(service, form.get("source_type", "other"), form.get("source_label", ""), form.get("raw_text", ""))
+                self._html(200, capture.inbox_page(self.runtime_db, notice))
+            elif path.startswith("/capture/suggestions/"):
+                if _needs_ready(state):
+                    return self._runtime_not_ready(state, service)
+                self._capture_suggestion_post(path, form, service)
             else:
                 self._html(*views.error_page("Unsupported action", 404))
         except (RuntimeError, sqlite3.Error) as exc:
@@ -167,6 +190,42 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
             self._html(200, views.first_run_required_page("Сначала инициализируйте локальный ledger."))
             return
         self._html(*views.error_page(f"Unsafe runtime schema: {state.reason}", 400))
+
+    def _capture_suggestion_get(self, path: str, state) -> None:
+        if _needs_ready(state):
+            return self._runtime_not_ready(state, FounderAssistantService(self.runtime_db))
+        parts = path.strip("/").split("/")
+        if len(parts) != 4:
+            self._html(*views.error_page("Page not found", 404))
+            return
+        suggestion, target = parts[2], parts[3]
+        if target == "codex":
+            self._html(200, capture.codex_page(self.runtime_db, suggestion))
+        elif target in {"task", "review", "decision"}:
+            self._html(200, capture.suggestion_form(self.runtime_db, suggestion, target))
+        else:
+            self._html(*views.error_page("Page not found", 404))
+
+    def _capture_suggestion_post(self, path: str, form: dict[str, str], service: FounderAssistantService) -> None:
+        parts = path.strip("/").split("/")
+        if len(parts) != 4:
+            self._html(*views.error_page("Unsupported action", 404))
+            return
+        suggestion, target = parts[2], parts[3]
+        if target == "task":
+            notice = actions.accept_capture_task(service, suggestion, form.get("text", ""))
+        elif target == "review":
+            notice = actions.accept_capture_review(service, suggestion, form.get("title", ""), form.get("body", ""), form.get("review_type", "risk"), form.get("priority", "high"))
+        elif target == "decision":
+            notice = actions.accept_capture_decision(service, suggestion, form.get("title", ""), form.get("text", ""))
+        elif target == "dismiss":
+            capture.dismiss_suggestion(self.runtime_db, suggestion)
+            notice = "Предложение скрыто."
+        else:
+            self._html(*views.error_page("Unsupported action", 404))
+            return
+        item, _ = capture.suggestion_detail(self.runtime_db, suggestion)
+        self._html(200, capture.detail_page(self.runtime_db, item.public_id, notice))
 
 
 def _query_key(query: dict[str, list[str]]) -> str:
