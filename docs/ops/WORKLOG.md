@@ -1,5 +1,19 @@
 # Worklog
 
+## 2026-05-25 - TR009: Persona Front Door
+
+**Goal:** Record the Front-of-House UI decision and add the first persona-first browser entry.
+
+**Summary:**
+
+- Recorded D-TR-012: primary founder UX follows the Front-of-House Model.
+- Added BRIEF-TR009 for Persona Front Door.
+- Added `/vera` as a conversational entry over the existing runtime and Workbench.
+- Workbench remains backstage/audit cockpit; Capture Inbox remains an ingestion primitive.
+- Persona drafts can propose actions, but task/decision/review ledger mutations require explicit confirmation and receipt-backed runtime paths.
+- Unsupported completed-action claims are downgraded unless backed by a receipt result.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
 ## 2026-05-25 - MERGE-TR008: Merge Conversation Capture Inbox
 
 **Goal:** Merge PR #12 into `main` with a merge commit and record post-merge state.

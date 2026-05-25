@@ -27,18 +27,19 @@
 - BRIEF-TR006: Browser Founder Workbench — merged in PR #7.
 - BRIEF-TR007: Project Context Intake and Suggested Work Queue — merged in PR #9.
 - BRIEF-TR008: Conversation Capture Inbox — merged in PR #12.
+- BRIEF-TR009: Persona Front Door — in progress.
 
 ## Current Work
 
-- Current product surface: Browser Founder Workbench.
-- Current product capability: Project Context Intake, Suggested Work Queue, Conversation Capture Inbox.
+- Current product surface: Persona Front Door over Browser Founder Workbench.
+- Current product capability: Project Context Intake, Suggested Work Queue, Conversation Capture Inbox, Persona Front Door.
 - Recent work: BRIEF-TR008: Conversation Capture Inbox — merged in PR #12.
 - Recent trial: FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake — passed. Oleg reported that the browser flow worked end-to-end.
-- Current work: Post-merge state recorded for BRIEF-TR008.
+- Current work: BRIEF-TR009: Persona Front Door.
 
 ## Next Intended Work
 
-- FOUNDER-TRIAL-005: Capture Inbox Real Text Trial.
+- FOUNDER-TRIAL-006: Persona Front Door Trial.
 
 ## Current Repository Fact
 

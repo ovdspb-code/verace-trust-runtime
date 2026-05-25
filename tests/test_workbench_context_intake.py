@@ -10,7 +10,7 @@ def test_context_intake_extracts_project_state_and_next_work():
 
     assert context.project_name == "Verace - Trust Runtime"
     assert context.current_phase == "Phase 1 - Founder Assistant Seed"
-    assert context.current_product_surface == "Browser Founder Workbench"
+    assert context.current_product_surface == "Persona Front Door over Browser Founder Workbench"
     assert context.next_work
 
 
