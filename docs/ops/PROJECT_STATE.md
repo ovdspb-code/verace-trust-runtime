@@ -2,7 +2,7 @@
 
 **Project:** Verace - Trust Runtime  
 **Current phase:** Phase 1 - Founder Assistant Seed  
-**Updated:** 2026-05-24  
+**Updated:** 2026-05-25  
 
 ## Accepted ADRs
 
@@ -26,15 +26,15 @@
 - BRIEF-TR005: Response Claim Renderer — merged in PR #5.
 - BRIEF-TR006: Browser Founder Workbench — merged in PR #7.
 - BRIEF-TR007: Project Context Intake and Suggested Work Queue — merged in PR #9.
-- BRIEF-TR008: Conversation Capture Inbox — active.
+- BRIEF-TR008: Conversation Capture Inbox — merged in PR #12.
 
 ## Current Work
 
 - Current product surface: Browser Founder Workbench.
-- Current product capability: Project Context Intake, Suggested Work Queue, and Conversation Capture Inbox.
-- Recent work: RUN-FIX-TR011: Workbench Run Control and Stale PID Guard — merged in PR #11.
+- Current product capability: Project Context Intake, Suggested Work Queue, Conversation Capture Inbox.
+- Recent work: BRIEF-TR008: Conversation Capture Inbox — merged in PR #12.
 - Recent trial: FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake — passed. Oleg reported that the browser flow worked end-to-end.
-- Current work: BRIEF-TR008: Conversation Capture Inbox.
+- Current work: Post-merge state recorded for BRIEF-TR008.
 
 ## Next Intended Work
 
@@ -75,3 +75,4 @@ Runtime implementation may proceed only inside an issued implementation brief an
 - PR #9 merged `work/brief-tr007-project-context-intake` into `main` with merge commit `cc2bf7c`.
 - PR #10 merged `work/founder-trial-fix-002-first-run-state` into `main` with merge commit `d766e48`.
 - PR #11 merged `work/run-fix-tr011-workbench-run-control` into `main` with merge commit `0feb48e`.
+- PR #12 merged `work/brief-tr008-conversation-capture-inbox` into `main` with merge commit `c00f7e6`.

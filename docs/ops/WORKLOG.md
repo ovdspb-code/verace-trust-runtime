@@ -1,5 +1,28 @@
 # Worklog
 
+## 2026-05-25 - MERGE-TR008: Merge Conversation Capture Inbox
+
+**Goal:** Merge PR #12 into `main` with a merge commit and record post-merge state.
+
+**Summary:**
+
+- PR #12 merged into `main`.
+- Merge commit: `c00f7e6`.
+- Product effect: Browser Workbench can capture pasted working text and produce editable task/review/decision/Codex-task/ignore suggestions.
+- Safety: known older v2 runtime DBs migrate to v3 before Workbench classification, and capture accept validates suggestions before ledger mutation.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed on merged `main`.
+- `python -m pytest` passed on merged `main`: 144 tests.
+- Healthy browser smoke passed for `/capture`, `/init`, Codex report capture, task accept, repeated-accept rejection, review accept, Codex task generation, and `/doctor`.
+- v2 migration smoke passed and preserved existing task/message/decision/review rows while adding capture tables.
+- Unsafe DB smoke reported explicit schema failure without a healthy claim.
+- Forbidden DB/log/env file scan returned no files.
+- Line-count gate passed: no files over 300 lines.
+- GitHub Actions on `main`: success for merge commit `c00f7e6`.
+
 ## 2026-05-25 - REVIEW-FIX-TR008A: Close Capture Inbox Merge Blockers
 
 **Summary:**
