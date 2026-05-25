@@ -1,5 +1,15 @@
 # Worklog
 
+## 2026-05-25 - REVIEW-FIX-TR008A: Close Capture Inbox Merge Blockers
+
+**Summary:**
+
+- Existing non-empty schema v2 runtime DBs now use governed migration to v3 during Workbench runtime classification instead of being marked unsafe.
+- Capture suggestion accept paths now validate suggestion existence, proposed status, and kind compatibility before creating task/review/decision ledger entries.
+- Repeated, dismissed, unknown, and wrong-kind accept attempts fail before ledger mutation.
+- Added regression tests for v2 migration preservation and duplicate-accept prevention.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
 ## 2026-05-24 - IMPL-TR008: Conversation Capture Inbox
 
 **Goal:** Bridge Oleg's real working text into editable Workbench suggestions.

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from verace_runtime.app.service import FounderAssistantService
 from verace_runtime.workbench import actions, capture
 
@@ -81,3 +83,60 @@ def test_codex_task_generation_is_read_only(tmp_path):
     assert "Goal:" in prompt
     assert "Acceptance criteria:" in prompt
     assert after == before
+
+
+def test_repeated_accept_does_not_create_duplicate_task(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+    actions.record_capture(service, "note", "", "Нужно подготовить duplicate guard.")
+    actions.accept_capture_task(service, "CSUG-000001", "Подготовить duplicate guard")
+    before = service.status()
+
+    with pytest.raises(RuntimeError, match="not proposed"):
+        actions.accept_capture_task(service, "CSUG-000001", "Подготовить duplicate guard again")
+    after = service.status()
+
+    assert after["tasks"] == before["tasks"]
+    assert after["messages"] == before["messages"]
+
+
+def test_dismissed_suggestion_accept_creates_no_task(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+    actions.record_capture(service, "note", "", "Нужно сделать dismissed guard.")
+    capture.dismiss_suggestion(service.db_path, "CSUG-000001")
+    before = service.status()
+
+    with pytest.raises(RuntimeError, match="not proposed"):
+        actions.accept_capture_task(service, "CSUG-000001", "Should not create")
+    after = service.status()
+
+    assert after["tasks"] == before["tasks"]
+    assert after["messages"] == before["messages"]
+
+
+def test_unknown_capture_suggestion_accept_creates_no_task(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+    before = service.status()
+
+    with pytest.raises(RuntimeError, match="not found"):
+        actions.accept_capture_task(service, "CSUG-999999", "Should not create")
+    after = service.status()
+
+    assert after["tasks"] == before["tasks"]
+    assert after["messages"] == before["messages"]
+
+
+def test_wrong_kind_capture_accept_creates_no_task(tmp_path):
+    service = FounderAssistantService(tmp_path / "runtime.sqlite3")
+    service.init_runtime()
+    actions.record_capture(service, "chatgpt", "", "РЕШЕНИЕ: Wrong kind must not become task.")
+    before = service.status()
+
+    with pytest.raises(RuntimeError, match="cannot be accepted"):
+        actions.accept_capture_task(service, "CSUG-000001", "Should not create")
+    after = service.status()
+
+    assert after["tasks"] == before["tasks"]
+    assert after["messages"] == before["messages"]

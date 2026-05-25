@@ -38,7 +38,6 @@ class CaptureSuggestion:
     source_span: str | None
     status: str
 
-
 SOURCE_TYPES = ("chatgpt", "codex", "claude", "telegram", "note", "other")
 
 
@@ -146,6 +145,16 @@ def suggestion_detail(db_path: str | Path, suggestion_ref: str) -> tuple[Capture
             raise RuntimeError("Capture suggestion not found")
         capture, _ = capture_detail(conn, row["capture_public_id"])
         return capture, _suggestion(row)
+
+
+def require_proposed_suggestion(db_path: str | Path, suggestion_ref: str, allowed_kinds: set[str]) -> CaptureSuggestion:
+    _, suggestion = suggestion_detail(db_path, suggestion_ref)
+    if suggestion.status != "proposed":
+        raise RuntimeError("Capture suggestion is not proposed")
+    if suggestion.kind not in allowed_kinds:
+        allowed = ", ".join(sorted(allowed_kinds))
+        raise RuntimeError(f"Capture suggestion kind {suggestion.kind} cannot be accepted here; expected {allowed}")
+    return suggestion
 
 
 def mark_suggestion(db_path: str | Path, suggestion_ref: str, subject_type: str, subject_ref: str, receipt_public_id: str) -> None:
