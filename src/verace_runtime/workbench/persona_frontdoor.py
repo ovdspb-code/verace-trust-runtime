@@ -39,8 +39,9 @@ def respond_page(message: str, provider: PersonaProvider | None = None, first_ru
     proposals = build_actions(message)
     draft_provider = provider or DraftOnlyProvider()
     draft = draft_provider.draft(message, context, _hints(proposals))
-    text = guard_persona_draft(draft.text)
+    text = _founder_text(guard_persona_draft(draft.text), context.next_work, bool(proposals))
     body = _dialog(message, text)
+    body += _continue_form()
     if first_run:
         body += _first_run_banner()
     body += _actions(proposals)
@@ -106,6 +107,15 @@ def _form() -> str:
     )
 
 
+def _continue_form() -> str:
+    return (
+        "<section><h2>Продолжим</h2><form method='post' action='/vera'>"
+        "<label>Напишите следующий вопрос или уточнение</label>"
+        "<textarea name='message' required rows='6' autofocus></textarea>"
+        "<button>Ответить Вере</button></form></section>"
+    )
+
+
 def _dialog(message: str, text: str) -> str:
     return (
         "<section class='hero'><h2>Разбор Веры</h2>"
@@ -116,7 +126,7 @@ def _dialog(message: str, text: str) -> str:
 
 def _actions(items: list[PersonaAction]) -> str:
     if not items:
-        return "<section><h2>Что записать?</h2><p class='muted'>Я бы пока ничего не записывала без уточнения.</p></section>"
+        return "<p class='muted'>Пока ничего записывать не предлагаю.</p>"
     cards = []
     for item in items:
         cards.append(
@@ -182,3 +192,15 @@ def _dedupe(items: list[PersonaAction]) -> list[PersonaAction]:
 
 def _clip(text: str, limit: int = 600) -> str:
     return " ".join(text.split())[:limit]
+
+
+def _founder_text(text: str, next_work: str, has_actions: bool) -> str:
+    if "Модель персонажа не подключена" not in text:
+        return text
+    lines = ["Я здесь. По текущему состоянию Verace главный следующий шаг:"]
+    lines.append(next_work or "следующий шаг не указан в проектном состоянии.")
+    if has_actions:
+        lines.append("Ниже я предложила, что можно подтвердить для записи.")
+    else:
+        lines.append("Сейчас я бы просто обсудила это с вами и ничего не записывала без явного решения.")
+    return "\n".join(lines)

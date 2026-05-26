@@ -1,5 +1,15 @@
 # Worklog
 
+## 2026-05-26 - FIX-TR009C: Make Vera a Continuous Conversation Surface
+
+**Summary:**
+
+- `/vera` now keeps a visible conversation input after Vera responds.
+- First-run init and confirmed action results still return to a writable Vera page.
+- The no-action state no longer shows a dead-end "Что записать?" block.
+- Provider-absence diagnostics are hidden from founder-facing copy.
+- No runtime semantics changed.
+
 ## 2026-05-26 - MERGE-TR009: Merge Persona Front Door
 
 **Goal:** Merge PR #13 into `main` with a merge commit and record the CI-bypass receipt.

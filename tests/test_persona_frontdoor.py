@@ -95,6 +95,30 @@ def test_post_vera_with_fake_provider_returns_persona_response(tmp_path):
     assert provider.calls
 
 
+def test_post_vera_response_keeps_conversation_input(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    with running_server(db_path) as base:
+        post(base, "/init", {})
+        html = post(base, "/vera", {"message": "Привет! Что у нас сегодня на повестке дня по работе?"})
+
+    assert "Разбор Веры" in html
+    assert "Продолжим" in html
+    assert 'name="message"' in html or "name='message'" in html
+    assert "Модель персонажа не подключена" not in html
+    assert "FOUNDER-TRIAL-006" in html
+
+
+def test_post_vera_without_actions_has_no_dead_end_recording_block(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    with running_server(db_path) as base:
+        post(base, "/init", {})
+        html = post(base, "/vera", {"message": "Привет! Что у нас сегодня на повестке дня по работе?"})
+
+    assert "Что записать?" not in html
+    assert "Пока ничего записывать не предлагаю." in html
+    assert 'name="message"' in html or "name='message'" in html
+
+
 def test_post_vera_does_not_mutate_without_explicit_confirm(tmp_path):
     db_path = tmp_path / "runtime.sqlite3"
     service = FounderAssistantService(db_path)
@@ -118,6 +142,7 @@ def test_vera_confirm_task_creates_receipt_backed_task(tmp_path):
     assert "Подтверждено receipt-записью" in html
     assert "Task TR-000001 was recorded" in html
     assert "Receipt: RCPT-" in html
+    assert 'name="message"' in html or "name='message'" in html
 
 
 def test_vera_confirm_decision_creates_receipt_backed_decision(tmp_path):
@@ -132,6 +157,7 @@ def test_vera_confirm_decision_creates_receipt_backed_decision(tmp_path):
 
     assert "Decision DEC-000001 was recorded" in html
     assert "Receipt: RCPT-" in html
+    assert 'name="message"' in html or "name='message'" in html
 
 
 def test_vera_confirm_review_creates_receipt_backed_review(tmp_path):
@@ -146,6 +172,7 @@ def test_vera_confirm_review_creates_receipt_backed_review(tmp_path):
 
     assert "Review REV-000001 was created" in html
     assert "Receipt: RCPT-" in html
+    assert 'name="message"' in html or "name='message'" in html
 
 
 def test_vera_blocks_unsupported_completed_action_claim(tmp_path):
@@ -184,6 +211,7 @@ def test_init_from_first_run_returns_to_persona_frontdoor(tmp_path):
     assert "Что произошло?" in initialized
     assert "Runtime initialized. Receipt: RCPT-" in initialized
     assert "Подтверждено receipt-записью" in initialized
+    assert 'name="message"' in initialized or "name='message'" in initialized
     assert "Рабочая панель проекта" not in initialized
     assert "Required ledger row not found" not in initialized
     assert "Traceback" not in initialized
