@@ -43,6 +43,9 @@
 | Persona route exists but cockpit remains primary | Mitigated in REVIEW-FIX-TR009A | Run-control, root route, and navigation now make `/vera` the actual primary founder surface; cockpit links are backstage. |
 | First-run init returns to cockpit | Mitigated in REVIEW-FIX-TR009B | `/init` now returns Persona Front Door after successful initialization. |
 | Template voice replacing model voice | Open | Persona provider drafts language only; runtime fact guard blocks unsupported completed-action claims. Real provider voice still needs later trial. |
+| No real Vera provider | Mitigated in BRIEF-TR010 implementation | `/vera` uses an env-gated OpenAI Responses API adapter when configured; without provider config it shows unavailable state instead of fallback pretending. |
+| Provider becomes autonomous agent | Open | TR010 disables tools/function calling and treats model output as voice plus proposed actions only; runtime and human approval own ledger mutation. |
+| Provider response storage privacy | Mitigated in BRIEF-TR010 implementation | The OpenAI Responses adapter sets `store=false` explicitly and tests assert the payload. |
 | Runtime taxonomy leaking into founder UX | Partially mitigated in TR009 | `/vera` uses human action language while Workbench keeps explicit audit surfaces. Trial must confirm taxonomy no longer dominates. |
 | Capture Inbox as primary UX | Rejected in TR009 direction | Capture Inbox remains available as ingestion primitive, not the main founder workflow. |
 | GitHub Actions checkout unavailable | Mitigated after PR #13 merge | PR-head checks failed before tests at account-level checkout 403, so PR #13 was merged under explicit founder CI-bypass decision; subsequent main Actions passed for merge and docs commits. |

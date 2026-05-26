@@ -11,6 +11,7 @@ from urllib.parse import parse_qs, urlparse
 
 from verace_runtime.app.service import FounderAssistantService
 from verace_runtime.workbench.context import read_project_context
+from verace_runtime.workbench.persona_provider import provider_from_env
 from verace_runtime.workbench.runtime_state import classify_runtime, reset_first_run_runtime
 from verace_runtime.workbench.suggestions import find_suggestion
 from verace_runtime.workbench import actions, capture, persona_frontdoor, views
@@ -30,7 +31,7 @@ def make_server(
     if host != DEFAULT_HOST:
         raise RuntimeError("Founder Workbench must bind to 127.0.0.1")
     db = Path(db_path or os.environ.get("VERACE_RUNTIME_DB") or DEFAULT_DB)
-    provider = persona_provider
+    provider = persona_provider or provider_from_env()
 
     class Handler(WorkbenchHandler):
         runtime_db = db
@@ -55,7 +56,7 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
                 if state.unsafe:
                     self._html(*views.error_page(f"Unsafe runtime schema: {state.reason}", 200))
                 else:
-                    self._html(200, persona_frontdoor.front_page(first_run=state.first_run, service=service))
+                    self._html(200, persona_frontdoor.front_page(first_run=state.first_run, service=service, provider=self.persona_provider))
             elif path == "/plan":
                 self._html(200, views.plan_page(service, dismissed=self.dismissed_suggestions, first_run=state.first_run))
             elif path == "/documents":
@@ -110,12 +111,12 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
                     if _needs_ready(state):
                         return self._runtime_not_ready(state, service)
                     notice = persona_frontdoor.confirm_action(service, form)
-                    self._html(200, persona_frontdoor.front_page(notice, service=service))
+                    self._html(200, persona_frontdoor.front_page(notice, service=service, provider=self.persona_provider))
                 else:
                     message = form.get("message", "")
                     if not message:
                         raise RuntimeError("Сообщение пустое")
-                    self._html(200, persona_frontdoor.respond_page(message, self.persona_provider, state.first_run))
+                    self._html(200, persona_frontdoor.respond_page(message, self.persona_provider, state.first_run, service))
             elif path == "/init":
                 if state.unsafe:
                     self._html(*views.error_page(f"Unsafe runtime schema: {state.reason}", 400))
@@ -124,7 +125,7 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
                     reset_first_run_runtime(self.runtime_db)
                     service = FounderAssistantService(self.runtime_db)
                 notice = actions.init_runtime(service)
-                self._html(200, persona_frontdoor.front_page(notice, service=service))
+                self._html(200, persona_frontdoor.front_page(notice, service=service, provider=self.persona_provider))
             elif path == "/tasks":
                 if _needs_ready(state):
                     return self._runtime_not_ready(state, service)

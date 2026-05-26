@@ -16,6 +16,7 @@ Durable operating decisions for Verace - Trust Runtime.
 | D-TR-010 | Human-facing factual statements about the system's own actions must be rendered from ledger/receipt fields or validated against receipts; otherwise the runtime must fail closed, repair, clarify, or downgrade the statement. | FAILURE_CLASS_CLOSURE / ADR-TR002 |
 | D-TR-011 | ADR-TR007 Human-Facing System-Action Claim Rendering accepted; future channel/LLM-facing system-action statements must be rendered from or validated against receipt-backed runtime state. | ADR-TR007 |
 | D-TR-012 | Verace primary founder UX follows the Front-of-House Model: live persona as entry point, runtime as trust controller, Workbench as backstage/audit cockpit, and Capture Inbox as ingestion capability rather than primary founder workflow. | Founder decision / TR009 |
+| D-TR-013 | Persona Provider v0 uses an env-gated, replaceable OpenAI Responses API adapter; `store=false` is explicit, tools are disabled, and no founder trial is valid while `/vera` is fallback-only. | Founder decision / BRIEF-TR010 |
 
 ## Decision Discipline
 
