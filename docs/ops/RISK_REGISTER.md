@@ -46,6 +46,7 @@
 | Runtime taxonomy leaking into founder UX | Partially mitigated in TR009 | `/vera` uses human action language while Workbench keeps explicit audit surfaces. Trial must confirm taxonomy no longer dominates. |
 | Capture Inbox as primary UX | Rejected in TR009 direction | Capture Inbox remains available as ingestion primitive, not the main founder workflow. |
 | GitHub Actions checkout unavailable | Mitigated after PR #13 merge | PR-head checks failed before tests at account-level checkout 403, so PR #13 was merged under explicit founder CI-bypass decision; subsequent main Actions passed for merge and docs commits. |
+| Persona front door becomes one-shot result page | Mitigated in FIX-TR009C | `/vera` keeps a visible input after responses, init, and confirmed actions so Oleg can continue the conversation. |
 
 ## Review Rule
 
