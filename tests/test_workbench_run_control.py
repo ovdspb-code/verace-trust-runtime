@@ -39,7 +39,7 @@ def _cleanup_process(process: subprocess.Popen) -> None:
             process.wait(timeout=5)
 
 
-def _body(config: run_control.ControlConfig, path: str = "/plan") -> str:
+def _body(config: run_control.ControlConfig, path: str = "/vera") -> str:
     with urlopen(f"http://{config.host}:{config.port}{path}", timeout=5) as response:
         assert response.status == 200
         return response.read().decode("utf-8")
@@ -55,13 +55,13 @@ def test_stale_pid_is_removed_and_status_reports_not_running(tmp_path, capsys):
     assert "stale" in capsys.readouterr().out
 
 
-def test_start_creates_pid_and_server_answers_plan(tmp_path):
+def test_start_creates_pid_and_server_answers_frontdoor(tmp_path):
     config = _config(tmp_path)
     try:
         assert run_control.start(config) == 0
         assert config.pid_file.exists()
         body = _body(config)
-        assert "План проекта" in body
+        assert "Вера" in body
         assert "Traceback" not in body
     finally:
         run_control.stop(config)
@@ -89,7 +89,7 @@ def test_open_calls_browser_after_health_ok(tmp_path, monkeypatch):
     finally:
         run_control.stop(config)
 
-    assert opened == [config.plan_url]
+    assert opened == [config.open_url]
 
 
 def test_stop_terminates_own_process_and_removes_pid(tmp_path):
@@ -167,7 +167,7 @@ def test_start_ignores_unowned_pid_when_port_free(tmp_path):
 
         assert owned_pid != process.pid
         assert process.poll() is None
-        assert "План проекта" in body
+        assert "Вера" in body
     finally:
         run_control.stop(config)
         _cleanup_process(process)

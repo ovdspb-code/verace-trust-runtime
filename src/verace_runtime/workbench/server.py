@@ -51,18 +51,11 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
             query = parse_qs(parsed.query, keep_blank_values=True)
             service = FounderAssistantService(self.runtime_db)
             state = classify_runtime(self.runtime_db)
-            if path == "/vera":
+            if path in {"/", "/vera"}:
                 if state.unsafe:
                     self._html(*views.error_page(f"Unsafe runtime schema: {state.reason}", 200))
                 else:
-                    self._html(200, persona_frontdoor.front_page(first_run=state.first_run))
-            elif path == "/":
-                if state.first_run:
-                    self._html(200, views.first_run_dashboard())
-                elif state.unsafe:
-                    self._html(*views.error_page(f"Unsafe runtime schema: {state.reason}", 200))
-                else:
-                    self._html(200, views.dashboard(service))
+                    self._html(200, persona_frontdoor.front_page(first_run=state.first_run, service=service))
             elif path == "/plan":
                 self._html(200, views.plan_page(service, dismissed=self.dismissed_suggestions, first_run=state.first_run))
             elif path == "/documents":
@@ -117,7 +110,7 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
                     if _needs_ready(state):
                         return self._runtime_not_ready(state, service)
                     notice = persona_frontdoor.confirm_action(service, form)
-                    self._html(200, persona_frontdoor.front_page(notice))
+                    self._html(200, persona_frontdoor.front_page(notice, service=service))
                 else:
                     message = form.get("message", "")
                     if not message:

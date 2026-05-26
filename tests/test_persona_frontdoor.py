@@ -50,6 +50,38 @@ def test_get_vera_renders_conversation_first_ui(tmp_path):
     assert "task / review / decision" not in html
 
 
+def test_root_is_persona_frontdoor(tmp_path):
+    with running_server(tmp_path / "runtime.sqlite3") as base:
+        html = get(base, "/")
+
+    assert "Вера" in html
+    assert "Что произошло?" in html
+    assert "Рабочая панель проекта" not in html
+
+
+def test_global_navigation_keeps_cockpit_backstage(tmp_path):
+    with running_server(tmp_path / "runtime.sqlite3") as base:
+        html = get(base, "/vera")
+
+    header = html.split("</header>", 1)[0]
+    assert '<a href="/vera">Вера</a>' in header
+    assert "За кулисами" in header
+    for label in ("План", "Документы", "Входящие", "Проверки", "Диагностика"):
+        assert label in header
+    for label in ("Задача", "Решение", "На проверку"):
+        assert label not in header
+
+
+def test_backstage_pages_remain_accessible(tmp_path):
+    db_path = tmp_path / "runtime.sqlite3"
+    with running_server(db_path) as base:
+        post(base, "/init", {})
+        assert "План проекта" in get(base, "/plan")
+        assert "Документы проекта" in get(base, "/documents")
+        assert "Входящие" in get(base, "/capture")
+        assert "Диагностика" in get(base, "/doctor")
+
+
 def test_post_vera_with_fake_provider_returns_persona_response(tmp_path):
     provider = FakePersonaProvider("Я поняла. Вот что важно: не делать диспетчерскую главным входом.")
     db_path = tmp_path / "runtime.sqlite3"
@@ -129,15 +161,17 @@ def test_vera_blocks_unsupported_completed_action_claim(tmp_path):
 
 def test_vera_first_run_is_clean(tmp_path):
     with running_server(tmp_path / "runtime.sqlite3") as base:
+        root = get(base, "/")
         html = get(base, "/vera")
         response = post(base, "/vera", {"message": "Надо подготовить first run."})
         confirm = post(base, "/vera", {"intent": "todo", "body": "Не должно записаться до init."})
 
+    assert "Первый запуск" in root
     assert "Первый запуск" in html
     assert "Первый запуск" in response
     assert "Сначала инициализируйте локальный ledger" in confirm
-    assert "Required ledger row not found" not in html + response + confirm
-    assert "Traceback" not in html + response + confirm
+    assert "Required ledger row not found" not in root + html + response + confirm
+    assert "Traceback" not in root + html + response + confirm
 
 
 def test_vera_unsafe_db_fails_closed(tmp_path):
@@ -147,8 +181,10 @@ def test_vera_unsafe_db_fails_closed(tmp_path):
         conn.execute("INSERT INTO orphan_state(id) VALUES ('x')")
 
     with running_server(db_path) as base:
+        root = get(base, "/")
         html = get(base, "/vera")
 
+    assert "Unsafe runtime schema" in root
     assert "Unsafe runtime schema" in html
     assert "missing runtime_meta" in html
-    assert "Traceback" not in html
+    assert "Traceback" not in root + html

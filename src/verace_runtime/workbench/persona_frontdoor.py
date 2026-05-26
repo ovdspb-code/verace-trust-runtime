@@ -26,11 +26,11 @@ class PersonaAction:
     reason: str
 
 
-def front_page(notice: str | None = None, first_run: bool = False) -> str:
+def front_page(notice: str | None = None, first_run: bool = False, service: FounderAssistantService | None = None) -> str:
     body = _form()
     if first_run:
         body += _first_run_banner()
-    body += _backstage()
+    body += _backstage(service, first_run)
     return page("Вера", body, notice)
 
 
@@ -141,12 +141,31 @@ def _first_run_banner() -> str:
     )
 
 
-def _backstage() -> str:
+def _backstage(service: FounderAssistantService | None = None, first_run: bool = False) -> str:
+    snapshot = "" if first_run or service is None else _runtime_snapshot(service)
     return (
         "<section><h2>За кулисами</h2><p class='muted'>Если нужно проверить ledger, документы или диагностику, "
         "это доступно отдельно.</p><p class='actions'><a class='button' href='/plan'>План</a>"
         "<a class='button' href='/documents'>Документы</a><a class='button' href='/capture'>Входящие</a>"
-        "<a class='button' href='/doctor'>Диагностика</a></p></section>"
+        "<a class='button' href='/reviews'>Проверки</a><a class='button' href='/doctor'>Диагностика</a></p>"
+        f"{snapshot}"
+        "<details><summary>Ручная коррекция</summary><p class='actions'>"
+        "<a class='button' href='/tasks/new'>Задача</a><a class='button' href='/decisions/new'>Решение</a>"
+        "<a class='button' href='/reviews/new'>На проверку</a></p>"
+        "<p class='actions'><a class='button' href='/tasks/new'>Добавить задачу</a>"
+        "<a class='button' href='/decisions/new'>Записать решение</a>"
+        "<a class='button' href='/reviews/new'>Добавить на проверку</a></p></details></section>"
+    )
+
+
+def _runtime_snapshot(service: FounderAssistantService) -> str:
+    brief = service.session_brief()
+    tasks = "".join(f"<li>{esc(row['public_no'])}: {esc(row['title'])}</li>" for row in brief["tasks"][:3])
+    decisions = "".join(f"<li>{esc(row['public_id'])}: {esc(row['title'])}</li>" for row in brief["decisions"][:3])
+    return (
+        "<details><summary>Текущий ledger</summary><p class='status ok'>Система готова</p>"
+        f"<h3>Открытые задачи</h3><ul>{tasks or '<li>Пока нет открытых задач.</li>'}</ul>"
+        f"<h3>Последние решения</h3><ul>{decisions or '<li>Пока нет записанных решений.</li>'}</ul></details>"
     )
 
 

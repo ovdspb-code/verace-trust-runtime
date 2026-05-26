@@ -1,5 +1,16 @@
 # Worklog
 
+## 2026-05-26 - REVIEW-FIX-TR009A: Make Persona Front Door Primary
+
+**Summary:**
+
+- `/vera` is now the actual founder landing surface.
+- Run-control opens and health-checks `/vera`.
+- Root route `/` resolves to the persona front door.
+- Cockpit links moved into secondary "За кулисами" navigation.
+- Workbench, Capture Inbox, Plan, Documents, Reviews, and Doctor remain directly accessible as backstage surfaces.
+- No runtime semantics changed.
+
 ## 2026-05-25 - TR009: Persona Front Door
 
 **Goal:** Record the Front-of-House UI decision and add the first persona-first browser entry.

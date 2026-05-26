@@ -84,7 +84,7 @@ Codex/admin may use:
 verace-workbench-control open
 ```
 
-This handles stale pid files, reuses a healthy local server, and opens `/plan`. This is internal/admin machinery. Founder UX remains the browser page.
+This handles stale pid files, reuses a healthy local server, and opens `/vera`. This is internal/admin machinery. Founder UX remains the browser page.
 
 ## Ledger Seed Quickstart
 

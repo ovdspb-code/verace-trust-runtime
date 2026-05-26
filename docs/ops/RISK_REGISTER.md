@@ -40,6 +40,7 @@
 | Existing v2 runtime blocked by v3 Workbench | Mitigated in PR #12 | Known older schema versions with governed migrations are migrated before Workbench runtime classification, preserving existing task/message/review/decision rows. |
 | Capture repeated accept duplicates ledger entries | Mitigated in PR #12 | Capture accept validates suggestion existence, proposed status, and kind compatibility before task/review/decision mutation. |
 | Dispatcher cockpit as primary UX | Mitigated in TR009 direction | Persona Front Door becomes the preferred entry; Workbench remains backstage/audit cockpit, pending founder trial. |
+| Persona route exists but cockpit remains primary | Mitigated in REVIEW-FIX-TR009A | Run-control, root route, and navigation now make `/vera` the actual primary founder surface; cockpit links are backstage. |
 | Template voice replacing model voice | Open | Persona provider drafts language only; runtime fact guard blocks unsupported completed-action claims. Real provider voice still needs later trial. |
 | Runtime taxonomy leaking into founder UX | Partially mitigated in TR009 | `/vera` uses human action language while Workbench keeps explicit audit surfaces. Trial must confirm taxonomy no longer dominates. |
 | Capture Inbox as primary UX | Rejected in TR009 direction | Capture Inbox remains available as ingestion primitive, not the main founder workflow. |
