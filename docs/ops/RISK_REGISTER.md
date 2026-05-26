@@ -45,7 +45,7 @@
 | Template voice replacing model voice | Open | Persona provider drafts language only; runtime fact guard blocks unsupported completed-action claims. Real provider voice still needs later trial. |
 | Runtime taxonomy leaking into founder UX | Partially mitigated in TR009 | `/vera` uses human action language while Workbench keeps explicit audit surfaces. Trial must confirm taxonomy no longer dominates. |
 | Capture Inbox as primary UX | Rejected in TR009 direction | Capture Inbox remains available as ingestion primitive, not the main founder workflow. |
-| GitHub Actions checkout unavailable | Open | PR #13 was merged under explicit founder CI-bypass decision because Actions failed before tests at account-level checkout 403; restore GitHub Actions access before treating remote CI as healthy. |
+| GitHub Actions checkout unavailable | Mitigated after PR #13 merge | PR-head checks failed before tests at account-level checkout 403, so PR #13 was merged under explicit founder CI-bypass decision; subsequent main Actions passed for merge and docs commits. |
 
 ## Review Rule
 

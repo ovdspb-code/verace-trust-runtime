@@ -22,7 +22,7 @@
 - Forbidden tracked/staged DB/log/env scans returned no files.
 - Raw local forbidden scan saw only ignored private `.runtime/verace.sqlite3` and `.runtime/workbench.log`; they were not staged or committed.
 - Line-count gate passed: no files over 300 lines.
-- GitHub Actions status: failed before tests during `actions/checkout` with account-level 403/suspension; not a code/test failure.
+- GitHub Actions status: PR-head checks failed before tests during `actions/checkout` with account-level 403/suspension; merge proceeded by founder decision. Main runs later passed for merge commit `971de0e` and docs commit `a393637`.
 
 ## 2026-05-26 - REVIEW-FIX-TR009B: Keep Founder on Persona Front Door After Init
 
