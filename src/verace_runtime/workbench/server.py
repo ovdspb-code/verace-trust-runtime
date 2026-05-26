@@ -124,7 +124,7 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
                     reset_first_run_runtime(self.runtime_db)
                     service = FounderAssistantService(self.runtime_db)
                 notice = actions.init_runtime(service)
-                self._html(200, views.dashboard(service, notice))
+                self._html(200, persona_frontdoor.front_page(notice, service=service))
             elif path == "/tasks":
                 if _needs_ready(state):
                     return self._runtime_not_ready(state, service)

@@ -174,6 +174,21 @@ def test_vera_first_run_is_clean(tmp_path):
     assert "Traceback" not in root + html + response + confirm
 
 
+def test_init_from_first_run_returns_to_persona_frontdoor(tmp_path):
+    with running_server(tmp_path / "runtime.sqlite3") as base:
+        first = get(base, "/vera")
+        initialized = post(base, "/init", {})
+
+    assert "Первый запуск" in first
+    assert "Вера" in initialized
+    assert "Что произошло?" in initialized
+    assert "Runtime initialized. Receipt: RCPT-" in initialized
+    assert "Подтверждено receipt-записью" in initialized
+    assert "Рабочая панель проекта" not in initialized
+    assert "Required ledger row not found" not in initialized
+    assert "Traceback" not in initialized
+
+
 def test_vera_unsafe_db_fails_closed(tmp_path):
     db_path = tmp_path / "unversioned.sqlite3"
     with sqlite3.connect(db_path) as conn:

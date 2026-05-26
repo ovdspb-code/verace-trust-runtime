@@ -1,5 +1,14 @@
 # Worklog
 
+## 2026-05-26 - REVIEW-FIX-TR009B: Keep Founder on Persona Front Door After Init
+
+**Summary:**
+
+- First-run initialization now returns to the Persona Front Door.
+- Prevents founder from being routed to dashboard/cockpit after setup.
+- Receipt-backed init confirmation remains visible on `/vera`.
+- No runtime semantics changed.
+
 ## 2026-05-26 - REVIEW-FIX-TR009A: Make Persona Front Door Primary
 
 **Summary:**
