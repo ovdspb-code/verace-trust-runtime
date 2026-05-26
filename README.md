@@ -31,6 +31,20 @@ Phase 1 - Founder Assistant Seed.
 
 The current implementation includes the Browser Founder Workbench over the Verace Runtime ledger. CLI commands remain internal/admin surfaces, not founder UX.
 
+## Persona Front Door
+
+Verace founder UX is persona-first:
+
+```text
+Persona is the interface.
+Runtime is the truth.
+Workbench is the audit cockpit.
+```
+
+The preferred browser entry is `/vera`. Oleg can write naturally, and Vera proposes what may be worth recording. The runtime still owns facts, permissions, receipts, approvals, and ledger state. Vera may propose actions freely, but she may not claim a task, decision, review, delivery, merge, or check is complete unless that statement is backed by a runtime receipt.
+
+The Workbench remains backstage: plan, documents, capture, reviews, ledger diagnostics, and manual correction.
+
 ## Founder Workbench
 
 Oleg's product surface is the browser workbench, not the terminal.
@@ -58,7 +72,7 @@ The workbench is not intended to be a manual notebook. It reads local project do
 
 ### Conversation Capture Inbox
 
-The Workbench also accepts pasted working text from ChatGPT, Codex reports, Claude notes, Telegram text, or local notes.
+Conversation Capture Inbox is an ingestion capability, not the primary founder workflow. It accepts pasted working text from ChatGPT, Codex reports, Claude notes, Telegram text, or local notes.
 
 The first capture implementation is deterministic and local-only: it stores the pasted text in the runtime DB, proposes editable task/decision/review/risk-review/Codex-task/ignore suggestions, and waits for Oleg to approve before ledger mutation. Accepted task, decision, and review entries use receipt-backed runtime paths. There is no LLM, provider, Telegram, channel, or external API integration yet.
 
@@ -70,7 +84,7 @@ Codex/admin may use:
 verace-workbench-control open
 ```
 
-This handles stale pid files, reuses a healthy local server, and opens `/plan`. This is internal/admin machinery. Founder UX remains the browser page.
+This handles stale pid files, reuses a healthy local server, and opens `/vera`. This is internal/admin machinery. Founder UX remains the browser page.
 
 ## Ledger Seed Quickstart
 

@@ -1,5 +1,39 @@
 # Worklog
 
+## 2026-05-26 - REVIEW-FIX-TR009B: Keep Founder on Persona Front Door After Init
+
+**Summary:**
+
+- First-run initialization now returns to the Persona Front Door.
+- Prevents founder from being routed to dashboard/cockpit after setup.
+- Receipt-backed init confirmation remains visible on `/vera`.
+- No runtime semantics changed.
+
+## 2026-05-26 - REVIEW-FIX-TR009A: Make Persona Front Door Primary
+
+**Summary:**
+
+- `/vera` is now the actual founder landing surface.
+- Run-control opens and health-checks `/vera`.
+- Root route `/` resolves to the persona front door.
+- Cockpit links moved into secondary "За кулисами" navigation.
+- Workbench, Capture Inbox, Plan, Documents, Reviews, and Doctor remain directly accessible as backstage surfaces.
+- No runtime semantics changed.
+
+## 2026-05-25 - TR009: Persona Front Door
+
+**Goal:** Record the Front-of-House UI decision and add the first persona-first browser entry.
+
+**Summary:**
+
+- Recorded D-TR-012: primary founder UX follows the Front-of-House Model.
+- Added BRIEF-TR009 for Persona Front Door.
+- Added `/vera` as a conversational entry over the existing runtime and Workbench.
+- Workbench remains backstage/audit cockpit; Capture Inbox remains an ingestion primitive.
+- Persona drafts can propose actions, but task/decision/review ledger mutations require explicit confirmation and receipt-backed runtime paths.
+- Unsupported completed-action claims are downgraded unless backed by a receipt result.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
 ## 2026-05-25 - MERGE-TR008: Merge Conversation Capture Inbox
 
 **Goal:** Merge PR #12 into `main` with a merge commit and record post-merge state.

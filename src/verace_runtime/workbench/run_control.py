@@ -19,7 +19,7 @@ from urllib.request import urlopen
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8765
 DEFAULT_RUNTIME_DIR = ".runtime"
-PLAN_PATH = "/plan"
+FRONTDOOR_PATH = "/vera"
 
 
 @dataclass(frozen=True)
@@ -32,8 +32,8 @@ class ControlConfig:
     log_file: Path
 
     @property
-    def plan_url(self) -> str:
-        return f"http://{self.host}:{self.port}{PLAN_PATH}"
+    def open_url(self) -> str:
+        return f"http://{self.host}:{self.port}{FRONTDOOR_PATH}"
 
 
 def build_config(host: str, port: int, runtime_dir: str | None, db_path: str | None) -> ControlConfig:
@@ -64,7 +64,7 @@ def start(config: ControlConfig) -> int:
         print(f"running: {detail}")
         return 0
     if state == "running_external":
-        print(f"running: existing workbench responds at {config.plan_url}")
+        print(f"running: existing workbench responds at {config.open_url}")
         return 0
     if state == "port_conflict":
         print(f"port conflict: {detail}")
@@ -85,7 +85,7 @@ def start(config: ControlConfig) -> int:
         )
     config.pid_file.write_text(str(process.pid))
     if _wait_for_health(config):
-        print(f"started: {config.plan_url}")
+        print(f"started: {config.open_url}")
         return 0
     print(f"health check failed: see {config.log_file}")
     return 1
@@ -96,12 +96,12 @@ def open_workbench(config: ControlConfig) -> int:
     if started != 0:
         return started
     if not _health_ok(config):
-        print(f"health check failed: {config.plan_url}")
+        print(f"health check failed: {config.open_url}")
         return 1
-    if not webbrowser.open(config.plan_url):
-        print(f"open failed: {config.plan_url}")
+    if not webbrowser.open(config.open_url):
+        print(f"open failed: {config.open_url}")
         return 1
-    print(f"opened: {config.plan_url}")
+    print(f"opened: {config.open_url}")
     return 0
 
 
@@ -178,8 +178,8 @@ def _server_state(config: ControlConfig, clean_stale: bool) -> tuple[str, str]:
                     return _port_state_without_pid(config)
                 return "unowned", "removed unowned pid" if clean_stale else "pid is not a workbench server"
             if _health_ok(config):
-                return "running", f"pid {pid} responds at {config.plan_url}"
-            return "dead", f"pid {pid} is alive but {PLAN_PATH} health check failed"
+                return "running", f"pid {pid} responds at {config.open_url}"
+            return "dead", f"pid {pid} is alive but {FRONTDOOR_PATH} health check failed"
         if clean_stale:
             _remove_pid(config.pid_file)
         if _port_open(config.host, config.port):
@@ -192,7 +192,7 @@ def _server_state(config: ControlConfig, clean_stale: bool) -> tuple[str, str]:
 
 def _port_state_without_pid(config: ControlConfig) -> tuple[str, str]:
     if _health_ok(config):
-        return "running_external", f"workbench responds without pid file at {config.plan_url}"
+        return "running_external", f"workbench responds without pid file at {config.open_url}"
     return "port_conflict", f"{config.host}:{config.port} is occupied by an unknown process"
 
 
@@ -206,9 +206,9 @@ def _wait_for_health(config: ControlConfig, attempts: int = 40) -> bool:
 
 def _health_ok(config: ControlConfig) -> bool:
     try:
-        with urlopen(config.plan_url, timeout=0.5) as response:
+        with urlopen(config.open_url, timeout=0.5) as response:
             body = response.read().decode("utf-8", errors="replace")
-            return response.status == 200 and "План проекта" in body and "Traceback" not in body
+            return response.status == 200 and "Вера" in body and "Traceback" not in body
     except Exception:
         return False
 

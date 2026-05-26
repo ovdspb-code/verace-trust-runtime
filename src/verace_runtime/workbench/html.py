@@ -9,7 +9,7 @@ STYLE = """
 body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;margin:0;background:#f6f7f9;color:#15171a}
 main{max-width:1040px;margin:0 auto;padding:24px}
 header{background:#111827;color:white;padding:18px 24px}
-nav a{color:#dbeafe;margin-right:16px;text-decoration:none}
+nav a{color:#dbeafe;margin-right:16px;text-decoration:none}nav details{display:inline-block;color:#dbeafe}nav summary{cursor:pointer}
 section,.card{background:white;border:1px solid #dde2ea;border-radius:8px;margin:16px 0;padding:18px}
 h1,h2{margin:0 0 12px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
@@ -34,10 +34,11 @@ def page(title: str, body: str, notice: str | None = None, error: str | None = N
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{escape(title)}</title><style>{STYLE}</style></head>
 <body><header><h1>Verace</h1><nav>
+<a href="/vera">Вера</a>
+<details><summary>За кулисами</summary>
 <a href="/">Обзор</a><a href="/plan">План</a><a href="/documents">Документы</a>
-<a href="/capture">Входящие</a>
-<a href="/tasks/new">Задача</a><a href="/decisions/new">Решение</a>
-<a href="/reviews">Проверки</a><a href="/reviews/new">На проверку</a><a href="/doctor">Диагностика</a>
+<a href="/capture">Входящие</a><a href="/reviews">Проверки</a><a href="/doctor">Диагностика</a>
+</details>
 </nav></header><main>{messages}{body}</main></body></html>"""
 
 

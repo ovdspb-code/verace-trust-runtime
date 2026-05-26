@@ -58,7 +58,7 @@ def test_server_refuses_non_localhost_bind(tmp_path):
         make_server(host="0.0.0.0", port=0, db_path=tmp_path / "runtime.sqlite3")
 
 
-def test_dashboard_renders_first_run_and_initialized_db(tmp_path):
+def test_root_renders_first_run_and_init_returns_persona_frontdoor(tmp_path):
     with running_server(tmp_path / "runtime.sqlite3") as base:
         fresh = get(base)
         initialized = post(base, "/init", {})
@@ -69,10 +69,11 @@ def test_dashboard_renders_first_run_and_initialized_db(tmp_path):
     assert "Traceback" not in fresh
     assert "Runtime initialized. Receipt: RCPT-" in initialized
     assert "Система готова" in initialized
+    assert "Вера" in initialized
+    assert "Что произошло?" in initialized
     assert "Пока нет открытых задач." in initialized
-    assert "Пока нет вопросов на проверке." in initialized
     assert "Пока нет записанных решений." in initialized
-    assert "Пока нет событий." in initialized
+    assert "Рабочая панель проекта" not in initialized
     assert "current=True" not in initialized
     assert "Reason: current" not in initialized
     assert "receipts=" not in initialized
