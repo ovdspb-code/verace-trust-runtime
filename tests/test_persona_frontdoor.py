@@ -7,13 +7,13 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from verace_runtime.app.service import FounderAssistantService
-from verace_runtime.workbench.persona_provider import FakePersonaProvider
+from verace_runtime.workbench.persona_provider import DraftOnlyProvider, FakePersonaProvider, PersonaActionDraft
 from verace_runtime.workbench.server import make_server
 
 
 @contextmanager
 def running_server(db_path, provider=None):
-    server = make_server(port=0, db_path=db_path, persona_provider=provider)
+    server = make_server(port=0, db_path=db_path, persona_provider=provider or DraftOnlyProvider())
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     host, port = server.server_address
@@ -83,7 +83,10 @@ def test_backstage_pages_remain_accessible(tmp_path):
 
 
 def test_post_vera_with_fake_provider_returns_persona_response(tmp_path):
-    provider = FakePersonaProvider("Я поняла. Вот что важно: не делать диспетчерскую главным входом.")
+    provider = FakePersonaProvider(
+        "Я поняла. Вот что важно: не делать диспетчерскую главным входом.",
+        (PersonaActionDraft("todo", "Сделать живую Веру", "Сделать живую Веру как вход.", "Полезный следующий шаг"),),
+    )
     db_path = tmp_path / "runtime.sqlite3"
     with running_server(db_path, provider) as base:
         post(base, "/init", {})
@@ -93,6 +96,7 @@ def test_post_vera_with_fake_provider_returns_persona_response(tmp_path):
     assert "Вот что важно" in html
     assert "Записать как задачу" in html
     assert provider.calls
+    assert "Open tasks:" in provider.calls[0].ledger_summary
 
 
 def test_post_vera_response_keeps_conversation_input(tmp_path):
@@ -105,7 +109,7 @@ def test_post_vera_response_keeps_conversation_input(tmp_path):
     assert "Продолжим" in html
     assert 'name="message"' in html or "name='message'" in html
     assert "Модель персонажа не подключена" not in html
-    assert "FOUNDER-TRIAL-006" in html
+    assert "Живой голос Веры" in html
 
 
 def test_post_vera_without_actions_has_no_dead_end_recording_block(tmp_path):
@@ -125,7 +129,11 @@ def test_post_vera_does_not_mutate_without_explicit_confirm(tmp_path):
     service.init_runtime()
     before = service.status()
 
-    with running_server(db_path) as base:
+    provider = FakePersonaProvider(
+        "Предлагаю записать следующий шаг.",
+        (PersonaActionDraft("todo", "Persona front door", "Сделать persona front door.", "Из сообщения"),),
+    )
+    with running_server(db_path, provider) as base:
         html = post(base, "/vera", {"message": "Надо сделать persona front door."})
 
     after = FounderAssistantService(db_path).status()

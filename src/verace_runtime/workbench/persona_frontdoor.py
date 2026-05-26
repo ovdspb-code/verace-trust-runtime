@@ -10,9 +10,11 @@ from verace_runtime.workbench.capture_classifier import classify_capture
 from verace_runtime.workbench.context import read_project_context
 from verace_runtime.workbench.html import esc, page
 from verace_runtime.workbench.persona_provider import (
-    DraftOnlyProvider,
+    PersonaActionDraft,
     PersonaActionHint,
+    PersonaRequestContext,
     PersonaProvider,
+    UnavailablePersonaProvider,
     guard_persona_draft,
 )
 
@@ -26,20 +28,34 @@ class PersonaAction:
     reason: str
 
 
-def front_page(notice: str | None = None, first_run: bool = False, service: FounderAssistantService | None = None) -> str:
+def front_page(
+    notice: str | None = None,
+    first_run: bool = False,
+    service: FounderAssistantService | None = None,
+    provider: PersonaProvider | None = None,
+) -> str:
     body = _form()
+    if _provider_unavailable(provider):
+        body += _unavailable()
     if first_run:
         body += _first_run_banner()
     body += _backstage(service, first_run)
     return page("Вера", body, notice)
 
 
-def respond_page(message: str, provider: PersonaProvider | None = None, first_run: bool = False) -> str:
+def respond_page(
+    message: str,
+    provider: PersonaProvider | None = None,
+    first_run: bool = False,
+    service: FounderAssistantService | None = None,
+) -> str:
     context = read_project_context()
-    proposals = build_actions(message)
-    draft_provider = provider or DraftOnlyProvider()
-    draft = draft_provider.draft(message, context, _hints(proposals))
-    text = _founder_text(guard_persona_draft(draft.text), context.next_work, bool(proposals))
+    hints = build_actions(message)
+    draft_provider = provider or UnavailablePersonaProvider()
+    request = PersonaRequestContext(message, context, _ledger_summary(service, first_run), tuple(_hints(hints)))
+    draft = draft_provider.draft(request)
+    text = guard_persona_draft(draft.text)
+    proposals = [] if draft.unavailable else _from_provider_actions(draft.proposed_actions)
     body = _dialog(message, text)
     body += _continue_form()
     if first_run:
@@ -96,6 +112,16 @@ def _hints(actions_: list[PersonaAction]) -> list[PersonaActionHint]:
     return [PersonaActionHint(item.intent, item.title, item.body, item.reason) for item in actions_]
 
 
+def _from_provider_actions(actions_: tuple[PersonaActionDraft, ...]) -> list[PersonaAction]:
+    labels = {"todo": "Записать как задачу", "fixation": "Зафиксировать решение", "check": "Поставить на проверку"}
+    proposals = [
+        PersonaAction(item.intent, labels[item.intent], item.title, item.body, item.reason or "Предложено Верой")
+        for item in actions_
+        if item.intent in labels and item.title and item.body
+    ]
+    return _dedupe(proposals)
+
+
 def _form() -> str:
     return (
         "<section class='hero'><h2>Вера</h2>"
@@ -143,6 +169,14 @@ def _actions(items: list[PersonaAction]) -> str:
     return "<section><h2>Что можно записать</h2>" + "".join(cards) + "</section>"
 
 
+def _unavailable() -> str:
+    return (
+        "<section class='error'><h2>Вера пока недоступна</h2>"
+        "<p>Живой голос Веры еще не подключен. Я не буду имитировать ассистента "
+        "заготовленным текстом; можно продолжить после настройки реального голоса.</p></section>"
+    )
+
+
 def _first_run_banner() -> str:
     return (
         "<section><h2>Первый запуск</h2>"
@@ -179,6 +213,19 @@ def _runtime_snapshot(service: FounderAssistantService) -> str:
     )
 
 
+def _ledger_summary(service: FounderAssistantService | None, first_run: bool) -> str:
+    if first_run or service is None:
+        return "Локальный ledger еще не инициализирован; записи невозможны до явного init."
+    try:
+        brief = service.session_brief()
+    except RuntimeError as exc:
+        return f"Ledger summary unavailable: {exc}"
+    tasks = "; ".join(f"{row['public_no']}: {row['title']}" for row in brief["tasks"][:5]) or "нет открытых задач"
+    decisions = "; ".join(f"{row['public_id']}: {row['title']}" for row in brief["decisions"][:5]) or "нет решений"
+    reviews = "; ".join(f"{row['public_id']}: {row['title']}" for row in brief["reviews"][:5]) or "нет открытых проверок"
+    return f"Open tasks: {tasks}\nRecent decisions: {decisions}\nOpen reviews: {reviews}"
+
+
 def _dedupe(items: list[PersonaAction]) -> list[PersonaAction]:
     seen: set[tuple[str, str]] = set()
     out: list[PersonaAction] = []
@@ -194,13 +241,5 @@ def _clip(text: str, limit: int = 600) -> str:
     return " ".join(text.split())[:limit]
 
 
-def _founder_text(text: str, next_work: str, has_actions: bool) -> str:
-    if "Модель персонажа не подключена" not in text:
-        return text
-    lines = ["Я здесь. По текущему состоянию Verace главный следующий шаг:"]
-    lines.append(next_work or "следующий шаг не указан в проектном состоянии.")
-    if has_actions:
-        lines.append("Ниже я предложила, что можно подтвердить для записи.")
-    else:
-        lines.append("Сейчас я бы просто обсудила это с вами и ничего не записывала без явного решения.")
-    return "\n".join(lines)
+def _provider_unavailable(provider: PersonaProvider | None) -> bool:
+    return provider is None or isinstance(provider, UnavailablePersonaProvider)

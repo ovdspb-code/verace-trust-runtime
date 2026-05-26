@@ -28,18 +28,19 @@
 - BRIEF-TR007: Project Context Intake and Suggested Work Queue — merged in PR #9.
 - BRIEF-TR008: Conversation Capture Inbox — merged in PR #12.
 - BRIEF-TR009: Persona Front Door — merged in PR #13.
+- BRIEF-TR010: Persona Provider v0 — in implementation.
 
 ## Current Work
 
 - Current product surface: Persona Front Door over Browser Founder Workbench.
 - Current product capability: Project Context Intake, Suggested Work Queue, Conversation Capture Inbox, Persona Front Door.
-- Recent work: BRIEF-TR009: Persona Front Door — merged in PR #13.
+- Recent work: FIX-TR009C: continuous Vera conversation surface — merged in PR #14.
 - Recent trial: FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake — passed. Oleg reported that the browser flow worked end-to-end.
-- Current work: Post-merge state recorded for BRIEF-TR009.
+- Current work: BRIEF-TR010: Persona Provider v0.
 
 ## Next Intended Work
 
-- FOUNDER-TRIAL-006: Persona Front Door Trial.
+- FOUNDER-TRIAL-006: Persona Front Door Trial with real provider.
 
 ## Current Repository Fact
 
@@ -78,3 +79,4 @@ Runtime implementation may proceed only inside an issued implementation brief an
 - PR #11 merged `work/run-fix-tr011-workbench-run-control` into `main` with merge commit `0feb48e`.
 - PR #12 merged `work/brief-tr008-conversation-capture-inbox` into `main` with merge commit `c00f7e6`.
 - PR #13 merged `work/tr009-persona-front-door` into `main` with merge commit `971de0e`.
+- PR #14 merged `work/fix-tr009c-continuous-vera` into `main` with merge commit `2758754`.

@@ -1,5 +1,18 @@
 # Worklog
 
+## 2026-05-26 - IMPL-TR010: Persona Provider v0
+
+**Summary:**
+
+- Added BRIEF-TR010 for a real persona provider.
+- Added an env-gated OpenAI Responses API adapter for Vera.
+- Provider prompts use verified project context, ledger summary, and deterministic candidate hints.
+- Provider responses contain human-facing Russian answer text plus proposed actions only.
+- `store=false` is set explicitly and tools/function calling are disabled in v0.
+- Without provider config, `/vera` shows unavailable state instead of pretending fallback text is Vera.
+- Ledger mutation still requires explicit founder confirmation and existing receipt-backed runtime paths.
+- No Telegram, channel integration, autonomous tool execution, model-owned state, or Workbench expansion was added.
+
 ## 2026-05-26 - FIX-TR009C: Make Vera a Continuous Conversation Surface
 
 **Summary:**

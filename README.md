@@ -43,6 +43,18 @@ Workbench is the audit cockpit.
 
 The preferred browser entry is `/vera`. Oleg can write naturally, and Vera proposes what may be worth recording. The runtime still owns facts, permissions, receipts, approvals, and ledger state. Vera may propose actions freely, but she may not claim a task, decision, review, delivery, merge, or check is complete unless that statement is backed by a runtime receipt.
 
+Vera requires a configured persona provider to be founder UX. Without one, `/vera` shows an unavailable state rather than pretending that fallback text is a real assistant.
+
+Persona Provider v0 uses the OpenAI Responses API through environment variables:
+
+```bash
+export VERACE_PERSONA_PROVIDER=openai
+export VERACE_PERSONA_MODEL=<model>
+export OPENAI_API_KEY=<secret>
+```
+
+The adapter is replaceable, sets `store=false`, and disables tool/function calling. The model drafts voice and proposed actions only; confirmed task, decision, and review writes still go through receipt-backed runtime paths.
+
 The Workbench remains backstage: plan, documents, capture, reviews, ledger diagnostics, and manual correction.
 
 ## Founder Workbench
