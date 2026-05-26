@@ -2,7 +2,7 @@
 
 **Project:** Verace - Trust Runtime  
 **Current phase:** Phase 1 - Founder Assistant Seed  
-**Updated:** 2026-05-25  
+**Updated:** 2026-05-26  
 
 ## Accepted ADRs
 
@@ -27,15 +27,15 @@
 - BRIEF-TR006: Browser Founder Workbench — merged in PR #7.
 - BRIEF-TR007: Project Context Intake and Suggested Work Queue — merged in PR #9.
 - BRIEF-TR008: Conversation Capture Inbox — merged in PR #12.
-- BRIEF-TR009: Persona Front Door — in progress.
+- BRIEF-TR009: Persona Front Door — merged in PR #13.
 
 ## Current Work
 
 - Current product surface: Persona Front Door over Browser Founder Workbench.
 - Current product capability: Project Context Intake, Suggested Work Queue, Conversation Capture Inbox, Persona Front Door.
-- Recent work: BRIEF-TR008: Conversation Capture Inbox — merged in PR #12.
+- Recent work: BRIEF-TR009: Persona Front Door — merged in PR #13.
 - Recent trial: FOUNDER-TRIAL-004: Real Session Trial with Project Context Intake — passed. Oleg reported that the browser flow worked end-to-end.
-- Current work: BRIEF-TR009: Persona Front Door.
+- Current work: Post-merge state recorded for BRIEF-TR009.
 
 ## Next Intended Work
 
@@ -77,3 +77,4 @@ Runtime implementation may proceed only inside an issued implementation brief an
 - PR #10 merged `work/founder-trial-fix-002-first-run-state` into `main` with merge commit `d766e48`.
 - PR #11 merged `work/run-fix-tr011-workbench-run-control` into `main` with merge commit `0feb48e`.
 - PR #12 merged `work/brief-tr008-conversation-capture-inbox` into `main` with merge commit `c00f7e6`.
+- PR #13 merged `work/tr009-persona-front-door` into `main` with merge commit `971de0e`.

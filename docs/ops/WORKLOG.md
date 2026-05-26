@@ -1,5 +1,29 @@
 # Worklog
 
+## 2026-05-26 - MERGE-TR009: Merge Persona Front Door
+
+**Goal:** Merge PR #13 into `main` with a merge commit and record the CI-bypass receipt.
+
+**Summary:**
+
+- PR #13 merged into `main`.
+- Merge commit: `971de0e`.
+- Product effect: `/vera` is the primary founder entry; root `/` and run-control open land on the Persona Front Door.
+- Workbench, Capture Inbox, Plan, Documents, Reviews, and Doctor remain available as backstage/audit surfaces.
+- Founder decision allowed merge despite GitHub Actions failure because Actions failed at checkout with account-level 403 before tests ran.
+- No LLM, API, channel, Telegram, npm, React, or Vite integration was added.
+
+**Checks:**
+
+- `python -m pip install -e ".[dev]"` completed on merged `main`.
+- `python -m pytest` passed on merged `main`: 160 tests.
+- Browser smoke passed for `/`, `/init` returning to `/vera`, natural text response, decision confirmation, receipt-backed confirmation, and `/doctor`.
+- Run-control smoke passed: `open` and `status` target `/vera`.
+- Forbidden tracked/staged DB/log/env scans returned no files.
+- Raw local forbidden scan saw only ignored private `.runtime/verace.sqlite3` and `.runtime/workbench.log`; they were not staged or committed.
+- Line-count gate passed: no files over 300 lines.
+- GitHub Actions status: failed before tests during `actions/checkout` with account-level 403/suspension; not a code/test failure.
+
 ## 2026-05-26 - REVIEW-FIX-TR009B: Keep Founder on Persona Front Door After Init
 
 **Summary:**
